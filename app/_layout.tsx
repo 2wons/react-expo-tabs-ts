@@ -4,6 +4,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { TamaguiProvider, createTamagui} from 'tamagui';
+import { config } from '@tamagui/config/v3'
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -44,15 +46,28 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+// you usually export this from a tamagui.config.ts file
+const tamaguiConfig = createTamagui(config)
+
+// make TypeScript type everything based on your config
+type Conf = typeof tamaguiConfig
+declare module '@tamagui/core' {
+  interface TamaguiCustomConfig extends Conf { }
+}
+
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
+
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <TamaguiProvider config={tamaguiConfig}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      </TamaguiProvider>
     </ThemeProvider>
   );
 }

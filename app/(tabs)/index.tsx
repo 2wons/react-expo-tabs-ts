@@ -7,9 +7,40 @@ import { useColorScheme } from '@/components/useColorScheme';
 
 import { Text, View } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
+import { Button, XStack } from 'tamagui'
+import DemoCard from '@/components/CustomCard';
+
+const listReports = [
+  {
+    id: 1,
+    date: '2024 February 12',
+    status: 'Healthy'
+  },
+  {
+    id: 2,
+    date: '2023 February 10',
+    status: 'Decay'
+  },
+]
+
+
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
+
+  const reports = listReports.map((report) => {
+    return (
+      <DemoCard
+        key={report.id}
+        size="$4"
+        width={200}
+        height={250}
+        title={report.date}
+        subtitle={report.status}
+      />
+    )
+  })
+
 
   return (
     <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, backgroundColor: Colors[colorScheme ?? 'light'].background}}>
@@ -18,6 +49,18 @@ export default function TabOneScreen() {
         <Feather size={48} name='heart' color={Colors[colorScheme ?? 'light'].text} />
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <View style={styles.container}>
+        <Button>Hello world</Button>
+        <XStack $sm={{ flexDirection: 'row' }} marginVertical="$4"space>
+          <DemoCard
+            size="$4"
+            width={200}
+            height={250}
+            title={'Sony A7IV'}
+          />
+          <DemoCard title={ '2023 February 12' } size="$5" width={200} height={250} />
+        </XStack>
+      </View >
       <EditScreenInfo path="app/(tabs)/index.tsx" />
     </SafeAreaView>
   );
@@ -25,8 +68,7 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginHorizontal: 20,
+    marginHorizontal: 15,
   },
   title: {
     fontSize: 20,
@@ -35,7 +77,7 @@ const styles = StyleSheet.create({
   separator: {
     marginVertical: 10,
     height: 1,
-    width: '80%',
+    width: '100%',
   },
   h1: {
     fontSize: 48,
