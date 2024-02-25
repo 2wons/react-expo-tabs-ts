@@ -8,7 +8,6 @@ import { TamaguiProvider, createTamagui} from 'tamagui';
 import { config } from '@tamagui/config/v3'
 
 import { useColorScheme } from '@/components/useColorScheme';
-import { CameraProvider } from './contexts/CameraContext';
 
 export {
   // Catch any errors thrown by the Layout component.
