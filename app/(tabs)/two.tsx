@@ -1,4 +1,4 @@
-import { StyleSheet, Alert, SafeAreaView } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useState } from 'react';
 
