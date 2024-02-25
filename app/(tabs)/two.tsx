@@ -2,44 +2,47 @@ import { StyleSheet, Alert, SafeAreaView } from 'react-native';
 
 import { useState } from 'react';
 
-import CameraView from '@/components/Camera';
 import { Image } from 'react-native';
 
-import { Camera } from 'expo-camera'
+import * as ImagePicker from 'expo-image-picker';
 
 import { Text, View } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
-import { useCamera } from '../contexts/CameraContext';
 
 export default function TabTwoScreen() {
 
   const [image, setImage] = useState<string | null>('');
-  const {cameraReady, setCameraReady} = useCamera();
 
   const openCamera = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1
+    });
+    console.log(result);
 
-    if ( status === 'granted' ) {
-      // open cam
-      setCameraReady(true);
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
-    else {
-      Alert.alert('Camera Access denied.');
+  }
+
+  const select = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4,3],
+      quality: 1,
+    })
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
     }
-  }
-
-  const capture = (uri: string) => {
-    console.log(uri);
-    setImage(uri);
-  }
-
-  const select = () => {
-    // select image from gallery
-  }
+  };
 
   return (
     
-    <View style={{flex: 1, alignItems: 'center', padding: cameraReady ? 0:10 }}>
+    <View style={styles.container}>
       <Text style={styles.title}>Select Image Source</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <XStack justifyContent='space-evenly' gap="$5" paddingHorizontal="$5">
@@ -63,11 +66,6 @@ export default function TabTwoScreen() {
         <Button onPress={() => setImage(null) }flex={1}>Cancel</Button>
         <Button flex={1}>Analyze</Button>
       </XStack>
-      { cameraReady ? (
-          <CameraView onCapture={capture} onCameraReady={setCameraReady} />
-      ) : null
-
-      }
     </View>
   );
 }

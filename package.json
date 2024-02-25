@@ -31,7 +31,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-web": "~0.19.6",
     "tamagui": "^1.90.6",
-    "expo-camera": "~14.0.5"
+    "expo-camera": "~14.0.5",
+    "expo-image-picker": "~14.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
