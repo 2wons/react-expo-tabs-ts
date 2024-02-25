@@ -1,13 +1,12 @@
 import { StyleSheet, SafeAreaView } from 'react-native';
 
 import Colors from '@/constants/Colors';
-import EditScreenInfo from '@/components/EditScreenInfo';
 import SafeViewAndroid from '@/components/SafeViewAndroid';
 import { useColorScheme } from '@/components/useColorScheme';
 
-import { Text, View } from '@/components/Themed';
+import { Text, View, ScrollView } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
-import { Button, XStack } from 'tamagui'
+import { Button, XStack, YStack } from 'tamagui'
 import DemoCard from '@/components/CustomCard';
 
 const listReports = [
@@ -22,8 +21,6 @@ const listReports = [
     status: 'Decay'
   },
 ]
-
-
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
@@ -41,7 +38,6 @@ export default function TabOneScreen() {
     )
   })
 
-
   return (
     <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, backgroundColor: Colors[colorScheme ?? 'light'].background}}>
       <View style={styles.myHeader}>
@@ -49,19 +45,17 @@ export default function TabOneScreen() {
         <Feather size={48} name='heart' color={Colors[colorScheme ?? 'light'].text} />
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View style={styles.container}>
-        <Button>Hello world</Button>
-        <XStack $sm={{ flexDirection: 'row' }} marginVertical="$4"space>
-          <DemoCard
-            size="$4"
-            width={200}
-            height={250}
-            title={'Sony A7IV'}
-          />
-          <DemoCard title={ '2023 February 12' } size="$5" width={200} height={250} />
+      <ScrollView style={styles.container}>
+        <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
+          <YStack flex={1} flexDirection='row' flexWrap='wrap'>
+            <DemoCard width={200} height={250} title={'Sony A7IV'} />
+            <DemoCard width={200} height={250} title={'Sony A7IV'} />
+            <DemoCard width={200} height={250} title={'Sony A7IV'} />
+            <DemoCard width={200} height={250} title={'Sony A7IV'} />
+            {/* ^make into flatlist */}
+          </YStack>
         </XStack>
-      </View >
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      </ScrollView >
     </SafeAreaView>
   );
 }

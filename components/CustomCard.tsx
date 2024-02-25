@@ -10,7 +10,7 @@ interface MyCardProps extends CardProps {
 export default function DemoCard(props: MyCardProps) {
     var { title , subtitle, ...other } = props;
     return (
-        <Card size="$4" animation="bouncy" hoverStyle={{ scale: 0.925 }} pressStyle={{ scale: 0.875 }}  bordered {...other}>
+        <Card margin="$2" size="$4" animation="bouncy" hoverStyle={{ scale: 0.925 }} pressStyle={{ scale: 0.875 }}  bordered {...other}>
             <Card.Header padded>
                 <H2>{ title ?? 'None' }</H2>
                 <Paragraph theme="alt2">{ subtitle ?? 'None' }</Paragraph>
@@ -40,5 +40,4 @@ const styles = StyleSheet.create({
         height: 1,
         width: '100%',
     },
-
 });
