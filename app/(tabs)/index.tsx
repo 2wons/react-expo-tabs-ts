@@ -7,7 +7,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { Text, View, ScrollView } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
 import { Button, XStack, YStack } from 'tamagui'
-import DemoCard from '@/components/CustomCard';
+import ResultCard from '@/components/CustomCard';
 
 const listReports = [
   {
@@ -27,7 +27,7 @@ export default function TabOneScreen() {
 
   const reports = listReports.map((report) => {
     return (
-      <DemoCard
+      <ResultCard
         key={report.id}
         size="$4"
         width={200}
@@ -48,10 +48,10 @@ export default function TabOneScreen() {
       <ScrollView style={styles.container}>
         <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
           <YStack flex={1} flexDirection='row' flexWrap='wrap'>
-            <DemoCard width={200} height={250} title={'Sony A7IV'} />
-            <DemoCard width={200} height={250} title={'Sony A7IV'} />
-            <DemoCard width={200} height={250} title={'Sony A7IV'} />
-            <DemoCard width={200} height={250} title={'Sony A7IV'} />
+            <ResultCard width={200} height={250} title={'Sony A7IV'} />
+            <ResultCard width={200} height={250} title={'Sony A7IV'} />
+            <ResultCard width={200} height={250} title={'Sony A7IV'} />
+            <ResultCard width={200} height={250} title={'Sony A7IV'} />
             {/* ^make into flatlist */}
           </YStack>
         </XStack>
