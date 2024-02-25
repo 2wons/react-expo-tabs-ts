@@ -19,7 +19,6 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const {cameraReady, setCameraReady} = useCamera();
 
   return (
     <Tabs
@@ -46,11 +45,6 @@ export default function TabLayout() {
         options={{
           title: 'Analyze',
           tabBarIcon: ({ color }) => <TabBarIcon name="plus-circle" color={color} />,
-          headerShown: !cameraReady,
-          tabBarStyle: {
-            height: 60,
-            display: cameraReady ? 'none' : 'flex',
-          }
         }}
       />
       <Tabs.Screen
