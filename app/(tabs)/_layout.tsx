@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { Feather } from '@expo/vector-icons';
+import { useCamera } from '../contexts/CameraContext';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -18,6 +19,7 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const {cameraReady, setCameraReady} = useCamera();
 
   return (
     <Tabs
@@ -26,7 +28,9 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
-        tabBarStyle: {height: 60},
+        tabBarStyle: {
+          height: 60,
+        },
         tabBarLabelStyle: {paddingBottom: 5}
       }}>
       <Tabs.Screen
@@ -42,7 +46,11 @@ export default function TabLayout() {
         options={{
           title: 'Analyze',
           tabBarIcon: ({ color }) => <TabBarIcon name="plus-circle" color={color} />,
-          
+          headerShown: !cameraReady,
+          tabBarStyle: {
+            height: 60,
+            display: cameraReady ? 'none' : 'flex',
+          }
         }}
       />
       <Tabs.Screen

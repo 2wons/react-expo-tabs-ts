@@ -8,6 +8,7 @@ import { TamaguiProvider, createTamagui} from 'tamagui';
 import { config } from '@tamagui/config/v3'
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { CameraProvider } from './contexts/CameraContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -63,10 +64,12 @@ function RootLayoutNav() {
 
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <TamaguiProvider config={tamaguiConfig}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-        </Stack>
+        <CameraProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        </CameraProvider>
       </TamaguiProvider>
     </ThemeProvider>
   );
