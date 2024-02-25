@@ -27,6 +27,7 @@ export default function CameraView(props: CameraViewProps) {
     onCameraReady(false);
   }
 
+  // TODO: make better button layouts
   return (
     <Camera style = {styles.camera} ratio='16:9' type = {CameraType.back} ref = {cameraRef}>
         <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, ...styles.container}}>
