@@ -1,5 +1,5 @@
 import type { CardProps } from 'tamagui'
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
 import { Button, Card, H2, Image, Paragraph, XStack } from 'tamagui'
 
@@ -12,7 +12,6 @@ export default function ResultCard(props: MyCardProps) {
     var { title , subtitle, ...other } = props;
     return (
         <Card 
-            margin="$2" 
             size="$4" 
             animation="bouncy" 
             hoverStyle={{ scale: 0.925 }} 

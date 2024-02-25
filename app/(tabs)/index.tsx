@@ -9,34 +9,9 @@ import { Feather } from '@expo/vector-icons';
 import { Button, XStack, YStack } from 'tamagui'
 import ResultCard from '@/components/CustomCard';
 
-const listReports = [
-  {
-    id: 1,
-    date: '2024 February 12',
-    status: 'Healthy'
-  },
-  {
-    id: 2,
-    date: '2023 February 10',
-    status: 'Decay'
-  },
-]
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
-
-  const reports = listReports.map((report) => {
-    return (
-      <ResultCard
-        key={report.id}
-        size="$4"
-        width={200}
-        height={250}
-        title={report.date}
-        subtitle={report.status}
-      />
-    )
-  })
 
   return (
     <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, backgroundColor: Colors[colorScheme ?? 'light'].background}}>
@@ -47,11 +22,16 @@ export default function TabOneScreen() {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <ScrollView style={styles.container}>
         <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
-          <YStack flex={1} flexDirection='row' flexWrap='wrap'>
-            <ResultCard width={200} height={250} title={'Sony A7IV'} />
-            <ResultCard width={200} height={250} title={'Sony A7IV'} />
-            <ResultCard width={200} height={250} title={'Sony A7IV'} />
-            <ResultCard width={200} height={250} title={'Sony A7IV'} />
+          <YStack flex={1} flexBasis={200} flexGrow={1} flexDirection='row' flexWrap='wrap' backgroundColor={'$background025'} rowGap={10} columnGap={10}>
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+            <ResultCard flexGrow={1} height={250} title={'Sony A7IV'} />
+
             {/* ^make into flatlist */}
           </YStack>
         </XStack>
