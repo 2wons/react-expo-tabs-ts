@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 
 import { useState } from 'react';
 
@@ -14,6 +14,14 @@ export default function TabTwoScreen() {
   const [image, setImage] = useState<string | null>('');
 
   const openCamera = async () => {
+    // camera needs permission
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Camera Permissions Denied")
+      return;
+    }
+
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4,3],
