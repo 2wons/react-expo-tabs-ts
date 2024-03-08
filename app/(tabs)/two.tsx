@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { Text, View } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
+import { Loader } from '@/components/Loader';
 
 import { analyzeTeeth } from '@/services/modelService';
 
@@ -18,6 +19,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 export default function TabTwoScreen() {
 
   const [image, setImage] = useState<string | null>('');
+  const [loading, setLoading] = useState(false);
   
   const { token } = useAuth();
 
@@ -43,6 +45,7 @@ export default function TabTwoScreen() {
   }
 
   const select = async () => {
+    setLoading(true);
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       base64: true,
@@ -54,6 +57,7 @@ export default function TabTwoScreen() {
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
+    setLoading(false);
   };
 
   const analyze = async () => {
@@ -61,6 +65,8 @@ export default function TabTwoScreen() {
     if (!token || !image) {
       return;
     }
+
+    setLoading(true);
     
     try {
       const response = await analyzeTeeth(token, image);
@@ -72,6 +78,7 @@ export default function TabTwoScreen() {
     } catch (error) {
       console.log('Analyze Error', error);
     }
+    setLoading(false);
   }
 
   return (
@@ -93,13 +100,14 @@ export default function TabTwoScreen() {
           </Button>
         </YStack>
       </XStack>
-      <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical='5%' borderRadius={10}>
+      <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' margin='$5' borderRadius={10}>
           <Image source={{uri: image ? image : 'https://i.postimg.cc/FFcjKg98/placeholder.png'}} style={styles.image} resizeMode='contain' />
       </YStack>
-      <XStack gap='$5' width={'100%'}>
+      <XStack gap='$5' margin='$5'>
         <Button onPress={() => setImage(null) } flex={1}>Cancel</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
+      { loading ?  <Loader /> : '' }
     </View>
   );
 }
