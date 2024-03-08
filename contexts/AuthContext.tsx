@@ -42,10 +42,10 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
             try {
                 const storedToken = await AsyncStorage.getItem('token');
                 const storedExpiration = await AsyncStorage.getItem('expiration');
-
+                
                 setToken(storedToken);
                 setExpiration(storedExpiration);
-                setAuthenticated(true);
+            if (storedToken) { setAuthenticated(true); }
 
             } catch (error) {
                 console.error('Error loading from AsyncStorage', error);
