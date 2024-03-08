@@ -9,9 +9,17 @@ import * as ImagePicker from 'expo-image-picker';
 import { Text, View } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
 
+import { analyzeTeeth } from '@/services/modelService';
+
+import { useAuth } from '@/contexts/AuthContext';
+
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
 export default function TabTwoScreen() {
 
   const [image, setImage] = useState<string | null>('');
+  const [imageName, setImageName] = useState<string | null | undefined>('');
+  const { token } = useAuth();
 
   const openCamera = async () => {
     // camera needs permission
@@ -24,7 +32,7 @@ export default function TabTwoScreen() {
 
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [4,3],
+      aspect: [1,1],
       quality: 1
     });
     console.log(result);
@@ -37,16 +45,34 @@ export default function TabTwoScreen() {
   const select = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
       allowsEditing: true,
-      aspect: [4,3],
+      //aspect: [4,3],
       quality: 1,
     })
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setImageName(result.assets[0].fileName);
     }
   };
+
+  const analyze = async () => {
+
+    if (!token || !image) {
+      return;
+    }
+    
+    try {
+      const response = await analyzeTeeth(token, image);
+      console.log(response);
+      const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
+      console.log(resultImgPath);
+      setImage(resultImgPath);
+    } catch (error) {
+      console.log('Analyze Error', error);
+    }
+  }
 
   return (
     
@@ -68,11 +94,11 @@ export default function TabTwoScreen() {
         </YStack>
       </XStack>
       <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical='5%' borderRadius={10}>
-          <Image source={{uri: image ? image : 'https://i.pinimg.com/736x/e4/8d/b6/e48db6ef87ba443b03965789dce98b80.jpg'}} style={styles.image} resizeMode='cover' />
+          <Image source={{uri: image ? image : 'https://i.postimg.cc/FFcjKg98/placeholder.png'}} style={styles.image} resizeMode='contain' />
       </YStack>
       <XStack gap='$5' width={'100%'}>
-        <Button onPress={() => setImage(null) }flex={1}>Cancel</Button>
-        <Button flex={1}>Analyze</Button>
+        <Button onPress={() => setImage(null) } flex={1}>Cancel</Button>
+        <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
     </View>
   );
