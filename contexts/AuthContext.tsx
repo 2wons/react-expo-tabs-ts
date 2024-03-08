@@ -45,12 +45,13 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
 
                 setToken(storedToken);
                 setExpiration(storedExpiration);
+                setAuthenticated(true);
 
             } catch (error) {
                 console.error('Error loading from AsyncStorage', error);
             }
         };
-        
+
         loadToken();
     }, []);
 
