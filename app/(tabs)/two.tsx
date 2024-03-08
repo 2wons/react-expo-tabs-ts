@@ -18,7 +18,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 export default function TabTwoScreen() {
 
   const [image, setImage] = useState<string | null>('');
-  const [imageName, setImageName] = useState<string | null | undefined>('');
+  
   const { token } = useAuth();
 
   const openCamera = async () => {
@@ -68,7 +68,7 @@ export default function TabTwoScreen() {
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
       
       setImage(resultImgPath);
-      
+
     } catch (error) {
       console.log('Analyze Error', error);
     }
