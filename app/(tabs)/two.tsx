@@ -123,6 +123,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
   separator: {
     marginVertical: 30,

@@ -10,11 +10,11 @@ export default function ResultScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Results Screen</Text>
-            <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center'>
-                <Image source={{uri: 'https://i.pinimg.com/736x/e4/8d/b6/e48db6ef87ba443b03965789dce98b80.jpg'}} style={styles.image} />
+            <Text style={styles.title}>Saved Result Screen</Text>
+            <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' padding='$5'>
+                <Image source={{uri: 'https://i.postimg.cc/FFcjKg98/placeholder.png'}} style={styles.image} resizeMode='contain' />
             </YStack>
-            <XStack marginVertical="$5">
+            <XStack padding='$5'>
                 <Button flex={1} marginRight="$3">Share</Button>
                 <Button flex={1}>Save</Button>
             </XStack>
@@ -27,17 +27,18 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'flex-start',
-      paddingHorizontal: 40,
+      paddingHorizontal: 30,
       paddingVertical: 20,
     },
     title: {
       fontSize: 20,
       fontWeight: 'bold',
-      padding: 20
+      padding: 15
     },
     image: {
-        width: '80%',
+        width: '100%',
         height: undefined,
-        aspectRatio: 1
+        aspectRatio: 1.5,
+        borderRadius: 10,
     },
   });
