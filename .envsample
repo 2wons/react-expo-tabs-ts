@@ -1,0 +1,4 @@
+
+EXPO_PUBLIC_API_URL=your_public_api_url
+
+EXPO_PUBLIC_MAPS_API_KEY=your_secret_maps_key
