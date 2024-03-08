@@ -53,7 +53,6 @@ export default function TabTwoScreen() {
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
-      setImageName(result.assets[0].fileName);
     }
   };
 
@@ -65,10 +64,11 @@ export default function TabTwoScreen() {
     
     try {
       const response = await analyzeTeeth(token, image);
-      console.log(response);
+      
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
-      console.log(resultImgPath);
+      
       setImage(resultImgPath);
+      
     } catch (error) {
       console.log('Analyze Error', error);
     }
