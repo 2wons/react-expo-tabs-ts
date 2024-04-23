@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { TamaguiProvider, createTamagui} from 'tamagui';
+import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
 import { config } from '@tamagui/config/v3'
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -58,7 +58,6 @@ declare module '@tamagui/core' {
   interface TamaguiCustomConfig extends Conf { }
 }
 
-
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
@@ -66,12 +65,14 @@ function RootLayoutNav() {
 
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <TamaguiProvider config={tamaguiConfig}>
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </AuthProvider>
+        <Theme name={colorScheme}>
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            </Stack>
+          </AuthProvider>
+        </Theme>
       </TamaguiProvider>
     </ThemeProvider>
   );
