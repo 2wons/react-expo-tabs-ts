@@ -68,7 +68,8 @@ function RootLayoutNav() {
         <Theme name={colorScheme}>
           <AuthProvider>
             <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)"  options={{ headerShown: false, title: 'Carident'}} />
+              <Stack.Screen name="auth" options={{ presentation: 'modal', headerShown: false }} />
               <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             </Stack>
           </AuthProvider>

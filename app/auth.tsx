@@ -3,7 +3,7 @@ import { Platform, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
 
 import { Text, View } from "@/components/Themed";
-import { Button, Form, Spinner, Input } from "tamagui";
+import { Button, Form, Spinner, Input, XStack, Text as TamText } from "tamagui";
 import { loginUser, register } from "@/services/authService";
 import { Alert } from "react-native";
 
@@ -48,41 +48,53 @@ export default function AuthScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Login to Carident</Text>
 
       <Form
-        alignItems="center"
-        minWidth={300}
         gap="$2"
         onSubmit={handleLogin}
-        borderWidth={1}
+        borderWidth={0}
         borderRadius="$4"
         backgroundColor="$background"
         borderColor="$borderColor"
-        padding="$8"
-      >
         
-        <Input width={'100%'} size="$4" placeholder={'Username'} borderWidth={2} 
+      >
+        <TamText fontSize={"$3"}>Username</TamText>
+        <Input width={'100%'} size="$4" placeholder={'Username'} borderWidth={2}
+          marginBottom='$2' 
           onChangeText={t => setUsername(t)} />
+
+        <TamText fontSize={"$3"}>Password</TamText>
         <Input width={'100%'} size="$4" placeholder={'Password'} borderWidth={2} 
           onChangeText={t => setPassword(t)}
           secureTextEntry/>
 
-        <Form.Trigger asChild disabled={status !== "off"}>
-          <Button
-            icon={status === "submitting" ? () => <Spinner /> : undefined}
-            alignSelf="flex-end"
-          >
-            Submit
+        <XStack gap='$2' marginVertical="$5" width={'100%'}>
+          <Button width={'50%'}>
+            Forgot Password
           </Button>
-        </Form.Trigger>
+          <Form.Trigger asChild disabled={status !== "off"}>
+            <Button themeInverse width={'50%'}icon={status === "submitting" ? () => <Spinner /> : undefined}>
+              Login
+            </Button>
+          </Form.Trigger>
+        </XStack>
+        
       </Form>
+      {/* Auth Debug */}
       { isAuthenticated ? (
         <>
           <Text style={styles.green}>Authenticated</Text>
           <Text>Bearing Token: { token }</Text>
         </>
       ) : '' }
+      <XStack alignItems="center" gap={'$2'}>
+        <TamText>New to the Platform?</TamText>
+        <Button size={"$2"} variant="outlined">Sign-up</Button>
+      </XStack>
+      <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
+        <Button size={"$2"} variant="outlined">More</Button>
+      </XStack>
 
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
@@ -92,12 +104,14 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10
+    paddingVertical: 10,
+    paddingHorizontal: '5%'
   },
   title: {
     fontSize: 40,
     fontWeight: "bold",
-    paddingLeft: 50
+    marginBottom: 15,
+    marginTop: 20,
   },
   green: {
     color: 'green'
