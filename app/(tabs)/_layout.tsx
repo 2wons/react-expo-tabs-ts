@@ -26,7 +26,6 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
         tabBarStyle: {
-          height: 60,
           width: '100%'
         },
         //tabBarLabelStyle: {paddingBottom: 5}
