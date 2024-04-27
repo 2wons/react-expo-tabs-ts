@@ -1,9 +1,10 @@
 import { View, StyleSheet, ActivityIndicator } from "react-native"
+import { Spinner } from "tamagui";
 
 export const Loader = () => {
     return (
         <View style={styles.loading}>
-            <ActivityIndicator  size="large" />
+            <Spinner size="large"/>
         </View>
     )
 }
