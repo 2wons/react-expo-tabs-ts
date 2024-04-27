@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import { Platform, StyleSheet } from "react-native";
+import { Platform, StyleSheet, Alert } from "react-native";
 import { useState, useEffect } from "react";
 
 import { Text, View } from "@/components/Themed";
 import { Button, Form, Spinner, Input, XStack, Text as TamText } from "tamagui";
-import { loginUser, register } from "@/services/authService";
-import { Alert } from "react-native";
 
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth as useAuthy } from "@/contexts/AuthyContext";
+
+import { Link } from "expo-router";
 
 export default function AuthScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
@@ -16,23 +16,16 @@ export default function AuthScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const { token, isAuthenticated, login } = useAuth();
+  const { authState, onLogin, onLogout  } = useAuthy();
 
   const handleLogin = async () => {
     setStatus('submitting');
-    try {
-      const userData = await loginUser(username, password);
-
-      const user = {
-        username: username,
-        password: password
-      }
-      login(user, userData.token, userData.expiration);
-      Alert.alert('Auth Successful');
-
-    } catch (error) {
-      console.error('Error', error)
-      Alert.alert('login failed.');
+    const response = await onLogin!(username, password);
+    if (response.error) {
+      Alert.alert('Invalid Username or Password');
+    }
+    else {
+      Alert.alert('Login Successful');
     }
     setStatus('submitted');
   }
@@ -82,15 +75,18 @@ export default function AuthScreen() {
         
       </Form>
       {/* Auth Debug */}
-      { isAuthenticated ? (
+      { authState?.authenticated && (
         <>
           <Text style={styles.green}>Authenticated</Text>
-          <Text>Bearing Token: { token }</Text>
+          <Text>Bearing Token: { authState?.token }</Text>
+          <Button onPress={onLogout}>Logout</Button>
         </>
-      ) : '' }
+      )}
       <XStack alignItems="center" gap={'$2'}>
         <TamText>New to the Platform?</TamText>
-        <Button size={"$2"} variant="outlined">Sign-up</Button>
+        <Link replace href='/register' asChild>
+            <Button size={"$2"} variant="outlined">Sign-up</Button>
+        </Link>
       </XStack>
       <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
         <Button size={"$2"} variant="outlined">More</Button>

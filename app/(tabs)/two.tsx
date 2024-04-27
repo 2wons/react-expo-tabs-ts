@@ -12,7 +12,7 @@ import { Loader } from '@/components/Loader';
 
 import { analyzeTeeth } from '@/services/modelService';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth as useAuthy } from '@/contexts/AuthyContext';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -21,7 +21,7 @@ export default function TabTwoScreen() {
   const [image, setImage] = useState<string | null>('');
   const [loading, setLoading] = useState(false);
   
-  const { token } = useAuth();
+  const { authState } = useAuthy();
 
   const openCamera = async () => {
     // camera needs permission
@@ -62,14 +62,15 @@ export default function TabTwoScreen() {
 
   const analyze = async () => {
 
-    if (!token || !image) {
+    if (!authState?.token || !image) {
+      Alert.alert("Not Authenticated");
       return;
     }
 
     setLoading(true);
     
     try {
-      const response = await analyzeTeeth(token, image);
+      const response = await analyzeTeeth(image);
       
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
       

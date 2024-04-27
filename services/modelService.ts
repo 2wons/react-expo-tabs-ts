@@ -8,7 +8,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
  * Calls the api to do analysis on image.
  * @param {string} uri - uri of image file
  */
-export const analyzeTeeth = async (token: string, uri: string) => {
+export const analyzeTeeth = async (uri: string) => {
 
     const formData = new FormData();
     console.log(uri);
@@ -23,7 +23,6 @@ export const analyzeTeeth = async (token: string, uri: string) => {
 
     const headers = {
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
         }
     };

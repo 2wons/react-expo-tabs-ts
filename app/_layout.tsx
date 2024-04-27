@@ -8,7 +8,7 @@ import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
 import { config } from '@tamagui/config/v3'
 
 import { useColorScheme } from '@/components/useColorScheme';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/AuthyContext';
 
 export {
   // Catch any errors thrown by the Layout component.
