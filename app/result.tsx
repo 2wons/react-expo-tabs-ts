@@ -2,17 +2,17 @@ import { Image, StyleSheet, Dimensions } from 'react-native';
 import { Text, View } from "@/components/Themed";
 import { Button, XStack, YStack } from 'tamagui';
 
-const dimensions = Dimensions.get('window');
-const imageHeight = Math.round(dimensions.width * 9 / 16); //calculate with aspect ratio
-const imageWidth = dimensions.width;
-
 export default function ResultScreen() {
+
+    const defaultImage = 'https://i.postimg.cc/FFcjKg98/placeholder.png';
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Saved Result Screen</Text>
             <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' padding='$5'>
-                <Image source={{uri: 'https://i.postimg.cc/FFcjKg98/placeholder.png'}} style={styles.image} resizeMode='contain' />
+                <Image 
+                    source={{uri: defaultImage }} 
+                    style={styles.image} resizeMode='contain' />
             </YStack>
             <XStack padding='$5'>
                 <Button flex={1} marginRight="$3">Share</Button>
