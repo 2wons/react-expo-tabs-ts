@@ -62,15 +62,26 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <TamaguiProvider config={tamaguiConfig}>
         <Theme name={colorScheme}>
           <AuthProvider>
             <Stack>
-              <Stack.Screen name="(tabs)"  options={{ headerShown: false, title: 'Carident'}} />
-              <Stack.Screen name="auth" options={{ presentation: 'modal', headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+              <Stack.Screen
+                name="(tabs)"
+                options={{ headerShown: false, title: "Carident" }}
+              />
+              <Stack.Screen
+                name="auth"
+                options={{ presentation: "modal", headerShown: false }}
+              />
+              <Stack.Screen
+                name="profile"
+                options={{ 
+                  headerShadowVisible: false, 
+                  title: "Profile" }}
+              />
+              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
             </Stack>
           </AuthProvider>
         </Theme>

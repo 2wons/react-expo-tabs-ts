@@ -7,7 +7,7 @@ import { Button, Form, Spinner, Input, XStack, Text as TamText } from "tamagui";
 
 import { useAuth as useAuthy } from "@/contexts/AuthyContext";
 
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 export default function AuthScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
@@ -17,6 +17,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
 
   const { authState, onLogin, onLogout  } = useAuthy();
+  const router = useRouter();
 
   const handleLogin = async () => {
     setStatus('submitting');
@@ -26,6 +27,7 @@ export default function AuthScreen() {
     }
     else {
       Alert.alert('Login Successful');
+      router.replace('/profile')
     }
     setStatus('submitted');
   }
@@ -55,10 +57,11 @@ export default function AuthScreen() {
         <TamText fontSize={"$3"}>Username</TamText>
         <Input width={'100%'} size="$4" placeholder={'Username'} borderWidth={2}
           marginBottom='$2' 
-          onChangeText={t => setUsername(t)} />
+          onChangeText={t => setUsername(t)} autoCapitalize="none" />
 
         <TamText fontSize={"$3"}>Password</TamText>
-        <Input width={'100%'} size="$4" placeholder={'Password'} borderWidth={2} 
+        <Input width={'100%'} size="$4" placeholder={'Password'} borderWidth={2}
+          autoCapitalize="none" 
           onChangeText={t => setPassword(t)}
           secureTextEntry/>
 
@@ -77,9 +80,7 @@ export default function AuthScreen() {
       {/* Auth Debug */}
       { authState?.authenticated && (
         <>
-          <Text style={styles.green}>Authenticated</Text>
-          <Text>Bearing Token: { authState?.token }</Text>
-          <Button onPress={onLogout}>Logout</Button>
+         
         </>
       )}
       <XStack alignItems="center" gap={'$2'}>
@@ -100,7 +101,7 @@ export default function AuthScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: '5%'
   },
   title: {

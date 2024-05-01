@@ -9,6 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import { XStack, YStack } from 'tamagui'
 import ResultCard from '@/components/CustomCard';
 import { Link } from 'expo-router';
+import { useAuth } from '@/contexts/AuthyContext';
 
 interface Report {
   id: string;
@@ -37,6 +38,7 @@ const _data: Report[] = [
 
 export default function TabOneScreen() {
   const colorScheme = useColorScheme();
+  const { authState } = useAuth();
 
   const reports = _data.map((report, index) => {
     return <ResultCard key={report.id} flexBasis={200} flexGrow={1} height={250} title={report.id} subtitle={report.date} />;
@@ -46,7 +48,7 @@ export default function TabOneScreen() {
     <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, backgroundColor: Colors[colorScheme ?? 'light'].background}}>
       <View style={styles.myHeader}>
         <Text style={styles.h1}>Home</Text>
-        <Link href='/auth' asChild>
+        <Link href={authState?.authenticated ? '/profile' : '/auth'} asChild>
           <Feather size={48} name='heart' color={Colors[colorScheme ?? 'light'].text} />
         </Link>
       </View>
