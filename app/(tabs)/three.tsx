@@ -3,7 +3,7 @@ import { View } from '@/components/Themed';
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 
-export default function TabThreeScreen() {
+export default function MapScreen() {
   return (
     <View style={styles.container}>
        <MapView style={styles.map} />

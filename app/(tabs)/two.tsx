@@ -16,7 +16,7 @@ import { useAuth as useAuthy } from '@/contexts/AuthyContext';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function TabTwoScreen() {
+export default function DetectScreen() {
 
   const [image, setImage] = useState<string | null>('');
   const [loading, setLoading] = useState(false);
@@ -75,6 +75,7 @@ export default function TabTwoScreen() {
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
       
       setImage(resultImgPath);
+      /* TODO: display result screen instead of placing the result in image preview */
 
     } catch (error) {
       console.log('Analyze Error', error);
