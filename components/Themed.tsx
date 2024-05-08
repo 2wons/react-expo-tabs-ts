@@ -3,10 +3,16 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView, ScrollView as DefaultScroll } from 'react-native';
+import { 
+  Text as DefaultText, 
+  View as DefaultView, 
+  ScrollView as DefaultScroll,
+  SafeAreaView as DefaultSafeAreaView 
+} from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from './useColorScheme';
+import SafeViewAndroid from './SafeViewAndroid';
 
 type ThemeProps = {
   lightColor?: string;
@@ -16,6 +22,7 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type ScrollProps = ThemeProps & DefaultScroll['props'];
+export type SafeAreaViewProps = ThemeProps & DefaultSafeAreaView['props'];
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -50,4 +57,11 @@ export function ScrollView(props: ScrollProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
   return <DefaultScroll style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+export function SafeAreaView(props: SafeAreaViewProps ) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+
+  return <DefaultSafeAreaView style={[{ ...SafeViewAndroid, backgroundColor }, style]} {...otherProps} />;
 }
