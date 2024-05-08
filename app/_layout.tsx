@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
 import { config } from '@tamagui/config/v3'
 
+import 'react-native-reanimated'
+
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthyContext';
 
