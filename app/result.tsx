@@ -16,7 +16,7 @@ export default function ResultScreen() {
             </YStack>
             <XStack padding='$5'>
                 <Button flex={1} marginRight="$3">Share</Button>
-                <Button flex={1}>Save</Button>
+                <Button flex={1}>Save Image</Button>
             </XStack>
         </View>
     )
