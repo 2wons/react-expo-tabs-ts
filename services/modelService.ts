@@ -11,7 +11,6 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 export const analyzeTeeth = async (uri: string) => {
 
     const formData = new FormData();
-    console.log(uri);
 
     const fileName = uri.split('/').pop();
 
