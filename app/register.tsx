@@ -7,7 +7,7 @@ import { Button, Form, Spinner, Input, XStack, H1, Text as TamText } from "tamag
 
 import { useAuth as useAuthy } from "@/contexts/AuthyContext";
 
-import { Link } from 'expo-router';
+import { router, Link } from 'expo-router';
 
 export default function RegisterScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
@@ -26,6 +26,9 @@ export default function RegisterScreen() {
     }
     else {
       Alert.alert('Sign up Successful');
+      setUsername('');
+      setPassword('');
+      router.replace('/auth')
     }
     setStatus('submitted');
   }
@@ -55,11 +58,13 @@ export default function RegisterScreen() {
       >
         <TamText fontSize={"$3"}>Username</TamText>
         <Input width={'100%'} size="$4" placeholder={'Choose a username'} borderWidth={2}
-          marginBottom='$2' 
+          marginBottom='$2'
+          value={username}
           onChangeText={t => setUsername(t)} />
 
         <TamText fontSize={"$3"}>Password</TamText>
         <Input width={'100%'} size="$4" placeholder={'Choose a password'} borderWidth={2} 
+          value={password}
           onChangeText={t => setPassword(t)}
           secureTextEntry/>
 
