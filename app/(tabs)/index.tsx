@@ -7,7 +7,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 
 import { Text, View, ScrollView } from '@/components/Themed';
 import { Feather } from '@expo/vector-icons';
-import { XStack, YStack } from 'tamagui'
+import { XStack, YStack, Button } from 'tamagui'
 import ResultCard from '@/components/CustomCard';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
@@ -44,9 +44,16 @@ export default function TabOneScreen() {
   const colorScheme = useColorScheme();
   const { authState } = useAuth();
 
-  const { history } = useData();
+  const { history, clear } = useData();
 
-  
+  const clearAll = () => {
+    try {
+      clear!();
+      Alert.alert("History cleared");
+    } catch (error) {
+      Alert.alert("Error Clearing History");
+    }
+  }
 
   const reports = history!.map((report, index) => {
     return <ResultCard key={report.id} flexBasis={200} flexGrow={1} height={250} title={index+1} subtitle={report.timestamp} />;
@@ -61,6 +68,7 @@ export default function TabOneScreen() {
         </Link>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <Button onPress={clearAll}>Clear History</Button>
       <ScrollView style={styles.container}>
         {reports ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
           <YStack flex={1} flexGrow={1} flexDirection='row' flexWrap='wrap' backgroundColor={'$background025'} rowGap={10} columnGap={10}>

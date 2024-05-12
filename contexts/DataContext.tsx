@@ -14,6 +14,7 @@ interface DataContextInterface {
     history?: Report[],
     load?: () => Promise<void>,
     save?: (imgUri: string) => Promise<void>,
+    clear?: () => Promise<void>
 }
 
 const DataContext = createContext<DataContextInterface>({})
@@ -32,6 +33,7 @@ export const DataProvider = ({ children }: ContextProps) => {
 
   const clear = async () => {
     await AsyncStorage.setItem('history', JSON.stringify([]))
+    setHistory([])
   }
 
   useEffect(() => {
@@ -65,7 +67,7 @@ export const DataProvider = ({ children }: ContextProps) => {
     }
   }
 
-  const value = { history, load, save }
+  const value = { history, load, save, clear }
 
   return (
     <DataContext.Provider value={value}>
