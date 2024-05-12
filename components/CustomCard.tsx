@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { Button, Card, H2, Image, Paragraph, XStack } from 'tamagui'
 
 interface MyCardProps extends CardProps {
-    title?: string,
+    title?: string | number,
     subtitle?: string,
 }
 

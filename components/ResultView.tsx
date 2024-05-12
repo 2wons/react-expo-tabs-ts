@@ -7,6 +7,11 @@ import * as MediaLibrary from "expo-media-library";
 import { View } from "./Themed";
 import { styled } from "@tamagui/core";
 
+import { generateUUID } from "@/services/common";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { useData } from "@/contexts/DataContext";
+
 const FloatingButton = styled(Button, {
   name: "Floating Button",
   flex: 1,
@@ -19,9 +24,13 @@ type ResultProps = {
 };
 
 export const ResultView = ({ imgUri }: ResultProps) => {
-  const saveToHistory = async () => {
-    
-  };
+  const { save } = useData();
+
+  const saveToHistory = () => {
+    save!(imgUri!)
+    Alert.alert('Result saved to history.')
+  }
+ 
 
   const saveImage = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -58,7 +67,7 @@ export const ResultView = ({ imgUri }: ResultProps) => {
         </FloatingButton>
       </View>
       <H3>Summary</H3>
-      <Button icon={History} marginVertical="$2">
+      <Button onPress={saveToHistory} icon={History} marginVertical="$2">
         Save to History
       </Button>
     </>
