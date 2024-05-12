@@ -11,6 +11,7 @@ import 'react-native-reanimated'
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthyContext';
+import { DataProvider } from '@/contexts/DataContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -68,23 +69,25 @@ function RootLayoutNav() {
       <TamaguiProvider config={tamaguiConfig}>
         <Theme name={colorScheme}>
           <AuthProvider>
-            <Stack>
-              <Stack.Screen
-                name="(tabs)"
-                options={{ headerShown: false, title: "Carident" }}
-              />
-              <Stack.Screen
-                name="auth"
-                options={{ presentation: "modal", headerShown: false }}
-              />
-              <Stack.Screen
-                name="profile"
-                options={{ 
-                  headerShadowVisible: false, 
-                  title: "Profile" }}
-              />
-              <Stack.Screen name="modal" options={{ presentation: "modal" }} />
-            </Stack>
+            <DataProvider>
+              <Stack>
+                <Stack.Screen
+                  name="(tabs)"
+                  options={{ headerShown: false, title: "Carident" }}
+                />
+                <Stack.Screen
+                  name="auth"
+                  options={{ presentation: "modal", headerShown: false }}
+                />
+                <Stack.Screen
+                  name="profile"
+                  options={{ 
+                    headerShadowVisible: false, 
+                    title: "Profile" }}
+                />
+                <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+              </Stack>
+            </DataProvider>
           </AuthProvider>
         </Theme>
       </TamaguiProvider>
