@@ -6,10 +6,11 @@ import { Button, Card, H2, Image, Paragraph, XStack } from 'tamagui'
 interface MyCardProps extends CardProps {
     title?: string | number,
     subtitle?: string,
+    id: string
 }
 
 export default function ResultCard(props: MyCardProps) {
-    var { title , subtitle, ...other } = props;
+    var { title , subtitle, id, ...other } = props;
     return (
         <Card 
             size="$4" 
@@ -24,7 +25,7 @@ export default function ResultCard(props: MyCardProps) {
             </Card.Header>
             <Card.Footer padded>
                 <XStack flex={1} />
-                <Link href="/result" asChild>
+                <Link href={{ pathname: '/result', params: { id: id }}} asChild>
                     <Button borderRadius="$10">View</Button>
                 </Link>
             </Card.Footer>

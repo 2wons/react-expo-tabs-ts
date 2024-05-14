@@ -13,50 +13,34 @@ import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
 
-
-interface Report {
-  id: string;
-  timestamp: string;
-  img?: string
-}
-
-const _data: Report[] = [
-  {
-    id: '001',
-    timestamp: 'Feb 12 2024'
-  },
-  {
-    id: '002',
-    timestamp: 'Feb 12 2024'
-  },
-  {
-    id: '003',
-    timestamp: 'Feb 12 2024'
-  },
-  {
-    id: '004',
-    timestamp: 'Feb 12 2024'
-  },
-];
-
-
-export default function TabOneScreen() {
+export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { authState } = useAuth();
 
   const { history, clear } = useData();
 
-  const clearAll = () => {
+  const clearAll = async () => {
     try {
-      clear!();
+      await clear!();
       Alert.alert("History cleared");
     } catch (error) {
       Alert.alert("Error Clearing History");
     }
   }
 
-  const reports = history!.map((report, index) => {
-    return <ResultCard key={report.id} flexBasis={200} flexGrow={1} height={250} title={index+1} subtitle={report.timestamp} />;
+  const reports = Object.keys(history!).map((id) => {
+    const i = history![id];
+    return (
+      <ResultCard
+        key={id}
+        flexBasis={200}
+        flexGrow={1}
+        height={250}
+        title={id}
+        subtitle={i.timestamp}
+        id={id}
+      />
+    );
   });
 
   return (
