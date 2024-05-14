@@ -86,7 +86,7 @@ export default function DetectScreen() {
       setVisible(!visible);
 
     } catch (error) {
-      Alert.alert('session expired');
+      Alert.alert('Something went wrong');
       console.log('Analyze Error', error);
     }
     setLoading(false);
