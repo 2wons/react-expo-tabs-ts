@@ -1,5 +1,5 @@
 import type { CardProps } from 'tamagui'
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 import { Button, Card, H2, Image, Paragraph, XStack } from 'tamagui'
 
@@ -13,12 +13,13 @@ export default function ResultCard(props: MyCardProps) {
     var { title , subtitle, id, ...other } = props;
     return (
         <Card 
-            size="$4" 
+            size={'$4'} 
             animation="bouncy" 
             hoverStyle={{ scale: 0.925 }} 
-            pressStyle={{ scale: 0.875 }}  
-            bordered {...other}
-        >
+            pressStyle={{ scale: 0.875 }}
+            maxHeight={"$15"}  
+            bordered {...other}>
+              
             <Card.Header padded>
                 <H2>{ title ?? 'None' }</H2>
                 <Paragraph theme="alt2">{ subtitle ?? 'None' }</Paragraph>
