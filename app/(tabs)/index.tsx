@@ -12,12 +12,17 @@ import ResultCard from '@/components/CustomCard';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { authState } = useAuth();
 
   const { history, clear } = useData();
+
+  const debug = () => {
+    router.push('/modal')
+  }
 
   const clearAll = async () => {
     try {
@@ -52,6 +57,7 @@ export default function HomeScreen() {
         </Link>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      <Button themeInverse onPress={debug}>Debug</Button>
       <Button onPress={clearAll}>Clear History</Button>
       <ScrollView style={styles.container}>
         {reports ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
