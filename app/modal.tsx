@@ -1,13 +1,12 @@
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { Text, View } from '@/components/Themed';
-import PlaceCard from '@/components/PlaceCard';
-import { place } from '@/constants/Markers';
+import { View } from '@/components/Themed';
 
 export default function ModalScreen() {
+ 
   return (
     <View style={styles.container}>
-      <PlaceCard place={place}/>
+     
     </View>
   );
 }

@@ -2,21 +2,24 @@ import { Alert, StyleSheet } from 'react-native';
 import { View } from '@/components/Themed';
 import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-native';
 
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import { useState, useEffect, useRef } from 'react';
-import Animated, { useAnimatedRef, useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
+import Animated, { useAnimatedRef, useSharedValue, withSpring } from 'react-native-reanimated';
 
-import { markers, PointOfInterest } from '@/constants/Markers';
 import * as Location from 'expo-location'
 import PlaceCard from '@/components/PlaceCard';
-import { place } from '@/constants/Markers';
+import { Loader } from '@/components/Loader';
+import { getNearbyClinics, Coords } from '@/services/mapService';
+
+import { YStack, XStack, H4, Button } from 'tamagui';
+import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth * 0.85;
 const cardMargin = 10; 
 
-const LATITIUDE_DELTA = 0.000000422
-const LONGITUDE_DELTA = 0.000000421
+const LATITIUDE_DELTA = 0.000422
+const LONGITUDE_DELTA = 0.000421
 
 const INITIAL_REGION = {
   /* Feut */
@@ -28,8 +31,11 @@ const INITIAL_REGION = {
 
 export default function MapScreen() {
   const [location, setLocation] = useState<Location.LocationObject>()
+  const [nearbyPlaces, setNearbyPlaces] = useState<any>()
+  const [loading, setLoading] = useState(false)
+
   const animatedRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollX = useSharedValue(0)
+  const height = useSharedValue<number>(140)
   const mapRef = useRef<any>()
   const theme = useColorScheme()
   
@@ -47,20 +53,16 @@ export default function MapScreen() {
 
   }, [])
 
-  const scrollHandler = useAnimatedScrollHandler((event) => {
-    scrollX.value = event.contentOffset.x;
-  });
-
-  const onMarkerPress = (place: PointOfInterest, index: number) => {
+  const onMarkerPress = (place: Coords, index: number) => {
     mapRef?.current?.animateCamera(
       {
         center: {
-          ...place.coordinate,
+          ...place,
           latitudeDelta: LATITIUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA, 
         },
       },
-      { duration: 1000 }
+      { duration: 2000 }
     );
     const pos =
       index * (cardWidth + cardMargin * 2) -
@@ -68,6 +70,26 @@ export default function MapScreen() {
       cardMargin;
     animatedRef.current?.scrollTo({x: pos})
   };
+
+  const getNearby = async () => {
+    try {
+      setLoading(true)
+      // Simulate a delay of 2 seconds for loading
+      height.value = withSpring(140);
+
+      const nearby = await getNearbyClinics({...location?.coords!})
+      setNearbyPlaces(nearby)
+
+      height.value = withSpring(265);
+      setLoading(false)
+      setLoading(false)
+
+    } catch (error) {
+      setLoading(false)
+      height.value = withSpring(140);
+      Alert.alert("No nearby clinics")
+    }
+  }
   
   return (
     <View style={styles.container}>
@@ -76,19 +98,27 @@ export default function MapScreen() {
         initialRegion={INITIAL_REGION}
         region={{
           ...location?.coords!,
-          latitudeDelta: 0.00422,
-          longitudeDelta: 0.00421
+          latitudeDelta: LATITIUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
         }}
         ref={mapRef}
         userInterfaceStyle={theme ?? 'light'}
         showsUserLocation
        >
-        {markers.map((marker, index) => {
+        {nearbyPlaces && nearbyPlaces.map((nearby: any, index: number) => {
           return (
-            <Marker key={index} coordinate={marker.coordinate} onPress={() => onMarkerPress(marker, index)}>
+            <Marker key={index} 
+              coordinate={{
+                latitude: nearby.geometry.location.lat,
+                longitude: nearby.geometry.location.lng
+              }} 
+              onPress={() => onMarkerPress({
+                latitude: nearby.geometry.location.lat,
+                longitude: nearby.geometry.location.lng
+              }, index)}>
               <Callout>
                 <NormalView style={{ padding: 5 }}>
-                  <Text>{marker.title}</Text>
+                  <Text>{nearby.name}</Text>
                 </NormalView>
               </Callout>
             </Marker>
@@ -98,13 +128,15 @@ export default function MapScreen() {
         <Animated.ScrollView 
           horizontal
           ref={animatedRef} 
-          style={styles.infobox} 
+          style={{
+            ...styles.infobox,
+            height,
+          }} 
           contentContainerStyle={styles.scrollContent}
           automaticallyAdjustContentInsets={false}
           showsHorizontalScrollIndicator={false}
           snapToAlignment='center'
           decelerationRate="fast"
-          onScroll={scrollHandler}
           scrollEventThrottle={16}
           contentInset={{ // Ensure the first and last card can be centered
             left: (screenWidth - cardWidth) / 2,
@@ -117,13 +149,39 @@ export default function MapScreen() {
           snapToInterval={cardWidth + cardMargin * 2} 
           directionalLockEnabled
           >
-          <PlaceCard place={place} />
-          <PlaceCard place={place} />
-          <PlaceCard place={place} />
-
+          { nearbyPlaces ? nearbyPlaces.map((nearby: any, index: number) => {
+              return (<PlaceCard key={index} place={{
+                coordinate: {
+                  latitude: nearby.geometry.latitude,
+                  longitude: nearby.geometry.longitude
+                },
+                title: nearby.name,
+                description: nearby.vicinity,
+                rating: nearby.rating,
+                reviews: nearby.user_ratings_total
+              }} />)
+          }): <PromptCard onPress={getNearby} /> }
+         { loading && <Loader />}
         </Animated.ScrollView> 
+        <View style={styles.toolbox}>
+          <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>Partnered Clinics</Button>
+          <Button style={styles.tool} icon={Search} elevate>Get Nearby</Button>
+        </View>
     </View>
   );
+}
+
+interface PromptCardProps {
+  onPress: () => void
+}
+
+function PromptCard({onPress}: PromptCardProps) {
+  return (
+    <YStack justifyContent={'center'} alignItems='center' flex={1} borderRadius={10} padding={15} width={cardWidth} margin={cardMargin} backgroundColor={"$background"}>
+      <H4>Tap on Nearby Clinics to get started</H4>
+      <Button width={'75%'} onPress={onPress}>Get Nearby</Button>
+    </YStack>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -139,7 +197,6 @@ const styles = StyleSheet.create({
   infobox: {
     bottom: 0,
     width: '100%',
-    height: 265,
     position: 'absolute',
     alignSelf: 'center',
     alignContent: 'center',
@@ -148,4 +205,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     justifyContent: 'center',
   },
+  toolbox: {
+    top: 0,
+    alignSelf: 'flex-end',
+    backgroundColor: 'transparent',
+    position: 'absolute'
+  },
+  tool: {
+    margin: 3
+  }
 });
