@@ -8,13 +8,15 @@ import Animated, { useAnimatedRef, useSharedValue, useAnimatedScrollHandler } fr
 
 import { markers, PointOfInterest } from '@/constants/Markers';
 import * as Location from 'expo-location'
+import PlaceCard from '@/components/PlaceCard';
+import { place } from '@/constants/Markers';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth * 0.85;
-const cardMargin = 20; 
+const cardMargin = 10; 
 
-const LATITIUDE_DELTA = 0.000422
-const LONGITUDE_DELTA = 0.000421
+const LATITIUDE_DELTA = 0.000000422
+const LONGITUDE_DELTA = 0.000000421
 
 const INITIAL_REGION = {
   /* Feut */
@@ -80,7 +82,6 @@ export default function MapScreen() {
         ref={mapRef}
         userInterfaceStyle={theme ?? 'light'}
         showsUserLocation
-        showsMyLocationButton
        >
         {markers.map((marker, index) => {
           return (
@@ -116,15 +117,10 @@ export default function MapScreen() {
           snapToInterval={cardWidth + cardMargin * 2} 
           directionalLockEnabled
           >
-          <View style={styles.placeCard}>
-            <Text>Cabana Suites Makati</Text>
-          </View>
-          <View style={styles.placeCard}>
-            <Text>Patrina Bakes</Text>
-          </View>
-          <View style={styles.placeCard}>
-            <Text>Childrens Clinic</Text>
-          </View>
+          <PlaceCard place={place} />
+          <PlaceCard place={place} />
+          <PlaceCard place={place} />
+
         </Animated.ScrollView> 
     </View>
   );
@@ -143,25 +139,13 @@ const styles = StyleSheet.create({
   infobox: {
     bottom: 0,
     width: '100%',
-    height: 200,
+    height: 265,
     position: 'absolute',
     alignSelf: 'center',
     alignContent: 'center',
-    marginBottom: 15,
+    marginBottom: 5,
   },
   scrollContent: {
     justifyContent: 'center',
   },
-  placeCard: {
-    marginHorizontal: cardMargin,
-    backgroundColor: 'white',
-    width: cardWidth,
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 200,
-    borderRadius: 10,
-    elevation: 10,
-    shadowOffset: { width: 0, height: 20 }
-  }
 });

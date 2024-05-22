@@ -1,39 +1,39 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import { PointOfInterest } from "@/constants/Markers";
 
-import { SizableText, Paragraph } from "tamagui";
+import { SizableText, Paragraph, stylePropsView } from "tamagui";
 import { XStack, YStack, Button } from "tamagui";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "tamagui";
+import { PanelLeftInactive } from "@tamagui/lucide-icons";
 
-const LIPSUM = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis varius tincidunt sapien ut volutpat. Aenean.'
+const LIPSUM = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+
+const { width: screenWidth } = Dimensions.get('window');
+const cardWidth = screenWidth * 0.85;
+const cardMargin = 10; 
 
 type PlaceCardProps = {
   place: PointOfInterest;
 };
 
-export default function PlaceCard({ place }: PlaceCardProps) {
+export default function PlaceCard({ place }: PlaceCardProps) {  
   const theme = useTheme()
 
   return (
-    <View style={styles.placeCard}>
+    <YStack flex={1} padding={15} borderStyle="solid" borderRadius={10} borderColor={'$white'} width={cardWidth} margin={cardMargin} backgroundColor={"$background"}>
       <XStack>
-        <MaterialIcons size={30} color={'white'} name="place"/>
+        <PanelLeftInactive size={24}/>
         <YStack>
-          <SizableText size='$5' fontWeight='800'>{place.title}</SizableText>
+          <SizableText size='$6' fontWeight='800'>{place.title}</SizableText>
           <SizableText size='$3' theme='alt2'>{place.description}</SizableText>
         </YStack>
       </XStack>
-      <SizableText size='$4' fontWeight='800'>Place Information</SizableText>
+      <SizableText size='$4' fontWeight='800'>Place Infosrmation</SizableText>
       <Paragraph>{LIPSUM}</Paragraph>
-      <XStack gap="$2" justifyContent="space-evenly">
-        <Button width='50%' variant="outlined">Get Directions</Button>
-        <Button width='50%' themeInverse>Contact</Button>
+      <XStack gap="$2" paddingTop='$4' flex={1} alignItems="flex-end">
+        <Button flex={1} flexGrow={1} variant="outlined">Get Directions</Button>
+        <Button flex={1} flexGrow={1} themeInverse>Contsact</Button>
       </XStack>
-    </View>
+    </YStack>
   );
 }
-
-const styles = StyleSheet.create({
-  placeCard: {},
-});
