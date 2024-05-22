@@ -12,11 +12,12 @@ export const getNearbyClinics = async (location: Coords) => {
 
     const locationStr = location.latitude + '%' + location.longitude;
     const baseQuery = `${BASE_URL}/place/nearbysearch/json?`;
+    const keyword = 'dental%clinic'
     const type = 'dentist';
     const radius = '400';
 
     try {
-        const url = `${baseQuery}${locationStr}&radius=${radius}%type${type}&key=${API_KEY}`
+        const url = `${baseQuery}${locationStr}keyword=${keyword}&radius=${radius}&type${type}&key=${API_KEY}`
 
         const response = await axios.get(url);
 
