@@ -2,23 +2,27 @@ import { StyleSheet, Alert } from 'react-native';
 
 import { useState } from 'react';
 
-import { Image } from 'react-native';
+import { Image, Modal } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
-import { Text, View } from '@/components/Themed';
+import { SafeAreaView, Text, View } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
 import { Loader } from '@/components/Loader';
 
 import { analyzeTeeth } from '@/services/modelService';
 
 import { useAuth as useAuthy } from '@/contexts/AuthyContext';
+import { EmojiButton } from '@/components/EmojiButton';
+import { ResultView } from '@/components/ResultView';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function DetectScreen() {
 
+  const [result, setResult] = useState<string | null>('');
   const [image, setImage] = useState<string | null>('');
+  const [visible, setVisible] = useState(false); 
   const [loading, setLoading] = useState(false);
   
   const { authState } = useAuthy();
@@ -62,7 +66,11 @@ export default function DetectScreen() {
 
   const analyze = async () => {
 
-    if (!authState?.token || !image) {
+    if (!image) {
+      Alert.alert('No Image Selected');
+      return;
+    }
+    if (!authState?.token) {
       Alert.alert("Not Authenticated");
       return;
     }
@@ -73,43 +81,51 @@ export default function DetectScreen() {
       const response = await analyzeTeeth(image);
       
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
-      
-      setImage(resultImgPath);
-      /* TODO: display result screen instead of placing the result in image preview */
+    
+      setResult(resultImgPath);
+      setVisible(!visible);
 
     } catch (error) {
+      Alert.alert('Something went wrong');
       console.log('Analyze Error', error);
     }
     setLoading(false);
   }
+  const dismiss = () => {
+    setVisible(!visible);
+    setResult('');
+  }
+
+  const PLACEHOLDER = 'https://i.postimg.cc/FFcjKg98/placeholder.png'
 
   return (
-    
     <View style={styles.container}>
+
+      <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
+        onRequestClose={() => setVisible(!visible)}>
+          <SafeAreaView style={styles.modal}>
+            <ResultView imgUri={result} />
+            <Button onPress={dismiss}> Dismiss </Button>
+          </SafeAreaView>
+      </Modal>
+
       <Text style={styles.title}>Select Image Source</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <XStack justifyContent='space-evenly' gap="$5" paddingHorizontal="$5">
-        <YStack flex={1} gap="$5" borderWidth={0} padding={1} borderColor={'$background025'}>
-          <Button alignSelf='stretch' size="$6" variant='outlined' borderWidth={1} height={80} onPress={openCamera}>
-          <Text style={styles.textEmoji}>📸</Text>
-          <Text>Camera</Text>
-          </Button>
-        </YStack>
-        <YStack flex={1} gap="$2" borderWidth={0} padding={1} borderColor={'$background025'}>
-          <Button alignSelf='stretch' size="$6" variant='outlined' borderWidth={1} height={80} onPress={select}>
-          <Text style={styles.textEmoji}>🖼</Text>
-          <Text>Gallery</Text>
-          </Button>
-        </YStack>
+        <EmojiButton emoji='📸' label='Camera' onPress={openCamera} />
+        <EmojiButton emoji='🖼' label='Gallery' onPress={select} />
       </XStack>
+
       <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' margin='$5' borderRadius={10}>
-          <Image source={{uri: image ? image : 'https://i.postimg.cc/FFcjKg98/placeholder.png'}} style={styles.image} resizeMode='contain' />
+          <Image source={{uri: image ? image : PLACEHOLDER }} style={styles.image} resizeMode='contain' />
       </YStack>
+
       <XStack gap='$5' margin='$5'>
-        <Button onPress={() => setImage(null) } flex={1}>Cancel</Button>
+        <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
       { loading ?  <Loader /> : '' }
+
     </View>
   );
 }
@@ -120,6 +136,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 10,
+  },
+  modal: {
+    flex: 1,
+    height: '100%',
+    paddingHorizontal: 25 
   },
   title: {
     fontSize: 20,
@@ -132,15 +153,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '90%',
-  },
-  textEmoji: {
-    fontSize: 20,
-  },
-  viewDebug: {
-    flex: 1,
-    width: '100%',
-    margin: 30,
-    backgroundColor:'#2e2d2c'
   },
   image: {
     width: '100%',

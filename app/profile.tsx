@@ -29,8 +29,14 @@ const OptionsGroup = ({ children }: OptionGroupProps) => {
 }
 
 export default function MeScreen() {
-  const { onLogout } = useAuth();
+  const { onLogout, authState } = useAuth();
   const router = useRouter();
+
+  const isValidSession = () => {
+    const storedTokenExpiration = new Date(authState?.expiration!)
+    const currentDate = new Date()
+    return storedTokenExpiration > currentDate
+  }
 
   const confirmLogout = () => {
     Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
@@ -49,6 +55,7 @@ export default function MeScreen() {
   }
   return (
     <View style={styles.container}>
+      { !isValidSession() && <Text color={"$red8"}>Session has expired</Text> }
       <XStack alignItems="center">
         <Avatar circular size="$10">
           <Avatar.Image

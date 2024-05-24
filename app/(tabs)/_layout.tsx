@@ -39,16 +39,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="analyze"
         options={{
           title: 'Analyze',
           tabBarIcon: ({ color }) => <TabBarIcon name="plus-circle" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="three"
+        name="maps"
         options={{
-          title: 'Maps',
+          title: 'Nearby Clinics',
           tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
         }}
       />
