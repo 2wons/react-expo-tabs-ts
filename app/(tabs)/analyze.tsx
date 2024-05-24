@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
   modal: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 20 
+    paddingHorizontal: 25 
   },
   title: {
     fontSize: 20,

@@ -4,14 +4,14 @@ import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-nati
 
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { useState, useEffect, useRef } from 'react';
-import Animated, { useAnimatedRef, useSharedValue, withSpring } from 'react-native-reanimated';
-
+import Animated, { SlideInDown, SlideOutDown, SlideOutLeft } from 'react-native-reanimated';
 import * as Location from 'expo-location'
 import PlaceCard from '@/components/PlaceCard';
 import { Loader } from '@/components/Loader';
 import { getNearbyClinics, Coords } from '@/services/mapService';
+import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
-import { YStack, XStack, H4, Button } from 'tamagui';
+import { YStack, SizableText, Button } from 'tamagui';
 import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -34,8 +34,7 @@ export default function MapScreen() {
   const [nearbyPlaces, setNearbyPlaces] = useState<any>()
   const [loading, setLoading] = useState(false)
 
-  const animatedRef = useAnimatedRef<Animated.ScrollView>();
-  const height = useSharedValue<number>(140)
+  const carouselRef = useRef<ICarouselInstance>(null)
   const mapRef = useRef<any>()
   const theme = useColorScheme()
   
@@ -68,26 +67,19 @@ export default function MapScreen() {
       index * (cardWidth + cardMargin * 2) -
       (screenWidth - cardWidth) / 2 +
       cardMargin;
-    animatedRef.current?.scrollTo({x: pos})
+    carouselRef.current?.scrollTo({count: index, animated: true})
   };
 
-  const getNearby = async () => {
+  const getNearby =  async () => {
     try {
       setLoading(true)
-      // Simulate a delay of 2 seconds for loading
-      height.value = withSpring(140);
-
+      setNearbyPlaces(null)
       const nearby = await getNearbyClinics({...location?.coords!})
       setNearbyPlaces(nearby)
-
-      height.value = withSpring(265);
-      setLoading(false)
-      setLoading(false)
-
     } catch (error) {
-      setLoading(false)
-      height.value = withSpring(140);
       Alert.alert("No nearby clinics")
+    } finally {
+      setLoading(false)
     }
   }
   
@@ -125,48 +117,35 @@ export default function MapScreen() {
           )
         })}
         </MapView>
-        <Animated.ScrollView 
-          horizontal
-          ref={animatedRef} 
-          style={{
-            ...styles.infobox,
-            height,
-          }} 
-          contentContainerStyle={styles.scrollContent}
-          automaticallyAdjustContentInsets={false}
-          showsHorizontalScrollIndicator={false}
-          snapToAlignment='center'
-          decelerationRate="fast"
-          scrollEventThrottle={16}
-          contentInset={{ // Ensure the first and last card can be centered
-            left: (screenWidth - cardWidth) / 2,
-            right: (screenWidth - cardWidth) / 2
-          }}
-          contentOffset={{ // Start with the first card centered
-            x: (screenWidth - cardWidth) / 2 - cardMargin,
-            y: 0
-          }}
-          snapToInterval={cardWidth + cardMargin * 2} 
-          directionalLockEnabled
-          >
-          { nearbyPlaces ? nearbyPlaces.map((nearby: any, index: number) => {
-              return (<PlaceCard key={index} place={{
-                coordinate: {
-                  latitude: nearby.geometry.latitude,
-                  longitude: nearby.geometry.longitude
-                },
-                title: nearby.name,
-                description: nearby.vicinity,
-                rating: nearby.rating,
-                reviews: nearby.user_ratings_total
-              }} />)
-          }): <PromptCard onPress={getNearby} /> }
-         { loading && <Loader />}
-        </Animated.ScrollView> 
+        <Animated.View style={styles.absolute}>
+          { nearbyPlaces ? 
+          <Animated.View entering={SlideOutLeft} exiting={SlideOutDown}>
+            <Carousel ref={carouselRef} width={screenWidth} height={245} data={nearbyPlaces} renderItem={({ item }: any) => {
+              return (
+                <PlaceCard place={{
+                  coordinate: {
+                    latitude: item.geometry.latitude,
+                    longitude: item.geometry.longitude
+                  },
+                  title: item.name,
+                  description: item.vicinity,
+                  rating: item.vicinity,
+                  reviews: item.user_ratings_total
+                }}/>
+              )
+            }} mode='parallax' />
+          </Animated.View>
+          :
+          <Animated.View entering={SlideInDown}>
+            <PromptCard onPress={getNearby}/>
+          </Animated.View>
+          }
+        </Animated.View>
         <View style={styles.toolbox}>
           <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>Partnered Clinics</Button>
-          <Button style={styles.tool} icon={Search} elevate>Get Nearby</Button>
+          <Button style={styles.tool} icon={Search} onPress={getNearby} elevate>Get Nearby</Button>
         </View>
+        { loading && <Loader />}
     </View>
   );
 }
@@ -177,11 +156,21 @@ interface PromptCardProps {
 
 function PromptCard({onPress}: PromptCardProps) {
   return (
-    <YStack justifyContent={'center'} alignItems='center' flex={1} borderRadius={10} padding={15} width={cardWidth} margin={cardMargin} backgroundColor={"$background"}>
-      <H4>Tap on Nearby Clinics to get started</H4>
-      <Button width={'75%'} onPress={onPress}>Get Nearby</Button>
+    <YStack
+      justifyContent={"center"}
+      gap={5}
+      alignItems="center"
+      flex={1}
+      borderRadius={10}
+      margin={cardMargin}
+      backgroundColor={"$background"}
+    >
+      <SizableText paddingVertical={2}>Tap on Nearby Clinics to View</SizableText>
+      <Button width={'100%'} borderTopEndRadius={0} borderTopStartRadius={0} onPress={onPress}>
+        Get Nearby
+      </Button>
     </YStack>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -201,6 +190,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignContent: 'center',
     marginBottom: 5,
+    justifyContent: 'center'
+  },
+  absolute: {
+    position: 'absolute',
+    bottom: 0,
   },
   scrollContent: {
     justifyContent: 'center',
