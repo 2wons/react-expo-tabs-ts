@@ -1,23 +1,28 @@
 import { StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { useState, useEffect } from 'react';
 
 import Colors from '@/constants/Colors';
 import SafeViewAndroid from '@/components/SafeViewAndroid';
 import { useColorScheme } from '@/components/useColorScheme';
 
 import { Text, View, ScrollView } from '@/components/Themed';
-import { Feather } from '@expo/vector-icons';
 import { XStack, YStack, Button } from 'tamagui'
 import ResultCard from '@/components/CustomCard';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
+import { router } from 'expo-router';
+
+import { CircleUserRound } from '@tamagui/lucide-icons';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { authState } = useAuth();
 
   const { history, clear } = useData();
+
+  const debug = () => {
+    router.push('/modal')
+  }
 
   const clearAll = async () => {
     try {
@@ -48,11 +53,12 @@ export default function HomeScreen() {
       <View style={styles.myHeader}>
         <Text style={styles.h1}>Home</Text>
         <Link href={authState?.authenticated ? '/profile' : '/auth'} asChild>
-          <Feather size={48} name='heart' color={Colors[colorScheme ?? 'light'].text} />
+          <CircleUserRound size={48} /> 
         </Link>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Button onPress={clearAll}>Clear History</Button>
+      
+      <Button style={{ marginHorizontal: 15 }}onPress={clearAll}>Clear History</Button>
       <ScrollView style={styles.container}>
         {reports ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
           <YStack flex={1} flexGrow={1} flexDirection='row' flexWrap='wrap' backgroundColor={'$background025'} rowGap={10} columnGap={10}>

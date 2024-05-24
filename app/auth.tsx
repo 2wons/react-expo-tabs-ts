@@ -44,7 +44,6 @@ export default function AuthScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login to Carident</Text>
-
       <Form
         gap="$2"
         onSubmit={handleLogin}
@@ -52,7 +51,6 @@ export default function AuthScreen() {
         borderRadius="$4"
         backgroundColor="$background"
         borderColor="$borderColor"
-        
       >
         <TamText fontSize={"$3"}>Username</TamText>
         <Input width={'100%'} size="$4" placeholder={'Username'} borderWidth={2}
@@ -75,14 +73,8 @@ export default function AuthScreen() {
             </Button>
           </Form.Trigger>
         </XStack>
-        
       </Form>
-      {/* Auth Debug */}
-      { authState?.authenticated && (
-        <>
-         
-        </>
-      )}
+      
       <XStack alignItems="center" gap={'$2'}>
         <TamText>New to the Platform?</TamText>
         <Link replace href='/register' asChild>
