@@ -13,20 +13,20 @@ export default function RegisterScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
     "off"
   );
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const { onRegister } = useAuthy();
 
   const handleLogin = async () => {
     setStatus('submitting');
-    const response = await onRegister!(username, password);
+    const response = await onRegister!(email, password);
     if (response.error) {
       Alert.alert('Invalid Username or Password');
     }
     else {
       Alert.alert('Sign up Successful');
-      setUsername('');
+      setEmail('');
       setPassword('');
       router.replace('/auth')
     }
@@ -59,8 +59,8 @@ export default function RegisterScreen() {
         <TamText fontSize={"$3"}>Username</TamText>
         <Input width={'100%'} size="$4" placeholder={'Choose a username'} borderWidth={2}
           marginBottom='$2'
-          value={username}
-          onChangeText={t => setUsername(t)} />
+          value={email}
+          onChangeText={t => setEmail(t)} />
 
         <TamText fontSize={"$3"}>Password</TamText>
         <Input width={'100%'} size="$4" placeholder={'Choose a password'} borderWidth={2} 

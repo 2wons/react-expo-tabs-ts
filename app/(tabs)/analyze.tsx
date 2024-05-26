@@ -1,4 +1,4 @@
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, Dimensions } from 'react-native';
 
 import { useState } from 'react';
 
@@ -6,9 +6,10 @@ import { Image, Modal } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
-import { SafeAreaView, Text, View } from '@/components/Themed';
+import { SafeAreaView, Text, View, ScrollView } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
 import { Loader } from '@/components/Loader';
+import { XCircle } from '@tamagui/lucide-icons';
 
 import { analyzeTeeth } from '@/services/modelService';
 
@@ -17,6 +18,7 @@ import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+const height = Dimensions.get('window').height
 
 export default function DetectScreen() {
 
@@ -39,7 +41,7 @@ export default function DetectScreen() {
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [1,1],
-      quality: 1
+      quality: 1,
     });
     console.log(result);
 
@@ -56,6 +58,7 @@ export default function DetectScreen() {
       allowsEditing: true,
       //aspect: [4,3],
       quality: 1,
+      //allowsMultipleSelection: true
     })
 
     if (!result.canceled) {
@@ -104,8 +107,10 @@ export default function DetectScreen() {
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
           <SafeAreaView style={styles.modal}>
-            <ResultView imgUri={result} />
-            <Button onPress={dismiss}> Dismiss </Button>
+            <ScrollView>
+              <ResultView imgUri={result} />
+              <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
+            </ScrollView>
           </SafeAreaView>
       </Modal>
 
@@ -135,7 +140,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    padding: 10,
+    padding: 5,
   },
   modal: {
     flex: 1,
@@ -150,7 +155,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   separator: {
-    marginVertical: 30,
+    marginVertical: 20,
     height: 1,
     width: '90%',
   },
@@ -158,6 +163,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: undefined,
     aspectRatio: 1.5,
-    borderRadius: 10
+    borderRadius: 10,
+    borderColor: "white",
+    borderStyle: "dashed",
+    borderWidth: 1
   },
 });

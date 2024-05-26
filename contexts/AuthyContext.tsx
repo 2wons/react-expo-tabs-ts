@@ -43,18 +43,18 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
         loadToken();
     }, [])
 
-    const register = async (username: string, password: string) => {
+    const register = async (email: string, password: string) => {
         try {
-            const response = await registerUser(username, password);
+            const response = await registerUser(email, password);
             return response;
         } catch (e) {
             return { error: true }
         }
     }
     
-    const login = async (username: string, password: string) => {
+    const login = async (email: string, password: string) => {
         try {
-            const response = await loginWithUserAndPassword(username, password);
+            const response = await loginWithUserAndPassword(email, password);
             const { token, expiration } = response.data;
             setAuthState({
                 token: token,

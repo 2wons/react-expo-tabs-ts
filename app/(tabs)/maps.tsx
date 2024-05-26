@@ -13,6 +13,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import { YStack, SizableText, Button } from 'tamagui';
 import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
+import { Link } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth * 0.85;
@@ -67,7 +68,7 @@ export default function MapScreen() {
       index * (cardWidth + cardMargin * 2) -
       (screenWidth - cardWidth) / 2 +
       cardMargin;
-    carouselRef.current?.scrollTo({count: index, animated: true})
+    carouselRef.current?.scrollTo({index: index, animated: true})
   };
 
   const getNearby =  async () => {
@@ -142,7 +143,11 @@ export default function MapScreen() {
           }
         </Animated.View>
         <View style={styles.toolbox}>
-          <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>Partnered Clinics</Button>
+          <Link href="/partner" asChild>
+            <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
+              Partnered Clinics
+            </Button>
+          </Link>
           <Button style={styles.tool} icon={Search} onPress={getNearby} elevate>Get Nearby</Button>
         </View>
         { loading && <Loader />}

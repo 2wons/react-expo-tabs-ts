@@ -1,16 +1,24 @@
 import type { CardProps } from 'tamagui'
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Link } from 'expo-router';
-import { Button, Card, H2, Image, Paragraph, XStack } from 'tamagui'
+import { Button, Card, H2, Image, Paragraph, XStack, YStack } from 'tamagui'
+
+const width = Dimensions.get('window').width
 
 interface MyCardProps extends CardProps {
     title?: string | number,
     subtitle?: string,
     id: string
+    image?: string
 }
 
 export default function ResultCard(props: MyCardProps) {
-    var { title , subtitle, id, ...other } = props;
+    var { title , subtitle, id, image, ...other } = props;
+
+    const log = () => {
+        console.log(`Device Width: ${width}`)
+    }
+
     return (
         <Card 
             size={'$4'} 
@@ -21,8 +29,17 @@ export default function ResultCard(props: MyCardProps) {
             bordered {...other}>
               
             <Card.Header padded>
-                <H2>{ title ?? 'None' }</H2>
-                <Paragraph theme="alt2">{ subtitle ?? 'None' }</Paragraph>
+                <XStack justifyContent='space-between'>
+                    <YStack>
+                        <H2>{ title ?? 'None' }</H2>
+                        <Paragraph theme="alt2">{ subtitle ?? 'None' }</Paragraph>
+                    </YStack>
+                    <Image source={{ 
+                        uri: image,
+                        width: 50,
+                        height: 50,
+                     }} borderRadius={5} onPress={log}/>
+                </XStack>
             </Card.Header>
             <Card.Footer padded>
                 <XStack flex={1} />

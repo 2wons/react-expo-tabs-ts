@@ -7,18 +7,27 @@ import { ContextProps } from ".";
 export interface Report {
     id: string;
     timestamp: string;
-    img?: string
+    img?: string;
+    title: string
 }
 
 export interface History {
   [key: string]: Report
 }
 
+export interface NewReport {
+  id: string;
+  timestamp: string;
+  img?: string;
+  title: string
+}
+
 interface DataContextInterface {
     history?: History,
     load?: () => Promise<void>,
-    save?: (imgUri: string) => Promise<void>,
-    clear?: () => Promise<void>
+    save?: (imgUri: string, title: string) => Promise<void>,
+    clear?: () => Promise<void>,
+    remove?: (id: string) => Promise<void>
 }
 
 const DataContext = createContext<DataContextInterface>({})
@@ -57,7 +66,7 @@ export const DataProvider = ({ children }: ContextProps) => {
     load()
   }, [])
 
-  const save = async (imgUri: string) => {
+  const save = async (imgUri: string, title: string) => {
     const localId = generateUUID(7);
 
     // Download file to app document directory
@@ -68,7 +77,8 @@ export const DataProvider = ({ children }: ContextProps) => {
 
     const newData = {
       timestamp: new Date().toISOString(),
-      img: uri
+      img: uri,
+      title: title
     };
     
     try {
@@ -83,7 +93,16 @@ export const DataProvider = ({ children }: ContextProps) => {
     }
   }
 
-  const value = { history, load, save, clear }
+  const remove = async (id: string) => {
+    let currentHistory = history
+    if (history.hasOwnProperty(id)) {
+      delete currentHistory[id]
+    }
+    setHistory(currentHistory)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
+  }
+
+  const value = { history, load, save, clear, remove }
 
   return (
     <DataContext.Provider value={value}>

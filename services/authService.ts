@@ -2,16 +2,16 @@ import axios from 'axios'
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export const loginWithUserAndPassword = async (username: string, password: string) => {
+export const loginWithUserAndPassword = async (email: string, password: string) => {
     return axios.post(
         `${BASE_URL}/Account/Login`,
-        { username: username, password: password }
+        { email: email, password: password }
     )
 }
 
-export const register = async (uesrname: string, password: string) => {
+export const register = async (email: string, password: string) => {
     return axios.post(
         `${BASE_URL}/Account/Register`,
-        {username: uesrname, password: password}
+        {email: email, password: password}
     );
 }

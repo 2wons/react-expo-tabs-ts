@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
+import { ShieldQuestion } from '@tamagui/lucide-icons';
 import { config } from '@tamagui/config/v3'
 
 import 'react-native-reanimated'
@@ -89,6 +90,12 @@ function RootLayoutNav() {
                   name="result"
                   options={{ 
                     title: "Viewing Result" }}
+                />
+                <Stack.Screen
+                  name="partner"
+                  options={{ 
+                    title: "Carident Partnered Clinics",
+                    headerRight: () => <ShieldQuestion /> }}
                 />
                 <Stack.Screen name="modal" options={{ presentation: "modal" }} />
               </Stack>
