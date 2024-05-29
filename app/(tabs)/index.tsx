@@ -34,7 +34,7 @@ export default function HomeScreen() {
     }
   }
 
-  const reports = Object.keys(history!).map((id) => {
+  const reports = Object.keys(history!).reverse().map((id) => {
     const i = history![id];
     const dateTaken = new Date(i.timestamp)
     return (

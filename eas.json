@@ -1,20 +1,26 @@
 {
-    "build": {
-      "development": {
-        "developmentClient": true,
-        "distribution": "internal"
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.production.com",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "myapikey"
       },
-      "preview": {
-        "distribution": "internal"
-      },
-      "development-simulator": {
-        "developmentClient": true,
-        "distribution": "internal",
-        "ios": {
-          "simulator": true
-        }
-      },
-      "production": {}
-    }
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "production": {}
   }
-  
+}

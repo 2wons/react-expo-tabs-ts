@@ -15,3 +15,9 @@ export const register = async (email: string, password: string) => {
         {email: email, password: password}
     );
 }
+
+export const getMe = async () => {
+    return axios.get(
+        `${BASE_URL}/Account/GetSelf`
+    )
+}

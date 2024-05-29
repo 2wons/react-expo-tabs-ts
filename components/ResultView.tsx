@@ -6,6 +6,7 @@ import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { View, ScrollView } from "./Themed";
 import { styled } from "@tamagui/core";
+import { XCircle } from "@tamagui/lucide-icons";
 
 import { useData } from "@/contexts/DataContext";
 import ImageViewer from "react-native-image-zoom-viewer";
@@ -23,9 +24,10 @@ const FloatingButton = styled(Button, {
 
 type ResultProps = {
   imgUri: string | null;
+  children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri }: ResultProps) => {
+export const ResultView = ({ imgUri, children }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -102,6 +104,7 @@ export const ResultView = ({ imgUri }: ResultProps) => {
       <Button onPress={saveToHistory} icon={History} marginVertical="$2">
         Save to History
       </Button>
+      { children }
       { loading && <Loader /> }
     </>
   );

@@ -1,6 +1,12 @@
 import { SizableText, YStack, XStack, Circle } from "tamagui";
 
-export const Summary = () => {
+interface SummaryProps {
+  initial?: number,
+  moderate?: number,
+  decay?: number
+}
+
+export const Summary = ({ initial, moderate, decay}: SummaryProps) => {
   return (
     <>
       <SizableText>Detected Caries</SizableText>
@@ -29,9 +35,9 @@ export const Summary = () => {
         </YStack>
         <YStack gap={3}>
           <SizableText theme="alt2">Count</SizableText>
-          <SizableText>2</SizableText>
-          <SizableText>3</SizableText>
-          <SizableText>3</SizableText>
+          <SizableText>{ initial ?? "0" }</SizableText>
+          <SizableText>{ moderate ?? "0" }</SizableText>
+          <SizableText>{ decay ?? "0" }</SizableText>
         </YStack>
       </XStack>
     </>

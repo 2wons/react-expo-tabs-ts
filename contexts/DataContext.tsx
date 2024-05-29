@@ -76,14 +76,14 @@ export const DataProvider = ({ children }: ContextProps) => {
     );
 
     const newData = {
+      id: localId,
       timestamp: new Date().toISOString(),
       img: uri,
       title: title
     };
     
     try {
-      const localHistory = await AsyncStorage.getItem('history')
-      const newHistory = localHistory ? JSON.parse(localHistory): {} 
+      const newHistory = {...history}
       newHistory[localId] = newData
       setHistory(newHistory)
 
@@ -94,7 +94,7 @@ export const DataProvider = ({ children }: ContextProps) => {
   }
 
   const remove = async (id: string) => {
-    let currentHistory = history
+    const currentHistory = {...history}
     if (history.hasOwnProperty(id)) {
       delete currentHistory[id]
     }

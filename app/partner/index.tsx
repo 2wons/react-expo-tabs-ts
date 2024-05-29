@@ -2,10 +2,26 @@ import { StyleSheet } from "react-native";
 import { ScrollView } from "@/components/Themed";
 import { YGroup, ListItem, Separator } from "tamagui";
 import { Star, ChevronRight, Moon } from "@tamagui/lucide-icons";
+import { router } from "expo-router";
+import { useEffect } from "react";
+import { useNavigation } from "expo-router";
 
 import { H3 } from "tamagui";
 
 export default function PartnerScreen() {
+  const handlePress = () => {
+    router.push("/partner/3")
+  }
+
+  const navigation = useNavigation()
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: "Partner Clinics"
+    })
+
+  }, [])
+
   return (
     <ScrollView style={styles.container}>
       <H3 paddingVertical="$3"l>Connect with our partners</H3>
@@ -19,6 +35,7 @@ export default function PartnerScreen() {
           icon={Star}
           iconAfter={ChevronRight}
           backgroundColor="$blue"
+          onPress={handlePress}
         />
       </YGroup.Item>
       <YGroup.Item>
@@ -30,6 +47,7 @@ export default function PartnerScreen() {
           icon={Moon}
           iconAfter={ChevronRight}
           backgroundColor="$blue"
+          onPress={handlePress}
         />
       </YGroup.Item>
     </YGroup>

@@ -56,8 +56,8 @@ export default function RegisterScreen() {
         borderColor="$borderColor"
         marginTop="$6"
       >
-        <TamText fontSize={"$3"}>Username</TamText>
-        <Input width={'100%'} size="$4" placeholder={'Choose a username'} borderWidth={2}
+        <TamText fontSize={"$3"}>Email</TamText>
+        <Input width={'100%'} size="$4" placeholder={'Enter you email'} borderWidth={2}
           marginBottom='$2'
           value={email}
           onChangeText={t => setEmail(t)} />

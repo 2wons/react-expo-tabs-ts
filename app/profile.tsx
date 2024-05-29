@@ -7,6 +7,10 @@ import { Button, Avatar, XStack, SizableText, Text, YStack, ListItem, YGroup } f
 
 import { useAuth } from "@/contexts/AuthyContext";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+
+import { getMe } from "@/services/authService";
+import { BASE_URL } from "@/constants/Common";
 
 interface OptionGroupProps {
   children?: React.ReactNode;
@@ -29,7 +33,7 @@ const OptionsGroup = ({ children }: OptionGroupProps) => {
 }
 
 export default function MeScreen() {
-  const { onLogout, authState } = useAuth();
+  const { onLogout, authState, user } = useAuth();
   const router = useRouter();
 
   const isValidSession = () => {
@@ -60,13 +64,14 @@ export default function MeScreen() {
         <Avatar circular size="$10">
           <Avatar.Image
             accessibilityLabel="Cam"
-            src="https://images.unsplash.com/photo-1548142813-c348350df52b?&w=150&h=150&dpr=2&q=80"
+            source={user?.avatar ? {uri: user.avatar} : undefined}
+            defaultSource={require('@/assets/images/avatardefault.png')}
           />
           <Avatar.Fallback backgroundColor="$blue10" />
         </Avatar>
         <YStack paddingHorizontal='$5'>
-          <SizableText size='$9' fontWeight='800'>Jennie Kims</SizableText>
-          <SizableText size='$5' theme='alt2'>rubyjane@gmail.com</SizableText>
+          <SizableText size='$9' fontWeight='800'>{user?.name}</SizableText>
+          <SizableText size='$5' theme='alt2'>{user?.email}</SizableText>
         </YStack>
       </XStack>
       <Button alignSelf="center" width='100%' marginVertical='$3'>

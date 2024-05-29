@@ -1,17 +1,22 @@
 import { AlertDialog, Button, XStack, YStack } from "tamagui";
 
-interface AlertProps {
+import { ButtonProps } from "tamagui";
+import { XCircle } from "@tamagui/lucide-icons";
+
+interface AlertProps extends ButtonProps {
     title: string,
     message: string,
     label: string,
-    onConfirm: () => void
+    onConfirm: () => void,
+    danger?: boolean
 }
 
-export function AlertButton({ title, message, onConfirm, label }: AlertProps) {
+export function AlertButton(props: AlertProps) {
+  const { title, message, label, onConfirm, danger, ...other } = props
   return (
-    <AlertDialog>
+    <AlertDialog >
       <AlertDialog.Trigger asChild>
-        <Button>{ label }</Button>
+        <Button {...other}>{ label }</Button>
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Overlay
@@ -53,7 +58,7 @@ export function AlertButton({ title, message, onConfirm, label }: AlertProps) {
               </AlertDialog.Cancel>
 
               <AlertDialog.Action asChild>
-                <Button onPress={onConfirm} theme="active">Confirm</Button>
+                <Button onPress={onConfirm} theme="active" backgroundColor={danger ? "$red10" : undefined}>Confirm</Button>
               </AlertDialog.Action>
             </XStack>
           </YStack>

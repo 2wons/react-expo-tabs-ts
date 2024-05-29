@@ -2,7 +2,7 @@ import { StyleSheet, Alert, Dimensions } from 'react-native';
 
 import { useState } from 'react';
 
-import { Image, Modal } from 'react-native';
+import { Image, Modal, Platform } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -18,7 +18,6 @@ import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
-const height = Dimensions.get('window').height
 
 export default function DetectScreen() {
 
@@ -106,12 +105,13 @@ export default function DetectScreen() {
 
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
-          <SafeAreaView style={styles.modal}>
+          <View style={styles.modal}>
             <ScrollView>
-              <ResultView imgUri={result} />
-              <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
+              <ResultView imgUri={result}>
+                <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
+              </ResultView>
             </ScrollView>
-          </SafeAreaView>
+          </View>
       </Modal>
 
       <Text style={styles.title}>Select Image Source</Text>
@@ -135,7 +135,6 @@ export default function DetectScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -145,7 +144,7 @@ const styles = StyleSheet.create({
   modal: {
     flex: 1,
     height: '100%',
-    paddingHorizontal: 25 
+    paddingHorizontal: 25,
   },
   title: {
     fontSize: 20,

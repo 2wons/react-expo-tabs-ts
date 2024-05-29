@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { Text, View, ScrollView } from "@/components/Themed";
 import { Button, XStack, YStack, SizableText, H1, H3 } from "tamagui";
-import { useNavigation, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
@@ -10,12 +10,15 @@ import { History } from "@/contexts/DataContext";
 import { Summary } from "@/components/Summary";
 import { Input } from "tamagui";
 import { StarFull, XCircle, Download } from "@tamagui/lucide-icons";
+import { useData } from "@/contexts/DataContext";
+import { AlertButton } from "@/components/Alert";
 
 import * as MediaLibrary from "expo-media-library";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
   const params = useLocalSearchParams();
+  const { history, remove } = useData()
   const { id } = params;
 
   const [prevtitle, setPrevtitle] = useState<string>();
@@ -29,10 +32,7 @@ export default function ResultScreen() {
   };
 
   const getResult = async () => {
-    const JSONHistoryList = await AsyncStorage.getItem("history");
-    const history: History = JSON.parse(JSONHistoryList!);
-
-    const { img, timestamp, title } = history[id!.toString()];
+    const { img, timestamp, title } = history![id!.toString()];
     const parseDate = new Date(timestamp);
     setImage(img);
     setTitle(title);
@@ -52,7 +52,14 @@ export default function ResultScreen() {
     Alert.alert("Image result saved to camera roll");
   };
 
-  const removeMe = async () => {};
+  const removeMe = async () => {
+    await remove!(id!.toString())
+      .then()
+      .catch(error => {
+        Alert.alert("Something went wrong")
+      })
+      router.back()
+  };
 
   useEffect(() => {
     getResult();
@@ -63,7 +70,7 @@ export default function ResultScreen() {
   const defaultImage = "https://i.postimg.cc/FFcjKg98/placeholder.png";
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <SizableText size="$3" theme="alt1">
         Viewing
       </SizableText>
@@ -111,9 +118,16 @@ export default function ResultScreen() {
         <Button icon={Download} onPress={saveImage} flex={1}>
           Save Image
         </Button>
-        <Button icon={XCircle} backgroundColor={"$red10"} marginVertical="$3">
-          Delete
-        </Button>
+        <AlertButton
+          label="Delete"
+          title="Delete Report"
+          message="Are you sure you want to delete this report?"
+          icon={XCircle}
+          onConfirm={removeMe}
+          backgroundColor="$red10"
+          marginTop={10}
+          danger
+        />
       </YStack>
       <ImgModalViewer
         isVisible={visible}
@@ -126,15 +140,9 @@ export default function ResultScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 15,
+    paddingHorizontal: 25,
     paddingVertical: 10,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    padding: 15,
-    alignSelf: "flex-start",
+    paddingBottom: 20
   },
   image: {
     width: "100%",

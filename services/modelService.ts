@@ -31,7 +31,19 @@ export const analyzeTeeth = async (uri: string) => {
             formData,
             headers
         )
-        return response.data;
+        const classCounts : { [key:string]: number} = {}
+        // count each occurence of className
+        response.data.detections.forEach((detection: any) => {
+            const className: string = detection.className
+            if (classCounts.hasOwnProperty(className)) {
+                classCounts[className]++
+            } else {
+                classCounts[className] = 1
+            }
+        })
+        const ResponseWithCount = {...response.data, classCounts}
+        console.log(ResponseWithCount)
+        return ResponseWithCount;
     } catch (error: any) {
         if (error.response) {
             console.log(error.response);
