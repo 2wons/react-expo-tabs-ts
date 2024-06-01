@@ -103,7 +103,7 @@ export default function MeScreen() {
       </OptionsGroup>
       {/* Logout */}
       <XStack flex={1} alignItems={"flex-end"}>
-        <Button onPress={ confirmLogout } variant="outlined" width='100%'>Logout</Button>
+        <Button themeInverse onPress={ confirmLogout } width='100%'>Logout</Button>
       </XStack>
     </View>
   );

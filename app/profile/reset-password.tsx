@@ -79,7 +79,7 @@ export default function ResetPasswordScreen() {
   }, [])
 
   return (
-    <YStack padding="$5" gap="$2">
+    <YStack flex={1} padding="$5" gap="$2" backgroundColor="$color1">
       <H2>Reset Password</H2>
       <Text>Enter your previous and new password to reset.</Text>
       <Input placeholder="Old Password" secureTextEntry marginTop="$5"
@@ -102,7 +102,7 @@ export default function ResetPasswordScreen() {
             )
           })
       }
-      <Button onPress={handleSubmit} marginTop="$5">Reset Password</Button>
+      <Button themeInverse onPress={handleSubmit} marginTop="$5">Reset Password</Button>
     </YStack>
   );
 }

@@ -9,7 +9,7 @@ export const Loader = ({ message }: LoaderProps) => {
     return (
         <View style={styles.loading}>
             <Spinner size="large"/>
-            <Text>{ message }</Text>
+            <Text color="$white1">{ message }</Text>
         </View>
     )
 }
