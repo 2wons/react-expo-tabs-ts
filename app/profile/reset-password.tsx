@@ -59,6 +59,7 @@ export default function ResetPasswordScreen() {
          .catch((e) => {
             let newError = ErrorDefaults as FormErrors
             const response = e as AxiosError<ErrorResponse>
+            // this is very ugly
             response.response?.data.details.forEach((detail: ErrorDetail) => {
                if (detail.propertyName.toLowerCase().includes('mismatch')) {
                   newError['oldPassword'].push(detail)
