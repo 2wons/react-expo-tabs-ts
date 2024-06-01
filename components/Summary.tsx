@@ -21,12 +21,14 @@ export const Summary = ({ counts }: SummaryProps) => {
       >
         <YStack gap={3}>
           <Circle backgroundColor={'$gray1'} size="$1.5"/>
+          <Circle backgroundColor={'$green10'} size="$1.5"/>
           <Circle backgroundColor={'$yellow10'} size="$1.5"/>
           <Circle backgroundColor={'$orange10'} size="$1.5"/>
           <Circle backgroundColor={'$red10'} size="$1.5"/>
         </YStack>
         <YStack gap={3}>
           <SizableText theme="alt2">Caries Class</SizableText>
+          <SizableText>Healthy</SizableText>
           <SizableText>Initial</SizableText>
           <SizableText>Moderate</SizableText>
           <SizableText>Extensive</SizableText>
@@ -34,6 +36,7 @@ export const Summary = ({ counts }: SummaryProps) => {
         </YStack>
         <YStack gap={3}>
           <SizableText theme="alt2">Count</SizableText>
+          <SizableText>{ counts.healthy ?? "0" }</SizableText>
           <SizableText>{ counts.initial ?? "0" }</SizableText>
           <SizableText>{ counts.moderate ?? "0" }</SizableText>
           <SizableText>{ counts.extensive ?? "0" }</SizableText>
