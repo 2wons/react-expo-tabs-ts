@@ -102,7 +102,7 @@ export default function ResetPasswordScreen() {
             )
           })
       }
-      <Button onPress={handleSubmit}>Reset Password</Button>
+      <Button onPress={handleSubmit} marginTop="$5">Reset Password</Button>
     </YStack>
   );
 }
