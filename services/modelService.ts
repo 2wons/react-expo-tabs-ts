@@ -28,7 +28,8 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
                     'Content-Type': 'multipart/form-data'
                 },
                 params: {
-                    threshold: iou
+                    threshold: iou,
+                    drawNames: false
                 }
             }
         )
