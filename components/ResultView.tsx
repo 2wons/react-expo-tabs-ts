@@ -39,15 +39,18 @@ export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
   const [title, setTitle] = useState("Untitled")
 
   const today = new Date();
 
   const saveToHistory = async () => {
     setLoading(true)
+    setMessage("Saving to history...")
     await save!(imgUri!, title, summary)
     Alert.alert('Result saved to history.')
     setLoading(false)
+    setMessage("")
   }
 
   const handleViewer = () => {
@@ -113,7 +116,7 @@ export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
         Save to History
       </Button>
       { children }
-      { loading && <Loader /> }
+      { loading && <Loader message={message} /> }
     </>
   );
 };

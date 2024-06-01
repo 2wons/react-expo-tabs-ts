@@ -18,6 +18,7 @@ import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
 import { ClassCounts } from '@/components/ResultView';
 import { Slider, H1, Text, SizableText, Input } from 'tamagui';
+import { SimepleTooltip } from '@/components/SimpleTooltip';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -28,6 +29,7 @@ export default function DetectScreen() {
   const [counts, setCounts] = useState<ClassCounts>({})
   const [visible, setVisible] = useState(false); 
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [IoU, setIoU] = useState(0.25);
   
   const { authState } = useAuthy();
@@ -82,6 +84,7 @@ export default function DetectScreen() {
     }
 
     setLoading(true);
+    setMessage('Analyzing Image');
     
     try {
       const response = await analyzeTeeth(image, IoU);
@@ -95,6 +98,8 @@ export default function DetectScreen() {
     } catch (error) {
       Alert.alert('Something went wrong');
       console.log('Analyze Error', error);
+    } finally {
+      setMessage('')
     }
     setLoading(false);
   }
@@ -151,8 +156,7 @@ export default function DetectScreen() {
         <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
-      { loading ?  <Loader /> : '' }
-
+      { loading ?  <Loader message={message} /> : '' }
     </View>
   );
 }
@@ -160,19 +164,12 @@ export default function DetectScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
+    padding: 10,
   },
   modal: {
     flex: 1,
     height: '100%',
     paddingHorizontal: 25,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 20,
-    paddingTop: 10,
   },
   separator: {
     marginVertical: 10,
