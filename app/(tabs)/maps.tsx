@@ -76,8 +76,10 @@ export default function MapScreen() {
       setLoading(true)
       setNearbyPlaces(null)
       const nearby = await getNearbyClinics({...location?.coords!})
+      console.log(nearby)
       setNearbyPlaces(nearby)
     } catch (error) {
+      console.log(error)
       Alert.alert("No nearby clinics")
     } finally {
       setLoading(false)

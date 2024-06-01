@@ -1,12 +1,11 @@
 import { SizableText, YStack, XStack, Circle } from "tamagui";
+import { ClassCounts } from "./ResultView";
 
 interface SummaryProps {
-  initial?: number,
-  moderate?: number,
-  decay?: number
+  counts: ClassCounts
 }
 
-export const Summary = ({ initial, moderate, decay}: SummaryProps) => {
+export const Summary = ({ counts }: SummaryProps) => {
   return (
     <>
       <SizableText>Detected Caries</SizableText>
@@ -35,9 +34,9 @@ export const Summary = ({ initial, moderate, decay}: SummaryProps) => {
         </YStack>
         <YStack gap={3}>
           <SizableText theme="alt2">Count</SizableText>
-          <SizableText>{ initial ?? "0" }</SizableText>
-          <SizableText>{ moderate ?? "0" }</SizableText>
-          <SizableText>{ decay ?? "0" }</SizableText>
+          <SizableText>{ counts.initial ?? "0" }</SizableText>
+          <SizableText>{ counts.moderate ?? "0" }</SizableText>
+          <SizableText>{ counts.extensive ?? "0" }</SizableText>
         </YStack>
       </XStack>
     </>

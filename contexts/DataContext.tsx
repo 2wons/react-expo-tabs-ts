@@ -3,12 +3,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { generateUUID } from "@/services/common";
 import * as FileSystem from 'expo-file-system'
 import { ContextProps } from ".";
+import { ClassCounts } from "@/components/ResultView";
 
 export interface Report {
     id: string;
     timestamp: string;
     img?: string;
     title: string
+    summary: ClassCounts
 }
 
 export interface History {
@@ -23,11 +25,11 @@ export interface NewReport {
 }
 
 interface DataContextInterface {
-    history?: History,
-    load?: () => Promise<void>,
-    save?: (imgUri: string, title: string) => Promise<void>,
-    clear?: () => Promise<void>,
-    remove?: (id: string) => Promise<void>
+  history?: History;
+  load?: () => Promise<void>;
+  save?: (imgUri: string, title: string, summary: ClassCounts) => Promise<void>;
+  clear?: () => Promise<void>;
+  remove?: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextInterface>({})
@@ -66,7 +68,7 @@ export const DataProvider = ({ children }: ContextProps) => {
     load()
   }, [])
 
-  const save = async (imgUri: string, title: string) => {
+  const save = async (imgUri: string, title: string, summary: ClassCounts) => {
     const localId = generateUUID(7);
 
     // Download file to app document directory
@@ -79,7 +81,8 @@ export const DataProvider = ({ children }: ContextProps) => {
       id: localId,
       timestamp: new Date().toISOString(),
       img: uri,
-      title: title
+      title: title,
+      summary: summary
     };
     
     try {

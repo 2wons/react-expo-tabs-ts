@@ -6,7 +6,7 @@ import { Image, Modal, Platform } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
-import { SafeAreaView, Text, View, ScrollView } from '@/components/Themed';
+import { SafeAreaView, View, ScrollView } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
 import { Loader } from '@/components/Loader';
 import { XCircle } from '@tamagui/lucide-icons';
@@ -16,6 +16,8 @@ import { analyzeTeeth } from '@/services/modelService';
 import { useAuth as useAuthy } from '@/contexts/AuthyContext';
 import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
+import { ClassCounts } from '@/components/ResultView';
+import { Slider, H1, Text, SizableText, Input } from 'tamagui';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -23,8 +25,10 @@ export default function DetectScreen() {
 
   const [result, setResult] = useState<string | null>('');
   const [image, setImage] = useState<string | null>('');
+  const [counts, setCounts] = useState<ClassCounts>({})
   const [visible, setVisible] = useState(false); 
   const [loading, setLoading] = useState(false);
+  const [IoU, setIoU] = useState(0.25);
   
   const { authState } = useAuthy();
 
@@ -80,10 +84,11 @@ export default function DetectScreen() {
     setLoading(true);
     
     try {
-      const response = await analyzeTeeth(image);
+      const response = await analyzeTeeth(image, IoU);
       
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
     
+      setCounts(response.classCounts);
       setResult(resultImgPath);
       setVisible(!visible);
 
@@ -98,6 +103,10 @@ export default function DetectScreen() {
     setResult('');
   }
 
+  const handleIoU = (value: number) => {
+    setIoU(value);
+  }
+
   const PLACEHOLDER = 'https://i.postimg.cc/FFcjKg98/placeholder.png'
 
   return (
@@ -107,25 +116,38 @@ export default function DetectScreen() {
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
             <ScrollView>
-              <ResultView imgUri={result}>
+              <ResultView summary={counts} imgUri={result}>
                 <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
               </ResultView>
             </ScrollView>
           </View>
       </Modal>
 
-      <Text style={styles.title}>Select Image Source</Text>
+      <H1>Select Image Source</H1>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <XStack justifyContent='space-evenly' gap="$5" paddingHorizontal="$5">
+      <XStack justifyContent='space-evenly' gap="$5">
         <EmojiButton emoji='📸' label='Camera' onPress={openCamera} />
         <EmojiButton emoji='🖼' label='Gallery' onPress={select} />
       </XStack>
 
-      <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' margin='$5' borderRadius={10}>
+      <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
           <Image source={{uri: image ? image : PLACEHOLDER }} style={styles.image} resizeMode='contain' />
       </YStack>
-
-      <XStack gap='$5' margin='$5'>
+      <XStack justifyContent='space-between'>
+        <Text theme="alt1">IoU Threshold</Text>
+        <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
+      </XStack>
+      <XStack alignItems='center' gap="$2">
+        <Text>0.05</Text>
+        <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$5" onValueChange={(val) => handleIoU(val[0])}>
+          <Slider.Track>
+            <Slider.TrackActive />
+          </Slider.Track>
+          <Slider.Thumb index={0} circular size={'$2'}/>
+        </Slider>
+        <Text>1</Text>
+      </XStack>
+      <XStack gap='$3'>
         <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
@@ -138,7 +160,6 @@ export default function DetectScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     padding: 5,
   },
   modal: {
@@ -154,9 +175,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   separator: {
-    marginVertical: 20,
+    marginVertical: 10,
     height: 1,
-    width: '90%',
+    width: '100%',
   },
   image: {
     width: '100%',

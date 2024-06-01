@@ -6,7 +6,6 @@ import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { View, ScrollView } from "./Themed";
 import { styled } from "@tamagui/core";
-import { XCircle } from "@tamagui/lucide-icons";
 
 import { useData } from "@/contexts/DataContext";
 import ImageViewer from "react-native-image-zoom-viewer";
@@ -22,12 +21,21 @@ const FloatingButton = styled(Button, {
   alignSelf: "flex-end",
 });
 
+export interface ClassCounts {
+  healthy?: number;
+  initial?: number;
+  moderate?: number;
+  extensive?: number;
+  unknown?: number;
+}
+
 type ResultProps = {
   imgUri: string | null;
+  summary: ClassCounts
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, children }: ResultProps) => {
+export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -37,7 +45,7 @@ export const ResultView = ({ imgUri, children }: ResultProps) => {
 
   const saveToHistory = async () => {
     setLoading(true)
-    await save!(imgUri!, title)
+    await save!(imgUri!, title, summary)
     Alert.alert('Result saved to history.')
     setLoading(false)
   }
@@ -90,7 +98,7 @@ export const ResultView = ({ imgUri, children }: ResultProps) => {
         </FloatingButton>
       </View>
       <H3 paddingTop={'$3'}>Summary</H3>
-      <Summary />
+      <Summary counts={summary}  />
       <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
       <XStack alignItems="center">
         <SizableText theme="alt2">{`title `}</SizableText>
