@@ -1,8 +1,9 @@
 import { useContext, createContext, ReactNode, useState, useEffect } from 'react';
 import { getMe, loginWithUserAndPassword, register as registerUser } from '@/services/authService';
 import * as SecureStore from 'expo-secure-store'
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { BASE_URL } from '@/constants/Common';
+import { ErrorResponse } from '@/services/types';
 
 /* token key string for accessing token in secure store */
 const TOKEN_KEY = 'MY_JWT_TOKEN'
@@ -26,9 +27,10 @@ interface AuthProviderProps {
 interface AuthContextInterface {
     authState?: AuthState | null;
     user?: User | null;
-    onRegister?: (username: string, password: string) => Promise<any>;
+    onRegister?: (username: string, password: string, name: string) => Promise<any>;
     onLogin?: (username: string, password: string) => Promise<any>;
     onLogout?: () => Promise<any>
+    onRefresh?: () => Promise<any>
 }
 
 const AuthContext = createContext<AuthContextInterface>({})
@@ -53,12 +55,13 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
         loadToken();
     }, [])
 
-    const register = async (email: string, password: string) => {
+    const register = async (email: string, password: string, name: string) => {
         try {
-            const response = await registerUser(email, password);
+            const response = await registerUser(name, email, password);
             return response;
-        } catch (e) {
-            return { error: true }
+        } catch (e: any) {
+            const response = e as AxiosError<ErrorResponse>
+            return { error: true, data: response.response?.data }
         }
     }
 
@@ -77,16 +80,16 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
     const login = async (email: string, password: string) => {
         try {
             const response = await loginWithUserAndPassword(email, password);
-            const { token, expiration } = response.data;
+            const { token: _token, expiration: _expiration } = response.data;
             setAuthState({
-                token: token,
-                expiration: expiration,
+                token: _token,
+                expiration: _expiration,
                 authenticated: true
             });
 
-            axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-            await SecureStore.setItemAsync(TOKEN_KEY, token);
-            await SecureStore.setItemAsync('expiration', expiration);
+            axios.defaults.headers.common.Authorization = `Bearer ${_token}`;
+            await SecureStore.setItemAsync(TOKEN_KEY, _token);
+            await SecureStore.setItemAsync('expiration', _expiration);
 
             refresh()
             return response;
@@ -113,6 +116,7 @@ export const AuthProvider = ({children}: AuthProviderProps) => {
         onRegister: register,
         onLogin: login,
         onLogout: logout,
+        onRefresh: refresh,
         user: user,
     }
 

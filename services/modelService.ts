@@ -29,7 +29,8 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
                 },
                 params: {
                     threshold: iou,
-                    drawNames: false
+                    drawNames: false,
+                    drawConfidence: false
                 }
             }
         )

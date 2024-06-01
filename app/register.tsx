@@ -3,37 +3,110 @@ import { Platform, StyleSheet, Alert } from "react-native";
 import { useState, useEffect } from "react";
 
 import { View } from "@/components/Themed";
-import { Button, Form, Spinner, Input, XStack, H1, Text as TamText } from "tamagui";
+import { Button, Form, Spinner, Input, XStack, H1, Text as TamText, YStack } from "tamagui";
 
 import { useAuth as useAuthy } from "@/contexts/AuthyContext";
 
-import { router, Link } from 'expo-router';
+import { router, Link, useNavigation } from 'expo-router';
+import { ErrorDetail, ErrorResponse } from "@/services/types";
+
+interface RegisterErrors {
+  [key: string]: ErrorDetail[]
+}
+
+const errorDefaults = {
+  "email": [],
+  "name": [],
+  "password": []
+}
 
 export default function RegisterScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
     "off"
   );
+
+  const navigation = useNavigation();
+
+  const [name , setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [formErrors, setFormErrors] = useState<RegisterErrors>({})
 
   const { onRegister } = useAuthy();
 
+  const validate = () => {
+    let isValid = true
+    let newErrors = {} as RegisterErrors;
+    if (email === '') {
+      isValid = false
+      newErrors['email'] = [{
+        message: 'Email is required',
+        propertyName: 'email'
+      }]
+    }
+    // validate email with regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (email !== '' && !emailRegex.test(email)) {
+      isValid = false
+      newErrors['email'] = [{
+        message: 'Invalid email address',
+        propertyName: 'email'
+      }]
+    }
+    if (name === '') {
+      isValid = false
+      newErrors['name'] = [{
+        message: 'Name is required',
+        propertyName: 'name'
+      }]
+    }
+    if (password === '') {
+      isValid = false
+      newErrors['password'] = [{
+        message: 'Password is required',
+        propertyName: 'password'
+      }]
+    }
+    setFormErrors(newErrors)
+    return isValid
+  }
+
   const handleLogin = async () => {
     setStatus('submitting');
-    const response = await onRegister!(email, password);
+    if (!validate()) {
+      setStatus('submitted')
+      return
+    }
+    const response = await onRegister!(email, password, name);
     if (response.error) {
-      Alert.alert('Invalid Username or Password');
+      let newErrors = errorDefaults as RegisterErrors
+      response.data.details.forEach((detail: ErrorDetail) => {
+        if (detail.propertyName.toLowerCase().includes('password')) {
+          newErrors["password"].push(detail);
+        }
+        if (detail.propertyName.toLowerCase().includes('email')) {
+          newErrors["email"].push(detail);
+        }
+        if (detail.propertyName.toLowerCase().includes('name')) {
+          newErrors["name"].push(detail);
+        }
+      })
+      setFormErrors(newErrors)
     }
     else {
       Alert.alert('Sign up Successful');
       setEmail('');
       setPassword('');
+      setFormErrors({});
       router.replace('/auth')
     }
     setStatus('submitted');
   }
 
   useEffect(() => {
+    navigation.setOptions({
+      title: "Sign Up",
+    });
     if (status === 'submitting') {
       const timer = setTimeout(() => setStatus('off'), 2000)
       return () => {
@@ -50,23 +123,47 @@ export default function RegisterScreen() {
       <Form
         gap="$2"
         onSubmit={handleLogin}
-        borderWidth={0}
-        borderRadius="$4"
-        backgroundColor="$background"
-        borderColor="$borderColor"
         marginTop="$6"
       >
+        <TamText fontSize={"$3"}>Full Name</TamText>
+        <Input width={'100%'} size="$4" placeholder={'Enter you full name'} borderWidth={2}
+          marginBottom='$2'
+          value={name}
+          onChangeText={t => setName(t)} />
+        {
+          formErrors['name'] && formErrors['name'].map((detail: ErrorDetail, index) => {
+            return (
+              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+            )
+          })
+        }
+
         <TamText fontSize={"$3"}>Email</TamText>
         <Input width={'100%'} size="$4" placeholder={'Enter you email'} borderWidth={2}
           marginBottom='$2'
           value={email}
-          onChangeText={t => setEmail(t)} />
+          autoCapitalize="none"
+          onChangeText={t => setEmail(t)}  />
+        {
+          formErrors['email'] && formErrors['email'].map((detail: ErrorDetail, index) => {
+            return (
+              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+            )
+          })
+        }
 
         <TamText fontSize={"$3"}>Password</TamText>
         <Input width={'100%'} size="$4" placeholder={'Choose a password'} borderWidth={2} 
           value={password}
           onChangeText={t => setPassword(t)}
           secureTextEntry/>
+        {
+          formErrors['password'] && formErrors['password'].map((detail: ErrorDetail, index) => {
+            return (
+              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+            )
+          })
+        }
 
         <XStack gap='$2' marginVertical="$5" width={'100%'}>
           <Form.Trigger asChild disabled={status !== "off"}>
@@ -93,14 +190,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: '5%'
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-    marginBottom: 15,
-    marginTop: 20,
-  },
-  green: {
-    color: 'green'
-  },
+  }
 });

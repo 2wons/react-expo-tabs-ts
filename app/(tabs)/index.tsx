@@ -5,19 +5,21 @@ import SafeViewAndroid from '@/components/SafeViewAndroid';
 import { useColorScheme } from '@/components/useColorScheme';
 
 import { View, ScrollView } from '@/components/Themed';
-import { XStack, YStack, Button, Text } from 'tamagui'
+import { XStack, YStack, Button, Text, H1, Avatar, Circle } from 'tamagui'
 import ResultCard from '@/components/ResultCard';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
 import { router } from 'expo-router';
 import { AlertButton } from '@/components/Alert';
+import { ButtonProps } from 'tamagui';
+import { CircleProps } from 'tamagui';
 
 import { CircleUserRound } from '@tamagui/lucide-icons';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
-  const { authState } = useAuth();
+  const { authState, user } = useAuth();
 
   const { history, clear } = useData();
 
@@ -52,15 +54,30 @@ export default function HomeScreen() {
       <View style={styles.myHeader}>
         <Text style={styles.h1}>Home</Text>
         <Link href={authState?.authenticated ? '/profile' : '/auth'} asChild>
-          <CircleUserRound size={48} /> 
+          { authState?.authenticated 
+            ? <CircleAvatar uri={user?.avatar!} />
+            : <CircleUserRound size={48} /> 
+          }
         </Link>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.container}>
-        <AlertButton label="Clear History" title="Confirm Clear" message='Are you sure you want to clear your whole history?'
-          onConfirm={clearAll} disabled={reports.length === 0}
-          backgroundColor={reports.length === 0? '$background075': '$background'}
-          color={reports.length === 0 ? "$color05" : "$color12"}/>
+        <AlertButton 
+          label="Clear History" 
+          title="Confirm Clear" 
+          message='Are you sure you want to clear your whole history?'
+          onConfirm={clearAll} 
+          disabled={reports.length === 0}
+          backgroundColor={
+            reports.length === 0 
+              ? '$background075'
+              : '$background'
+          }
+          color={
+            reports.length === 0 
+              ? "$color05" 
+              : "$color12"}
+          />
       </View>
       
       <ScrollView style={styles.container}>
@@ -77,6 +94,24 @@ export default function HomeScreen() {
         )}
       </ScrollView >
     </SafeAreaView>
+  );
+}
+
+interface CircleAvatarProps extends CircleProps {
+  uri: string;
+}
+const CircleAvatar = ({ uri, ...other }: CircleAvatarProps) => {
+  return (
+    <Circle size={"$5"} borderColor="$green10" borderWidth="$1" {...other}>
+      <Avatar circular size="$3">
+          <Avatar.Image
+            accessibilityLabel="Cam"
+            source={{ uri: uri }}
+            defaultSource={require('@/assets/images/avatardefault.png')}
+          />
+          <Avatar.Fallback backgroundColor="$blue10" />
+      </Avatar>
+    </Circle>
   );
 }
 

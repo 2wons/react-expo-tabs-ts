@@ -18,7 +18,6 @@ import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
 import { ClassCounts } from '@/components/ResultView';
 import { Slider, H1, Text, SizableText, Input } from 'tamagui';
-import { SimepleTooltip } from '@/components/SimpleTooltip';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 

@@ -84,12 +84,6 @@ function RootLayoutNav() {
                   options={{ presentation: "modal", headerShown: false }}
                 />
                 <Stack.Screen
-                  name="profile"
-                  options={{ 
-                    headerShadowVisible: false, 
-                    title: "Profile" }}
-                />
-                <Stack.Screen
                   name="result"
                   options={{ 
                     title: "Viewing Result" }}
