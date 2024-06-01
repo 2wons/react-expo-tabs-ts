@@ -3,10 +3,8 @@ import { Text, View, ScrollView } from "@/components/Themed";
 import { Button, XStack, YStack, SizableText, H1, H3 } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
 
-import { History } from "@/contexts/DataContext";
 import { Summary } from "@/components/Summary";
 import { Input } from "tamagui";
 import { StarFull, XCircle, Download } from "@tamagui/lucide-icons";
@@ -107,6 +105,7 @@ export default function ResultScreen() {
           onChangeText={(t) => {
             setTitle(t);
           }}
+          disabled
         />
       </XStack>
       <XStack>
