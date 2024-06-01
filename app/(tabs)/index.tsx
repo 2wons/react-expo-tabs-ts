@@ -4,8 +4,8 @@ import Colors from '@/constants/Colors';
 import SafeViewAndroid from '@/components/SafeViewAndroid';
 import { useColorScheme } from '@/components/useColorScheme';
 
-import { Text, View, ScrollView } from '@/components/Themed';
-import { XStack, YStack, Button } from 'tamagui'
+import { View, ScrollView } from '@/components/Themed';
+import { XStack, YStack, Button, Text } from 'tamagui'
 import ResultCard from '@/components/ResultCard';
 import { Link } from 'expo-router';
 import { useAuth } from '@/contexts/AuthyContext';
@@ -20,10 +20,6 @@ export default function HomeScreen() {
   const { authState } = useAuth();
 
   const { history, clear } = useData();
-
-  const debug = () => {
-    router.push('/partner')
-  }
 
   const clearAll = async () => {
     try {
@@ -62,18 +58,23 @@ export default function HomeScreen() {
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <View style={styles.container}>
         <AlertButton label="Clear History" title="Confirm Clear" message='Are you sure you want to clear your whole history?'
-          onConfirm={clearAll} />
+          onConfirm={clearAll} disabled={reports.length === 0}
+          backgroundColor={reports.length === 0? '$background075': '$background'}
+          color={reports.length === 0 ? "$color05" : "$color12"}/>
       </View>
       
       <ScrollView style={styles.container}>
-        {reports ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
+        {reports.length !== 0 ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>
           <YStack flex={1} flexGrow={1} flexDirection='row' flexWrap='wrap' backgroundColor={'$background025'} rowGap={10} columnGap={10}>
             {reports}
-           
-            {/* ^make into flatlist */}
           </YStack>
         </XStack>
-        : <Text>Empty History</Text>}
+        : (
+          <YStack theme="alt2" alignItems='center' paddingVertical="$5">
+            <Text alignSelf='center'>Empty History</Text> 
+            <Text alignSelf='center'>{"\(Start by analyzing an image\)"}</Text>
+          </YStack>
+        )}
       </ScrollView >
     </SafeAreaView>
   );
