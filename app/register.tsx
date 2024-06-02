@@ -3,21 +3,19 @@ import { Platform, StyleSheet, Alert } from "react-native";
 import { useState, useEffect } from "react";
 
 import { View } from "@/components/Themed";
-import { Button, Form, Spinner, Input, XStack, H1, Text as TamText, YStack } from "tamagui";
+import { Button, Form, Spinner, Input, XStack, H1, Text, YStack } from "tamagui";
 
 import { useAuth as useAuthy } from "@/contexts/AuthyContext";
 
 import { router, Link, useNavigation } from 'expo-router';
-import { ErrorDetail, ErrorResponse } from "@/services/types";
+import { ErrorDetail } from "@/services/types";
+
+import { Modal } from "react-native";
+import { Privacy } from "@/components/Privacy";
+import { XCircle } from "@tamagui/lucide-icons";
 
 interface RegisterErrors {
   [key: string]: ErrorDetail[]
-}
-
-const errorDefaults = {
-  "email": [],
-  "name": [],
-  "password": []
 }
 
 export default function RegisterScreen() {
@@ -30,6 +28,7 @@ export default function RegisterScreen() {
   const [name , setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [privacyVisible, setPrivacyVisible] = useState(false)
   const [formErrors, setFormErrors] = useState<RegisterErrors>({})
 
   const { onRegister } = useAuthy();
@@ -71,12 +70,17 @@ export default function RegisterScreen() {
     return isValid
   }
 
-  const handleLogin = async () => {
-    setStatus('submitting');
+  const toPrivacyPolicy = () => {
+    setStatus('submitting')
     if (!validate()) {
       setStatus('submitted')
       return
     }
+    setPrivacyVisible(true)
+  }
+
+  const handleSubmit = async () => {
+    setPrivacyVisible(false)
     const response = await onRegister!(email, password, name);
     if (response.error) {
       let newErrors = {
@@ -104,7 +108,7 @@ export default function RegisterScreen() {
       setFormErrors({});
       router.replace('/auth')
     }
-    setStatus('submitted');
+    setStatus('submitted')
   }
 
   useEffect(() => {
@@ -122,14 +126,14 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <H1>Get Started</H1>
-      <TamText theme='alt2'>Create a new account</TamText>
+      <Text theme='alt2'>Create a new account</Text>
 
       <Form
         gap="$2"
-        onSubmit={handleLogin}
+        onSubmit={toPrivacyPolicy}
         marginTop="$6"
       >
-        <TamText fontSize={"$3"}>Full Name</TamText>
+        <Text fontSize={"$3"}>Full Name</Text>
         <Input width={'100%'} size="$4" placeholder={'Enter you full name'} borderWidth={2}
           marginBottom='$2'
           value={name}
@@ -137,12 +141,12 @@ export default function RegisterScreen() {
         {
           formErrors['name'] && formErrors['name'].map((detail: ErrorDetail, index) => {
             return (
-              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+              <Text color="$red10" key={index}>• {detail.message}</Text>
             )
           })
         }
 
-        <TamText fontSize={"$3"}>Email</TamText>
+        <Text fontSize={"$3"}>Email</Text>
         <Input width={'100%'} size="$4" placeholder={'Enter you email'} borderWidth={2}
           marginBottom='$2'
           value={email}
@@ -151,12 +155,12 @@ export default function RegisterScreen() {
         {
           formErrors['email'] && formErrors['email'].map((detail: ErrorDetail, index) => {
             return (
-              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+              <Text color="$red10" key={index}>• {detail.message}</Text>
             )
           })
         }
 
-        <TamText fontSize={"$3"}>Password</TamText>
+        <Text fontSize={"$3"}>Password</Text>
         <Input width={'100%'} size="$4" placeholder={'Choose a password'} borderWidth={2} 
           value={password}
           onChangeText={t => setPassword(t)}
@@ -164,7 +168,7 @@ export default function RegisterScreen() {
         {
           formErrors['password'] && formErrors['password'].map((detail: ErrorDetail, index) => {
             return (
-              <TamText color="$red10" key={index}>• {detail.message}</TamText>
+              <Text color="$red10" key={index}>• {detail.message}</Text>
             )
           })
         }
@@ -179,12 +183,24 @@ export default function RegisterScreen() {
         
       </Form>
       <XStack alignItems="center" gap={'$2'}>
-        <TamText>Already have an Account?</TamText>
+        <Text>Already have an Account?</Text>
         <Link replace href='/auth' asChild>
             <Button size={"$2"} variant="outlined">Login</Button>
         </Link>
       </XStack>
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
+
+      <Modal animationType="slide" presentationStyle="pageSheet" visible={privacyVisible}>
+        <View style={styles.closeButton}>
+          <XCircle onPress={() => {
+            setPrivacyVisible(false)
+            setStatus('submitted')
+          }} />
+        </View>
+        <Privacy>
+          <Button marginBottom="$2" onPress={handleSubmit}>Agree and Sign up</Button>
+        </Privacy>
+      </Modal>
     </View>
   );
 }
@@ -194,5 +210,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     paddingHorizontal: '5%'
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 100
   }
 });

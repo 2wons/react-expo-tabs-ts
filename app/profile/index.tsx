@@ -9,8 +9,6 @@ import { useAuth } from "@/contexts/AuthyContext";
 import { useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
-import { getMe } from "@/services/authService";
-import { BASE_URL } from "@/constants/Common";
 import { PencilLine } from "@tamagui/lucide-icons";
 
 interface OptionGroupProps {
@@ -94,7 +92,7 @@ export default function MeScreen() {
       {/* Legal */}
       <Text theme='alt2'>Legal</Text>
       <OptionsGroup>
-        <Option icon={ArrowUpRight} title="Data Privacy"/>
+        <Option icon={ArrowUpRight} title="Data Privacy" onPress={() => router.push("/privacy")}/>
       </OptionsGroup>
       {/* Help */}
       <Text theme='alt2'>Help</Text>
