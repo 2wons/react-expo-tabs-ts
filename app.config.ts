@@ -19,7 +19,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         googleMaps: {
             apiKey: GOOGLE_MAPS_API_KEY
         }
-    }
+    },
+    package: "com.codegeass.carident",
+    versionCode: 1
   },
   extra: {
     eas:{
