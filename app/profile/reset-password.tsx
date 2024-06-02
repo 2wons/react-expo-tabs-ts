@@ -57,7 +57,11 @@ export default function ResetPasswordScreen() {
             setOldPassword('')
          })
          .catch((e) => {
-            let newError = ErrorDefaults as FormErrors
+            setFormErrors({})
+            let newError = {
+               "oldPassword": [],
+               "newPassword": []
+            } as FormErrors
             const response = e as AxiosError<ErrorResponse>
             // this is very ugly
             response.response?.data.details.forEach((detail: ErrorDetail) => {

@@ -79,7 +79,11 @@ export default function RegisterScreen() {
     }
     const response = await onRegister!(email, password, name);
     if (response.error) {
-      let newErrors = errorDefaults as RegisterErrors
+      let newErrors = {
+        "email": [],
+        "name": [],
+        "password": []
+      } as RegisterErrors
       response.data.details.forEach((detail: ErrorDetail) => {
         if (detail.propertyName.toLowerCase().includes('password')) {
           newErrors["password"].push(detail);
