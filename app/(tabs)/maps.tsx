@@ -97,7 +97,7 @@ export default function MapScreen() {
         }}
         ref={mapRef}
         userInterfaceStyle={theme ?? 'light'}
-        showsUserLocation
+        
        >
         {nearbyPlaces && nearbyPlaces.map((nearby: any, index: number) => {
           return (
