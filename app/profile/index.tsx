@@ -76,8 +76,8 @@ export default function MeScreen() {
           />
           <Avatar.Fallback backgroundColor="$blue10" />
         </Avatar>
-        <YStack paddingHorizontal='$5'>
-          <SizableText size='$9' fontWeight='800'>{user?.name}</SizableText>
+        <YStack paddingHorizontal='$5' flex={1}>
+          <SizableText size='$9' fontWeight='800' numberOfLines={2}>{user?.name}</SizableText>
           <SizableText size='$5' theme='alt2'>{user?.email}</SizableText>
         </YStack>
       </XStack>
