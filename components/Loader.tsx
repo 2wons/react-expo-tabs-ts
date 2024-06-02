@@ -1,10 +1,15 @@
 import { View, StyleSheet, ActivityIndicator } from "react-native"
-import { Spinner } from "tamagui";
+import { Spinner, Text } from "tamagui";
 
-export const Loader = () => {
+type LoaderProps = {
+    message?: string
+}
+
+export const Loader = ({ message }: LoaderProps) => {
     return (
         <View style={styles.loading}>
             <Spinner size="large"/>
+            <Text color="$white1">{ message }</Text>
         </View>
     )
 }
@@ -14,7 +19,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'absolute',
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        backgroundColor: 'rgba(0,0,0,0.7)',
         left: 0,
         right: 0,
         top: 0,

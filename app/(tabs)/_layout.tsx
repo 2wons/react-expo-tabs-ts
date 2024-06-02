@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { Tabs } from 'expo-router';
-
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { Feather, FontAwesome } from '@expo/vector-icons';
+
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -29,6 +29,7 @@ export default function TabLayout() {
           width: '100%'
         },
         //tabBarLabelStyle: {paddingBottom: 5}
+        tabBarVisibilityAnimationConfig: {}
       }}>
       <Tabs.Screen
         name="index"

@@ -13,15 +13,15 @@ export default function AuthScreen() {
   const [status, setStatus] = useState<"off" | "submitting" | "submitted">(
     "off"
   );
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { authState, onLogin, onLogout  } = useAuthy();
+  const { onLogin } = useAuthy();
   const router = useRouter();
 
   const handleLogin = async () => {
     setStatus('submitting');
-    const response = await onLogin!(username, password);
+    const response = await onLogin!(email, password);
     if (response.error) {
       Alert.alert('Invalid Username or Password');
     }
@@ -52,10 +52,11 @@ export default function AuthScreen() {
         backgroundColor="$background"
         borderColor="$borderColor"
       >
-        <TamText fontSize={"$3"}>Username</TamText>
-        <Input width={'100%'} size="$4" placeholder={'Username'} borderWidth={2}
-          marginBottom='$2' 
-          onChangeText={t => setUsername(t)} autoCapitalize="none" />
+        <TamText fontSize={"$3"}>Email</TamText>
+        <Input width={'100%'} size="$4" placeholder={'Email'} borderWidth={2}
+          marginBottom='$2'
+          textContentType="emailAddress" 
+          onChangeText={t => setEmail(t)} autoCapitalize="none" />
 
         <TamText fontSize={"$3"}>Password</TamText>
         <Input width={'100%'} size="$4" placeholder={'Password'} borderWidth={2}
@@ -81,9 +82,9 @@ export default function AuthScreen() {
             <Button size={"$2"} variant="outlined">Sign-up</Button>
         </Link>
       </XStack>
-      <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
+      {/* <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
         <Button size={"$2"} variant="outlined">More</Button>
-      </XStack>
+      </XStack> */}
 
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>

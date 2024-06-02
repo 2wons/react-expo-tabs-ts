@@ -5,13 +5,17 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
+import { ShieldQuestion } from '@tamagui/lucide-icons';
 import { config } from '@tamagui/config/v3'
+import { LogBox } from 'react-native';
 
 import 'react-native-reanimated'
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthyContext';
 import { DataProvider } from '@/contexts/DataContext';
+
+LogBox.ignoreLogs(["Warning: Cannot update a component (`Button`) while rendering a different component (`Button`). To locate the bad setState() call inside `Button`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render"])
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -78,12 +82,6 @@ function RootLayoutNav() {
                 <Stack.Screen
                   name="auth"
                   options={{ presentation: "modal", headerShown: false }}
-                />
-                <Stack.Screen
-                  name="profile"
-                  options={{ 
-                    headerShadowVisible: false, 
-                    title: "Profile" }}
                 />
                 <Stack.Screen
                   name="result"

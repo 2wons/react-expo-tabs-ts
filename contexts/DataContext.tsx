@@ -3,22 +3,33 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { generateUUID } from "@/services/common";
 import * as FileSystem from 'expo-file-system'
 import { ContextProps } from ".";
+import { ClassCounts } from "@/components/ResultView";
 
 export interface Report {
     id: string;
     timestamp: string;
-    img?: string
+    img?: string;
+    title: string
+    summary: ClassCounts
 }
 
 export interface History {
   [key: string]: Report
 }
 
+export interface NewReport {
+  id: string;
+  timestamp: string;
+  img?: string;
+  title: string
+}
+
 interface DataContextInterface {
-    history?: History,
-    load?: () => Promise<void>,
-    save?: (imgUri: string) => Promise<void>,
-    clear?: () => Promise<void>
+  history?: History;
+  load?: () => Promise<void>;
+  save?: (imgUri: string, title: string, summary: ClassCounts) => Promise<void>;
+  clear?: () => Promise<void>;
+  remove?: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextInterface>({})
@@ -57,7 +68,7 @@ export const DataProvider = ({ children }: ContextProps) => {
     load()
   }, [])
 
-  const save = async (imgUri: string) => {
+  const save = async (imgUri: string, title: string, summary: ClassCounts) => {
     const localId = generateUUID(7);
 
     // Download file to app document directory
@@ -67,13 +78,15 @@ export const DataProvider = ({ children }: ContextProps) => {
     );
 
     const newData = {
+      id: localId,
       timestamp: new Date().toISOString(),
-      img: uri
+      img: uri,
+      title: title,
+      summary: summary
     };
     
     try {
-      const localHistory = await AsyncStorage.getItem('history')
-      const newHistory = localHistory ? JSON.parse(localHistory): {} 
+      const newHistory = {...history}
       newHistory[localId] = newData
       setHistory(newHistory)
 
@@ -83,7 +96,16 @@ export const DataProvider = ({ children }: ContextProps) => {
     }
   }
 
-  const value = { history, load, save, clear }
+  const remove = async (id: string) => {
+    const currentHistory = {...history}
+    if (history.hasOwnProperty(id)) {
+      delete currentHistory[id]
+    }
+    setHistory(currentHistory)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
+  }
+
+  const value = { history, load, save, clear, remove }
 
   return (
     <DataContext.Provider value={value}>

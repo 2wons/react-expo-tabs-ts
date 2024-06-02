@@ -1,13 +1,18 @@
-import { StyleSheet, Image, Alert } from "react-native";
-import { Button, H1, H3 } from "tamagui";
+import { StyleSheet, Image, Alert, TouchableOpacity } from "react-native";
+import { Button, H1, H3, SizableText, Input, XStack } from "tamagui";
 import { Download, History } from "@tamagui/lucide-icons";
 
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import { View } from "./Themed";
+import { View, ScrollView } from "./Themed";
 import { styled } from "@tamagui/core";
 
 import { useData } from "@/contexts/DataContext";
+import ImageViewer from "react-native-image-zoom-viewer";
+import { Modal } from "react-native";
+import { useState } from "react";
+import { Loader } from "./Loader";
+import { Summary } from "./Summary";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -16,18 +21,41 @@ const FloatingButton = styled(Button, {
   alignSelf: "flex-end",
 });
 
+export interface ClassCounts {
+  healthy?: number;
+  initial?: number;
+  moderate?: number;
+  extensive?: number;
+  unknown?: number;
+}
+
 type ResultProps = {
   imgUri: string | null;
+  summary: ClassCounts
+  children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri }: ResultProps) => {
+export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
   const { save } = useData();
+  const [isViewerVisible, setViewerVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState("")
+  const [title, setTitle] = useState("Untitled")
+
+  const today = new Date();
 
   const saveToHistory = async () => {
-    await save!(imgUri!)
+    setLoading(true)
+    setMessage("Saving to history...")
+    await save!(imgUri!, title, summary)
     Alert.alert('Result saved to history.')
+    setLoading(false)
+    setMessage("")
   }
- 
+
+  const handleViewer = () => {
+    setViewerVisible(!isViewerVisible)
+  }
 
   const saveImage = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
@@ -49,24 +77,46 @@ export const ResultView = ({ imgUri }: ResultProps) => {
     Alert.alert("Image result saved to Camera Roll");
   };
 
+  const images = [
+    { url: imgUri! },
+  ]
+
   const PLACEHOLDER = "https://i.postimg.cc/FFcjKg98/placeholder.png";
   return (
     <>
-      <H1 paddingTop="$5">Analysis result</H1>
+      <H1 paddingVertical="$5">Analysis result</H1>
       <View style={styles.preview}>
-        <Image
-          source={{ uri: imgUri ? imgUri : PLACEHOLDER }}
-          style={styles.image}
-          resizeMode="contain"
-        />
+        <TouchableOpacity onPress={handleViewer}>
+          <Image
+            source={{ uri: imgUri ? imgUri : PLACEHOLDER }}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      <Modal visible={isViewerVisible} transparent={true}>
+        <ImageViewer imageUrls={images}/>
+        <Button onPress={handleViewer}>Close</Button>
+      </Modal>
         <FloatingButton icon={Download} onPress={saveImage}>
-          Save Image
         </FloatingButton>
       </View>
-      <H3>Summary</H3>
+      <H3 paddingTop={'$3'}>Summary</H3>
+      <Summary counts={summary}  />
+      <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
+      <XStack alignItems="center">
+        <SizableText theme="alt2">{`title `}</SizableText>
+        <Input size="$1" flex={1} placeholder="Untitled" onChangeText={t => setTitle(t)}/>
+      </XStack>
+      <XStack>
+        <SizableText theme="alt2">{`date taken `}</SizableText>
+        <SizableText>{`${today.toLocaleString()}`}</SizableText>
+      </XStack>
+      <H3 paddingTop={'$3'}>Actions</H3>
       <Button onPress={saveToHistory} icon={History} marginVertical="$2">
         Save to History
       </Button>
+      { children }
+      { loading && <Loader message={message} /> }
     </>
   );
 };
@@ -84,5 +134,8 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1.5,
     borderRadius: 10,
+    borderStyle: "dashed",
+    borderColor: "white",
+    borderWidth: 1
   },
 });

@@ -1,4 +1,4 @@
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, StyleSheet, Platform } from 'react-native';
 import { View } from '@/components/Themed';
 import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-native';
 
@@ -13,6 +13,8 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import { YStack, SizableText, Button } from 'tamagui';
 import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
+import { Link } from 'expo-router';
+import { PROVIDER_GOOGLE } from 'react-native-maps';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth * 0.85;
@@ -20,6 +22,13 @@ const cardMargin = 10;
 
 const LATITIUDE_DELTA = 0.000422
 const LONGITUDE_DELTA = 0.000421
+
+interface MapRegion {
+  latitude: number,
+  longitude: number,
+  latitudeDelta: number,
+  longitudeDelta: number
+}
 
 const INITIAL_REGION = {
   /* Feut */
@@ -31,6 +40,7 @@ const INITIAL_REGION = {
 
 export default function MapScreen() {
   const [location, setLocation] = useState<Location.LocationObject>()
+  const [region, setRegion] = useState<MapRegion>(INITIAL_REGION)
   const [nearbyPlaces, setNearbyPlaces] = useState<any>()
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +58,12 @@ export default function MapScreen() {
 
       const location = await Location.getCurrentPositionAsync();
       setLocation(location)
+      setRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: LATITIUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA
+      })
     })()
 
   }, [])
@@ -67,7 +83,7 @@ export default function MapScreen() {
       index * (cardWidth + cardMargin * 2) -
       (screenWidth - cardWidth) / 2 +
       cardMargin;
-    carouselRef.current?.scrollTo({count: index, animated: true})
+    carouselRef.current?.scrollTo({index: index, animated: true})
   };
 
   const getNearby =  async () => {
@@ -77,6 +93,7 @@ export default function MapScreen() {
       const nearby = await getNearbyClinics({...location?.coords!})
       setNearbyPlaces(nearby)
     } catch (error) {
+      console.log(error)
       Alert.alert("No nearby clinics")
     } finally {
       setLoading(false)
@@ -85,17 +102,13 @@ export default function MapScreen() {
   
   return (
     <View style={styles.container}>
-       <MapView 
+       <MapView
         style={styles.map}
         initialRegion={INITIAL_REGION}
-        region={{
-          ...location?.coords!,
-          latitudeDelta: LATITIUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        }}
+        region={region}
         ref={mapRef}
         userInterfaceStyle={theme ?? 'light'}
-        showsUserLocation
+        
        >
         {nearbyPlaces && nearbyPlaces.map((nearby: any, index: number) => {
           return (
@@ -142,7 +155,11 @@ export default function MapScreen() {
           }
         </Animated.View>
         <View style={styles.toolbox}>
-          <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>Partnered Clinics</Button>
+          <Link href="/partner" asChild>
+            <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
+              Partnered Clinics
+            </Button>
+          </Link>
           <Button style={styles.tool} icon={Search} onPress={getNearby} elevate>Get Nearby</Button>
         </View>
         { loading && <Loader />}

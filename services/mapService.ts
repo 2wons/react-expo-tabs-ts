@@ -91,7 +91,7 @@ export const getNearbyClinics = async (location: Coords) => {
         const url = `${BASE_URL}keyword=${keyword}&location=${locationStr}&radius=${radius}&type=${type}&key=${API_KEY}`;
 
         const response = await axios.get(url);
-
+        
         return response.data.results;
         
     } catch (error) {
