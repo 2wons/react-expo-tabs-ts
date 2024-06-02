@@ -77,6 +77,10 @@ export const DataProvider = ({ children }: ContextProps) => {
       FileSystem.documentDirectory + `images/${localId}_image-result.jpg`
     );
 
+    if (title === 'Untitled') {
+      title = `Test ${Object.keys(history).length+1}`
+    }
+
     const newData = {
       id: localId,
       timestamp: new Date().toISOString(),
