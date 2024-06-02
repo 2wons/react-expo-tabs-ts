@@ -82,9 +82,9 @@ export default function AuthScreen() {
             <Button size={"$2"} variant="outlined">Sign-up</Button>
         </Link>
       </XStack>
-      <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
+      {/* <XStack flex={1} alignItems={"flex-end"} justifyContent="flex-end" >
         <Button size={"$2"} variant="outlined">More</Button>
-      </XStack>
+      </XStack> */}
 
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
