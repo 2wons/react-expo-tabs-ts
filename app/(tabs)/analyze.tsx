@@ -29,6 +29,7 @@ export default function DetectScreen() {
   const [visible, setVisible] = useState(false); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [extreme, setExtreme] = useState('NONE');
   const [IoU, setIoU] = useState(0.25);
   
   const { authState } = useAuthy();
@@ -91,6 +92,7 @@ export default function DetectScreen() {
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
     
       setCounts(response.classCounts);
+      setExtreme(response.recommendation);
       setResult(resultImgPath);
       setVisible(!visible);
 
@@ -120,7 +122,7 @@ export default function DetectScreen() {
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
             <ScrollView>
-              <ResultView summary={counts} imgUri={result}>
+              <ResultView summary={counts} imgUri={result} extreme={extreme}>
                 <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
               </ResultView>
             </ScrollView>

@@ -30,18 +30,29 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
                 params: {
                     threshold: iou,
                     drawNames: false,
+                    drawConfidence: false
                 }
             }
         )
-        const classCounts = {
-            healthy: 0,
-            initial: 0,
-            moderate: 0,
-            extensive: 0,
-            unknown: 0
+
+        const cariesRank: {[key: string]: number} = {
+            [HEALTHY]:   1,
+            [INITIAL]:   2,
+            [MODERATE]:  3,
+            [EXTENSIVE]: 4
         }
+
+        const classCounts = {
+            healthy:    0,
+            initial:    0,
+            moderate:   0,
+            extensive:  0,
+            
+        }
+        const classes: string[] = ["none"]
         // count each occurence of className
         response.data.detections.forEach((detection: any) => {
+            classes.push(detection.className)
             switch (detection.className) {
                 case HEALTHY:
                     classCounts.healthy++;
@@ -56,11 +67,17 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
                     classCounts.extensive++;
                     break;
                 default:
-                    classCounts.unknown++;
+                    
                     break;
             }
         })
-        const ResponseWithCount = {...response.data, classCounts}
+        
+        const filters = Array.from(new Set(classes))
+        const recommendation = filters
+            .reduce((a: string, b:string) => cariesRank[a] > cariesRank[b] ? a : b);
+        console.log(recommendation)
+
+        const ResponseWithCount = {...response.data, classCounts, recommendation}
         return ResponseWithCount;
     } catch (error: any) {
         if (error.response) {
