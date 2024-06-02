@@ -47,7 +47,8 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0-rc.0",
     "react-native-web": "~0.19.6",
-    "tamagui": "^1.90.6"
+    "tamagui": "^1.90.6",
+    "expo-dev-client": "~4.0.15"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
