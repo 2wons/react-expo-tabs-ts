@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Platform } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { View } from '@/components/Themed';
 import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-native';
 
@@ -14,14 +14,13 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { YStack, SizableText, Button } from 'tamagui';
 import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
 import { Link } from 'expo-router';
-import { PROVIDER_GOOGLE } from 'react-native-maps';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth * 0.85;
 const cardMargin = 10; 
 
-const LATITIUDE_DELTA = 0.000422
-const LONGITUDE_DELTA = 0.000421
+const LATITIUDE_DELTA = 0.00422
+const LONGITUDE_DELTA = 0.00421
 
 interface MapRegion {
   latitude: number,
@@ -133,7 +132,7 @@ export default function MapScreen() {
         <Animated.View style={styles.absolute}>
           { nearbyPlaces ? 
           <Animated.View entering={SlideOutLeft} exiting={SlideOutDown}>
-            <Carousel ref={carouselRef} width={screenWidth} height={245} data={nearbyPlaces} renderItem={({ item }: any) => {
+            <Carousel ref={carouselRef} width={screenWidth} height={245} data={nearbyPlaces} renderItem={({ item, index }: any) => {
               return (
                 <PlaceCard place={{
                   coordinate: {
@@ -142,9 +141,17 @@ export default function MapScreen() {
                   },
                   title: item.name,
                   description: item.vicinity,
-                  rating: item.vicinity,
-                  reviews: item.user_ratings_total
-                }}/>
+                  rating: item.rating,
+                  reviews: item.user_ratings_total,
+                  open_now: item.opening_hours?.open_now ?? false
+                }}
+                onPress={() => {
+                  onMarkerPress({
+                    latitude: item.geometry.location.lat,
+                    longitude: item.geometry.location.lng
+                  }, index)
+                }}
+                />
               )
             }} mode='parallax' />
           </Animated.View>
@@ -200,15 +207,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  infobox: {
-    bottom: 0,
-    width: '100%',
-    position: 'absolute',
-    alignSelf: 'center',
-    alignContent: 'center',
-    marginBottom: 5,
-    justifyContent: 'center'
-  },
   absolute: {
     position: 'absolute',
     bottom: 0,
@@ -219,6 +217,7 @@ const styles = StyleSheet.create({
   toolbox: {
     top: 0,
     alignSelf: 'flex-end',
+    justifyContent:'flex-end',
     backgroundColor: 'transparent',
     position: 'absolute'
   },
