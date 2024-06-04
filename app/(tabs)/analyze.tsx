@@ -92,7 +92,7 @@ export default function DetectScreen() {
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
     
       setCounts(response.classCounts);
-      setExtreme(response.recommendation);
+      setExtreme(response.extreme);
       setResult(resultImgPath);
       setVisible(!visible);
 
