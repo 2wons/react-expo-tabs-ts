@@ -9,7 +9,10 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
  * Calls the api to do analysis on image.
  * @param {string} uri - uri of image file
  */
-export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
+export const analyzeTeeth = async (uri: string, iou: number = 0.25, {
+    drawConfidence = false,
+    drawNames = false
+ }) => {
 
     const formData = new FormData();
 
@@ -29,8 +32,8 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25) => {
                 },
                 params: {
                     threshold: iou,
-                    drawNames: false,
-                    drawConfidence: false
+                    drawNames: drawNames,
+                    drawConfidence: drawConfidence
                 }
             }
         )

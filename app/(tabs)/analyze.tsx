@@ -1,12 +1,12 @@
-import { StyleSheet, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Image, Modal, Platform } from 'react-native';
+import { Image, Modal } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 
-import { SafeAreaView, View, ScrollView } from '@/components/Themed';
+import { View, ScrollView } from '@/components/Themed';
 import { XStack, YStack, Button } from 'tamagui';
 import { Loader } from '@/components/Loader';
 import { XCircle } from '@tamagui/lucide-icons';
@@ -14,12 +14,18 @@ import { XCircle } from '@tamagui/lucide-icons';
 import { analyzeTeeth } from '@/services/modelService';
 
 import { useAuth as useAuthy } from '@/contexts/AuthyContext';
-import { EmojiButton } from '@/components/EmojiButton';
 import { ResultView } from '@/components/ResultView';
 import { ClassCounts } from '@/components/ResultView';
-import { Slider, H1, Text, SizableText, Input } from 'tamagui';
+import { Slider, H1, Text, SizableText, Input, Checkbox } from 'tamagui';
+import { useNavigation } from 'expo-router';
 
+import { ImagePlus, Camera, Check as CheckIcon } from '@tamagui/lucide-icons';
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+
+interface DetectOptions {
+  drawConfidence: boolean 
+  drawNames: boolean 
+}
 
 export default function DetectScreen() {
 
@@ -31,7 +37,16 @@ export default function DetectScreen() {
   const [message, setMessage] = useState('');
   const [extreme, setExtreme] = useState('NONE');
   const [IoU, setIoU] = useState(0.25);
+
+  const [options, setOptions] = useState<DetectOptions>(
+    {drawConfidence: false, drawNames: false}
+  );
+
+  useEffect(() => {
+    
+  },[])
   
+  const navigation = useNavigation();
   const { authState } = useAuthy();
 
   const openCamera = async () => {
@@ -87,7 +102,7 @@ export default function DetectScreen() {
     setMessage('Analyzing Image');
     
     try {
-      const response = await analyzeTeeth(image, IoU);
+      const response = await analyzeTeeth(image, IoU, options);
       
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
     
@@ -116,7 +131,7 @@ export default function DetectScreen() {
   const PLACEHOLDER = 'https://i.postimg.cc/FFcjKg98/placeholder.png'
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
 
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
@@ -131,21 +146,26 @@ export default function DetectScreen() {
 
       <H1>Select Image Source</H1>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <XStack justifyContent='space-evenly' gap="$5">
-        <EmojiButton emoji='📸' label='Camera' onPress={openCamera} />
-        <EmojiButton emoji='🖼' label='Gallery' onPress={select} />
+      <XStack justifyContent='space-evenly' gap="$3" paddingVertical="$2">
+        <Button variant="outlined"size="$5" flex={1} onPress={openCamera}>
+          <Camera size={24} />
+          <Text>Camera</Text>
+        </Button>
+        <Button variant="outlined" size="$5" flex={1} onPress={select}>
+          <ImagePlus size={24} />
+          <Text>Gallery</Text>
+        </Button>
       </XStack>
-
       <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
-          <Image source={{uri: image ? image : PLACEHOLDER }} style={styles.image} resizeMode='contain' />
+          <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={styles.image} resizeMode='contain' />
       </YStack>
-      <XStack justifyContent='space-between'>
+      <XStack justifyContent='space-between' paddingTop="$3">
         <Text theme="alt1">IoU Threshold</Text>
         <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
       </XStack>
       <XStack alignItems='center' gap="$2">
         <Text>0.05</Text>
-        <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$5" onValueChange={(val) => handleIoU(val[0])}>
+        <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
           <Slider.Track>
             <Slider.TrackActive />
           </Slider.Track>
@@ -153,12 +173,34 @@ export default function DetectScreen() {
         </Slider>
         <Text>1</Text>
       </XStack>
+      <YStack gap="$2" paddingVertical="$3">
+        <XStack justifyContent='space-between'>
+          <Text>Draw Confidence</Text>
+          <Checkbox id='1' checked={options.drawConfidence} onCheckedChange={() => {
+            setOptions({...options, drawConfidence: !options.drawConfidence})
+          }}>
+            <Checkbox.Indicator>
+              <CheckIcon size={16} />
+            </Checkbox.Indicator>
+          </Checkbox>
+        </XStack>
+        <XStack justifyContent='space-between'>
+          <Text>Draw Labels</Text>
+          <Checkbox checked={options.drawNames} onCheckedChange={() => {
+            setOptions({...options, drawNames: !options.drawNames})
+          }}>
+            <Checkbox.Indicator>
+              <CheckIcon size={16} />
+            </Checkbox.Indicator>
+          </Checkbox>
+        </XStack>
+      </YStack>
       <XStack gap='$3'>
-        <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
+        <Button onPress={() => console.log(options) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
       { loading ?  <Loader message={message} /> : '' }
-    </View>
+    </ScrollView>
   );
 }
 
