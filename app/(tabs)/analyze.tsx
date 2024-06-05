@@ -196,7 +196,7 @@ export default function DetectScreen() {
         </XStack>
       </YStack>
       <XStack gap='$3'>
-        <Button onPress={() => console.log(options) } flex={1}>Reset</Button>
+        <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
       { loading ?  <Loader message={message} /> : '' }
