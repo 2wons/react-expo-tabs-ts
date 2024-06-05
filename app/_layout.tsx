@@ -15,7 +15,9 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthyContext';
 import { DataProvider } from '@/contexts/DataContext';
 
-LogBox.ignoreLogs(["Warning: Cannot update a component (`Button`) while rendering a different component (`Button`). To locate the bad setState() call inside `Button`, follow the stack trace as described in https://reactjs.org/link/setstate-in-render"])
+LogBox.ignoreLogs([
+  /Cannot update a component/,
+])
 
 export {
   // Catch any errors thrown by the Layout component.
