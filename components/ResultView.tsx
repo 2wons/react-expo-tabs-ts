@@ -65,7 +65,6 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
 
   const handleViewer = () => {
     setViewerVisible(!isViewerVisible)
-    console.log(extreme)
   }
 
   const saveImage = async () => {
