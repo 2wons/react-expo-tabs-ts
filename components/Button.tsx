@@ -6,10 +6,12 @@ export const Button = styled(DefaultTamaguiButton, {
             true: {
                 backgroundColor: "$background075",
                 color: "$color05",
+                disabled: true,
             },
             false: {
                 backgroundColor: "$background1",
                 color: "$color12",
+                disabled: false,
             }
             
         },
