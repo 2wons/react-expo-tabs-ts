@@ -1,4 +1,4 @@
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, useColorScheme } from 'react-native';
 
 import { useEffect, useState } from 'react';
 
@@ -50,6 +50,7 @@ export default function DetectScreen() {
   
   const navigation = useNavigation();
   const { authState } = useAuthy();
+  const theme = useColorScheme() ?? 'light'
 
   const openCamera = async () => {
     // camera needs permission
@@ -160,7 +161,7 @@ export default function DetectScreen() {
         </Button>
       </XStack>
       <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
-          <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={styles.image} resizeMode='contain' />
+          <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={{...styles.image, borderColor: theme === 'dark' ? 'white' : 'black'}} resizeMode='contain' />
       </YStack>
       <XStack justifyContent='space-between' paddingTop="$3">
         <Text theme="alt1">IoU Threshold</Text>
@@ -227,7 +228,6 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1.5,
     borderRadius: 10,
-    borderColor: "white",
     borderStyle: "dashed",
     borderWidth: 1
   },
