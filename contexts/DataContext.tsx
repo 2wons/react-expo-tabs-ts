@@ -11,6 +11,7 @@ export interface Report {
     img?: string;
     title: string
     summary: ClassCounts
+    extreme?: string
 }
 
 export interface History {
@@ -27,7 +28,7 @@ export interface NewReport {
 interface DataContextInterface {
   history?: History;
   load?: () => Promise<void>;
-  save?: (imgUri: string, title: string, summary: ClassCounts) => Promise<void>;
+  save?: (imgUri: string, title: string, summary: ClassCounts, extreme?: string) => Promise<void>;
   clear?: () => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
@@ -68,7 +69,7 @@ export const DataProvider = ({ children }: ContextProps) => {
     load()
   }, [])
 
-  const save = async (imgUri: string, title: string, summary: ClassCounts) => {
+  const save = async (imgUri: string, title: string, summary: ClassCounts, extreme?: string) => {
     const localId = generateUUID(7);
 
     // Download file to app document directory
@@ -86,7 +87,8 @@ export const DataProvider = ({ children }: ContextProps) => {
       timestamp: new Date().toISOString(),
       img: uri,
       title: title,
-      summary: summary
+      summary: summary,
+      extreme: extreme
     };
     
     try {

@@ -15,5 +15,5 @@ export const RECO: RecoType = {
     [INITIAL]: "Maintain Oral Hygiene and use Fluoride Toothpaste and mouthwash to strengthen enamel.",
     [MODERATE]: "Consult a Dentist for thorough examination and treatment.",
     [EXTENSIVE]: "Seek dental treatment to avoid infections and further complications.",
-    ["NONE"]: "No Caries Detected"
+    ["none"]: "No Caries Detected"
 }

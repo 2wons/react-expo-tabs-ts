@@ -37,7 +37,7 @@ type ResultProps = {
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, summary, children, extreme="NONE" }: ResultProps) => {
+export const ResultView = ({ imgUri, summary, children, extreme="none" }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -49,7 +49,7 @@ export const ResultView = ({ imgUri, summary, children, extreme="NONE" }: Result
   const saveToHistory = async () => {
     setLoading(true)
     setMessage("Saving to history...")
-    await save!(imgUri!, title, summary)
+    await save!(imgUri!, title, summary, extreme)
     Alert.alert('Result saved to history.')
     setLoading(false)
     setMessage("")
