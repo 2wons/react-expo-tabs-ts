@@ -13,6 +13,7 @@ import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
+import { createReport } from "@/services/clinicService";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
@@ -61,6 +62,14 @@ export default function ResultScreen() {
       })
       router.back()
   };
+
+  const shareReport = async () => {
+    const { serverId } = history![id!.toString()];
+    router.push({
+      pathname: "/partner/share",
+      params: { serverId: serverId }
+    })
+  }
 
   useEffect(() => {
     getResult();
@@ -114,7 +123,7 @@ export default function ResultScreen() {
       </XStack>
       <H3 marginTop="$4">Actions</H3>
       <YStack gap={3}>
-        <Button icon={StarFull} backgroundColor={"$blue5"}>
+        <Button icon={StarFull} backgroundColor={"$blue5"} onPress={shareReport}>
           Share to partner clinic
         </Button>
         <Button icon={Download} onPress={saveImage} flex={1}>

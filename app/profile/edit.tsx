@@ -96,7 +96,7 @@ export default function EditProfileSreen() {
       >
         <Avatar circular size="$13">
           <Avatar.Image
-            source={avi ? { uri: avi } : undefined}
+            source={avi ? { uri: avi } : require("@/assets/images/avatardefault.png")}
             accessibilityLabel="Cam"
             defaultSource={require("@/assets/images/avatardefault.png")}
           />

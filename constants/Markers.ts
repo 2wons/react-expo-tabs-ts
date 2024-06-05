@@ -7,6 +7,7 @@ export interface PointOfInterest {
     description: string,
     rating: number,
     reviews: number
+    open_now?: boolean | 'uknown'
 }
 
 export const place: PointOfInterest ={

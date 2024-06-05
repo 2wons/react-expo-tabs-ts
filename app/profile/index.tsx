@@ -7,7 +7,7 @@ import { Button, Avatar, XStack, SizableText, Text, YStack, ListItem, YGroup } f
 
 import { useAuth } from "@/contexts/AuthyContext";
 import { useNavigation, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import { PencilLine } from "@tamagui/lucide-icons";
 
@@ -98,6 +98,7 @@ export default function MeScreen() {
       <Text theme='alt2'>Help</Text>
       <OptionsGroup>
         <Option icon={HelpCircle} title="FAQs"/>
+        <Option icon={HelpCircle} title="Feedback"/>
       </OptionsGroup>
       {/* Logout */}
       <XStack flex={1} alignItems={"flex-end"}>

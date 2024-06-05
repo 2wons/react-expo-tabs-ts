@@ -1,5 +1,5 @@
 import { StyleSheet, Image, Alert, TouchableOpacity } from "react-native";
-import { Button, H1, H3, SizableText, Input, XStack } from "tamagui";
+import { Button, H1, H3, SizableText, Input, XStack, YStack } from "tamagui";
 import { Download, History } from "@tamagui/lucide-icons";
 
 import * as FileSystem from "expo-file-system";
@@ -13,6 +13,8 @@ import { Modal } from "react-native";
 import { useState } from "react";
 import { Loader } from "./Loader";
 import { Summary } from "./Summary";
+import { RECO } from "@/constants/Common";
+import { ImageResponse } from "@/services/types";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -32,10 +34,12 @@ export interface ClassCounts {
 type ResultProps = {
   imgUri: string | null;
   summary: ClassCounts
+  extreme?: string
+  imageResponse: ImageResponse
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
+export const ResultView = ({ imgUri, summary, children, extreme="none", imageResponse }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -47,7 +51,13 @@ export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
   const saveToHistory = async () => {
     setLoading(true)
     setMessage("Saving to history...")
-    await save!(imgUri!, title, summary)
+    await save!({
+      imgUri: imgUri!,
+      title,
+      summary,
+      extreme,
+      ...imageResponse
+    })
     Alert.alert('Result saved to history.')
     setLoading(false)
     setMessage("")
@@ -55,6 +65,7 @@ export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
 
   const handleViewer = () => {
     setViewerVisible(!isViewerVisible)
+    console.log(extreme)
   }
 
   const saveImage = async () => {
@@ -102,6 +113,10 @@ export const ResultView = ({ imgUri, summary, children }: ResultProps) => {
       </View>
       <H3 paddingTop={'$3'}>Summary</H3>
       <Summary counts={summary}  />
+      <SizableText marginTop="$2">Recommendations</SizableText>
+      <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
+        <SizableText>{RECO[extreme]}</SizableText>
+      </YStack>
       <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
       <XStack alignItems="center">
         <SizableText theme="alt2">{`title `}</SizableText>
