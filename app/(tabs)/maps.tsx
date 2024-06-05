@@ -12,7 +12,7 @@ import { getNearbyClinics, Coords } from '@/services/mapService';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import { YStack, SizableText, Button } from 'tamagui';
-import { Search, CheckCircle2, ChevronRight } from '@tamagui/lucide-icons';
+import { Search, CheckCircle2, ChevronRight, Locate } from '@tamagui/lucide-icons';
 import { Link } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -46,6 +46,17 @@ export default function MapScreen() {
   const carouselRef = useRef<ICarouselInstance>(null)
   const mapRef = useRef<any>()
   const theme = useColorScheme()
+
+  const getCurrentLocation = async () => {
+    const location = await Location.getCurrentPositionAsync()
+    setLocation(location)
+    setRegion({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      latitudeDelta: LATITIUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
+    })
+  }
   
   useEffect(() => {
     (async () => {
@@ -54,15 +65,7 @@ export default function MapScreen() {
         Alert.alert("Permission to access location was denied.")
         return;
       }
-
-      const location = await Location.getCurrentPositionAsync();
-      setLocation(location)
-      setRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: LATITIUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
-      })
+      getCurrentLocation()
     })()
 
   }, [])
@@ -78,25 +81,25 @@ export default function MapScreen() {
       },
       { duration: 2000 }
     );
-    const pos =
-      index * (cardWidth + cardMargin * 2) -
-      (screenWidth - cardWidth) / 2 +
-      cardMargin;
     carouselRef.current?.scrollTo({index: index, animated: true})
   };
 
   const getNearby =  async () => {
-    try {
-      setLoading(true)
-      setNearbyPlaces(null)
-      const nearby = await getNearbyClinics({...location?.coords!})
-      setNearbyPlaces(nearby)
-    } catch (error) {
-      console.log(error)
-      Alert.alert("No nearby clinics")
-    } finally {
-      setLoading(false)
-    }
+    setLoading(true)
+    setNearbyPlaces(null)
+
+    await getNearbyClinics({...location?.coords!})
+      .then((nearby) => {
+        setNearbyPlaces(nearby)
+        console.log(nearby)
+      })
+      .catch((error) => {
+        console.log(error)
+        Alert.alert("No nearby clinics")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
   
   return (
@@ -132,7 +135,12 @@ export default function MapScreen() {
         <Animated.View style={styles.absolute}>
           { nearbyPlaces ? 
           <Animated.View entering={SlideOutLeft} exiting={SlideOutDown}>
-            <Carousel ref={carouselRef} width={screenWidth} height={245} data={nearbyPlaces} renderItem={({ item, index }: any) => {
+            <Carousel 
+              ref={carouselRef} 
+              width={screenWidth} 
+              height={245}
+              data={nearbyPlaces} 
+              renderItem={({ item, index }: any) => {
               return (
                 <PlaceCard place={{
                   coordinate: {
@@ -157,18 +165,19 @@ export default function MapScreen() {
           </Animated.View>
           :
           <Animated.View entering={SlideInDown}>
-            <PromptCard onPress={getNearby}/>
+            {/*<PromptCard onPress={getNearby}/>*/}
           </Animated.View>
           }
         </Animated.View>
-        <View style={styles.toolbox}>
-          <Link href="/partner" asChild>
-            <Button style={styles.tool} icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
+        <YStack position='absolute' flex={1} top={0} right={0} alignItems='flex-end' margin="$2" gap="$2">
+          <Link href="/partner" asChild style={{alignSelf: "flex-end"}}>
+            <Button icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
               Partnered Clinics
             </Button>
           </Link>
-          <Button style={styles.tool} icon={Search} onPress={getNearby} elevate>Get Nearby</Button>
-        </View>
+          <Button padding="$3" icon={<Search size="$1" />} onPress={getNearby}></Button>
+          <Button padding="$3" icon={<Locate size="$1"/>} onPress={getCurrentLocation}/>
+        </YStack>
         { loading && <Loader />}
     </View>
   );
@@ -222,6 +231,7 @@ const styles = StyleSheet.create({
     position: 'absolute'
   },
   tool: {
+    flexShrink: 1,
     margin: 3
   }
 });
