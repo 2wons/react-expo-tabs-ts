@@ -56,6 +56,12 @@ export default function MapScreen() {
       latitudeDelta: LATITIUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA
     })
+    mapRef?.current?.animateCamera(
+      {
+        center: { ...region },
+      },
+      { duration: 2000 }
+    );
   }
   
   useEffect(() => {
