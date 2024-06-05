@@ -2,6 +2,7 @@ import FormData from 'form-data'
 import axios, {AxiosError} from 'axios'
 import { Platform } from 'react-native';
 import { HEALTHY, INITIAL, MODERATE, EXTENSIVE } from '@/constants/Common';
+import { ImageResponse } from './types';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -25,7 +26,7 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25, {
     });
     
     try {
-        const response = await axios.post(`${BASE_URL}/Image/AnalyzeImage`,
+        const response = await axios.post<ImageResponse>(`${BASE_URL}/Image/AnalyzeImage`,
             formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -79,7 +80,6 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25, {
         const extreme = filters
             .reduce((a: string, b:string) => cariesRank[a] > cariesRank[b] ? a : b);
         console.log(extreme)
-
         const ResponseWithCount = {...response.data, classCounts, extreme}
         return ResponseWithCount;
     } catch (error: any) {

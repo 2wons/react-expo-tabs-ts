@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Loader } from "./Loader";
 import { Summary } from "./Summary";
 import { RECO } from "@/constants/Common";
+import { ImageResponse } from "@/services/types";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -34,10 +35,11 @@ type ResultProps = {
   imgUri: string | null;
   summary: ClassCounts
   extreme?: string
+  imageResponse: ImageResponse
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, summary, children, extreme="none" }: ResultProps) => {
+export const ResultView = ({ imgUri, summary, children, extreme="none", imageResponse }: ResultProps) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -49,7 +51,13 @@ export const ResultView = ({ imgUri, summary, children, extreme="none" }: Result
   const saveToHistory = async () => {
     setLoading(true)
     setMessage("Saving to history...")
-    await save!(imgUri!, title, summary, extreme)
+    await save!({
+      imgUri: imgUri!,
+      title,
+      summary,
+      extreme,
+      ...imageResponse
+    })
     Alert.alert('Result saved to history.')
     setLoading(false)
     setMessage("")

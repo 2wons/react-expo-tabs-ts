@@ -4,9 +4,11 @@ import { generateUUID } from "@/services/common";
 import * as FileSystem from 'expo-file-system'
 import { ContextProps } from ".";
 import { ClassCounts } from "@/components/ResultView";
+import { ImageResponse } from "@/services/types";
 
 export interface Report {
     id: string;
+    serverId?: number
     timestamp: string;
     img?: string;
     title: string
@@ -18,17 +20,23 @@ export interface History {
   [key: string]: Report
 }
 
-export interface NewReport {
-  id: string;
-  timestamp: string;
-  img?: string;
-  title: string
+export interface SaveData extends ImageResponse {
+  imgUri: string;
+  title: string;
+  summary: ClassCounts;
+  extreme?: string;
 }
 
 interface DataContextInterface {
   history?: History;
   load?: () => Promise<void>;
-  save?: (imgUri: string, title: string, summary: ClassCounts, extreme?: string) => Promise<void>;
+  save?: ({
+    imgUri,
+    title,
+    summary,
+    extreme,
+    ...imageResponse
+   }: SaveData) => Promise<void>;
   clear?: () => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
@@ -69,7 +77,13 @@ export const DataProvider = ({ children }: ContextProps) => {
     load()
   }, [])
 
-  const save = async (imgUri: string, title: string, summary: ClassCounts, extreme?: string) => {
+  const save = async ({
+    imgUri,
+    title,
+    summary,
+    extreme,
+    ...imageResponse
+   }: SaveData) => {
     const localId = generateUUID(7);
 
     // Download file to app document directory
@@ -88,7 +102,8 @@ export const DataProvider = ({ children }: ContextProps) => {
       img: uri,
       title: title,
       summary: summary,
-      extreme: extreme
+      extreme: extreme,
+      serverId: imageResponse.id
     };
     
     try {

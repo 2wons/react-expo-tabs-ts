@@ -1,6 +1,13 @@
 import { BASE_URL } from "@/constants/Common";
 import axios from "axios";
 
+export interface SharedReportDTO {
+    clinicId: number
+    imageIds: number[]
+    description: string
+    title: string
+}
+
 export const getClinics = async () => {
     return axios.get(
         `${BASE_URL}/Clinic/GetClinics`
@@ -15,5 +22,12 @@ export const getClinic = async (id: number) => {
                 clinicId: id
             }
         }
+    )
+}
+
+export const createReport = async (report: SharedReportDTO) => {
+    return axios.post(
+        `${BASE_URL}/Image/CreateReport`,
+        report
     )
 }

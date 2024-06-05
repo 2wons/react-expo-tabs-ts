@@ -20,6 +20,7 @@ import { Slider, H1, Text, SizableText, Input, Checkbox } from 'tamagui';
 import { useNavigation } from 'expo-router';
 
 import { ImagePlus, Camera, Check as CheckIcon } from '@tamagui/lucide-icons';
+import { ImageResponse } from '@/services/types';
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface DetectOptions {
@@ -36,6 +37,7 @@ export default function DetectScreen() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [extreme, setExtreme] = useState('NONE');
+  const [response, setImageResponse] = useState<ImageResponse | null>(null)
   const [IoU, setIoU] = useState(0.25);
 
   const [options, setOptions] = useState<DetectOptions>(
@@ -103,6 +105,7 @@ export default function DetectScreen() {
     
     try {
       const response = await analyzeTeeth(image, IoU, options);
+      setImageResponse(response);
       
       const resultImgPath = `${BASE_URL}/${response.plottedImagePath}`;
     
@@ -137,7 +140,7 @@ export default function DetectScreen() {
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
             <ScrollView>
-              <ResultView summary={counts} imgUri={result} extreme={extreme}>
+              <ResultView summary={counts} imgUri={result} extreme={extreme} imageResponse={response!}>
                 <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
               </ResultView>
             </ScrollView>

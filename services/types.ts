@@ -75,3 +75,44 @@ export interface Clinic {
     imagePath: string
     website: string
 }
+
+export interface ImageResponse {
+    createdAt: string;
+    height: number;
+    id: number;
+    width: number;
+    detections: {
+      confidence: number;
+      classId: number;
+      height: number;
+      id: number;
+      width: number;
+      x: number;
+      y: number;
+      bounds: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        location: {
+          x: number;
+          y: number;
+          isEmpty: boolean;
+        };
+        size: {
+          width: number;
+          height: number;
+          isEmpty: boolean;
+        };
+        isEmpty: boolean;
+        top: number;
+        right: number;
+        bottom: number;
+        left: number;
+      };
+      className: string;
+    }[];
+    name: string;
+    originalImagePath: string;
+    plottedImagePath: string;
+  }
