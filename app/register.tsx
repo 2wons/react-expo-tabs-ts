@@ -115,7 +115,7 @@ export default function RegisterScreen() {
       setMessage('Logging in...')
       await onLogin!(email, password)
         .then(() => {
-          router.push('/profile')
+          router.replace('/profile')
         })
         .catch(() => {
           Alert.alert('Error', 'An error occurred while logging in. Please try again.')
