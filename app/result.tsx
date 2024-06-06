@@ -13,7 +13,7 @@ import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
-import { createReport } from "@/services/clinicService";
+import { RECO } from "@/constants/Common";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
@@ -26,6 +26,7 @@ export default function ResultScreen() {
   const [title, setTitle] = useState<string>();
   const [image, setImage] = useState<string>();
   const [date, setDate] = useState<string>();
+  const [extreme, setExtreme] = useState<string>();
   const [summary, setSummary] = useState<ClassCounts>({});
 
   const handleVisible = () => {
@@ -33,12 +34,13 @@ export default function ResultScreen() {
   };
 
   const getResult = async () => {
-    const { img, timestamp, title, summary } = history![id!.toString()];
+    const { img, timestamp, title, summary, extreme } = history![id!.toString()];
     const parseDate = new Date(timestamp);
     setImage(img);
     setTitle(title);
     setPrevtitle(title);
     setSummary(summary);
+    setExtreme(extreme);
     setDate(parseDate.toLocaleString());
   };
 
@@ -100,6 +102,10 @@ export default function ResultScreen() {
       </YStack>
       <H3 paddingTop="$3">Summary</H3>
       <Summary counts={summary} />
+      <SizableText marginTop="$2">Recommendations</SizableText>
+      <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
+        <SizableText>{extreme ? RECO[extreme] : 'Recommendations not available'}</SizableText>
+      </YStack>
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText theme="alt1" paddingTop="$2">
           General Information
