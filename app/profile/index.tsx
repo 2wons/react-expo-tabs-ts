@@ -98,7 +98,7 @@ export default function MeScreen() {
       <Text theme='alt2'>Help</Text>
       <OptionsGroup>
         <Option icon={HelpCircle} title="FAQs"/>
-        <Option icon={HelpCircle} title="Feedback"/>
+        <Option icon={HelpCircle} title="Feedback" onPress={() => router.push("/feedback")}/>
       </OptionsGroup>
       {/* Logout */}
       <XStack flex={1} alignItems={"flex-end"}>
