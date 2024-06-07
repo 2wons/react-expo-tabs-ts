@@ -4,18 +4,19 @@ import Colors from '@/constants/Colors';
 import SafeViewAndroid from '@/components/SafeViewAndroid';
 import { useColorScheme } from '@/components/useColorScheme';
 
-import { View, ScrollView } from '@/components/Themed';
-import { XStack, YStack, Button, Text, H1, Avatar, Circle } from 'tamagui'
-import ResultCard from '@/components/ResultCard';
 import { Link } from 'expo-router';
+import { router } from 'expo-router';
+
+import { CircleProps, XStack, YStack, Text, Avatar, Circle } from 'tamagui';
+import { CircleUserRound } from '@tamagui/lucide-icons';
+
+import { View, ScrollView } from '@/components/Themed';
+import ResultCard from '@/components/ResultCard';
+import { AlertButton } from '@/components/Alert';
+
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
-import { router } from 'expo-router';
-import { AlertButton } from '@/components/Alert';
-import { ButtonProps } from 'tamagui';
-import { CircleProps } from 'tamagui';
 
-import { CircleUserRound } from '@tamagui/lucide-icons';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -45,6 +46,12 @@ export default function HomeScreen() {
         subtitle={dateTaken.toLocaleString()}
         id={id}
         image={i.img}
+        onPress={() => {
+          router.push({
+            pathname: '/result',
+            params: { id: i.id.toString() }
+          })
+        }}
       />
     );
   });

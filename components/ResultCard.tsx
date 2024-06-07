@@ -3,8 +3,6 @@ import { StyleSheet, Dimensions } from "react-native";
 import { Link } from "expo-router";
 import { Button, Card, H2, Image, Paragraph, XStack, YStack } from "tamagui";
 
-const width = Dimensions.get("window").width;
-
 interface MyCardProps extends CardProps {
   title?: string | number;
   subtitle?: string;
@@ -38,6 +36,7 @@ export default function ResultCard(props: MyCardProps) {
               height: 50,
             }}
             borderRadius={5}
+            onPress={() => console.log("Image pressed")}
           />
         </XStack>
       </Card.Header>
