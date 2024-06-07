@@ -93,6 +93,7 @@ export default function MeScreen() {
       <Text theme='alt2'>Legal</Text>
       <OptionsGroup>
         <Option icon={ArrowUpRight} title="Data Privacy" onPress={() => router.push("/privacy")}/>
+        <Option icon={ArrowUpRight} title="Disclaimer" onPress={() => router.push("/disclaimer")}/>
       </OptionsGroup>
       {/* Help */}
       <Text theme='alt2'>Help</Text>

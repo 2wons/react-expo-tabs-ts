@@ -21,6 +21,8 @@ import { useNavigation } from 'expo-router';
 
 import { ImagePlus, Camera, Check as CheckIcon } from '@tamagui/lucide-icons';
 import { ImageResponse } from '@/services/types';
+import { Disclaimer } from '@/components/Disclaimer';
+
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface DetectOptions {
@@ -204,6 +206,7 @@ export default function DetectScreen() {
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
       { loading ?  <Loader message={message} /> : '' }
+      <Disclaimer />
     </ScrollView>
   );
 }
