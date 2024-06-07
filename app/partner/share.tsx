@@ -16,6 +16,7 @@ import { Button } from "@/components/Button";
 import { BulletList } from "react-content-loader/native";
 import { ChevronsUp } from "@tamagui/lucide-icons";
 import { Loader } from "@/components/Loader";
+import { useData } from "@/contexts/DataContext";
 
 export default function PartnerShareScreen() {
 
@@ -25,7 +26,19 @@ export default function PartnerShareScreen() {
   const [selected, setSelected] = useState<number>()
   const [loading ,setLoading] = useState<boolean>(false)
 
-  const { serverId } = useLocalSearchParams<{ serverId: string }>()
+  const { history, edit } = useData()
+
+  const { serverId, localId } = useLocalSearchParams<{ serverId: string, localId: string }>()
+
+  const setReportToShared = async () => {
+    const report = history![localId!];
+    let newReport = { ...report, shared: true };
+    await edit!(localId!, newReport)
+      .then()
+      .catch(error => {
+        Alert.alert("Something went wrong")
+      })
+  }
 
   const shareReport = async () => {
     if (!selected) {
@@ -39,8 +52,14 @@ export default function PartnerShareScreen() {
       title: title ?? "Shared Report"
     })
     .then((r) => {
-      Alert.alert("Report shared successfully")
-      navigation.goBack()
+      setReportToShared()
+      .then(() => {
+        Alert.alert("Report shared successfully")
+        navigation.goBack()
+      })
+      .catch(() => {
+        Alert.alert("Something went wrong")
+      })
     })
     .catch((e) => {
       console.log(e)

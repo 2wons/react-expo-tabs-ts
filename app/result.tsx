@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Alert, TouchableOpacity, useColorScheme } from "react-native";
-import { Text, View, ScrollView } from "@/components/Themed";
+import { ScrollView } from "@/components/Themed";
 import { Button, XStack, YStack, SizableText, H1, H3, Paragraph } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { ImgModalViewer } from "@/components/ImgModalViewer";
 
 import { Summary } from "@/components/Summary";
 import { Input } from "tamagui";
-import { StarFull, XCircle, Download } from "@tamagui/lucide-icons";
+import { StarFull, XCircle, Download, Lock } from "@tamagui/lucide-icons";
 import { useData } from "@/contexts/DataContext";
 import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
@@ -15,33 +15,35 @@ import { ClassCounts } from "@/components/ResultView";
 import * as MediaLibrary from "expo-media-library";
 import { getRecommendation } from "@/constants/Common";
 import { Tooltip } from "@/components/Tooltip";
+import { Badge } from "@/components/Badge";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
   const params = useLocalSearchParams();
-  const { history, remove } = useData()
+  const { history, remove, edit } = useData()
   const { id } = params;
 
   const [prevtitle, setPrevtitle] = useState<string>();
-  const [canSave, setCanSave] = useState(false);
   const [title, setTitle] = useState<string>();
   const [image, setImage] = useState<string>();
   const [date, setDate] = useState<string>();
   const [extreme, setExtreme] = useState<string>();
   const [summary, setSummary] = useState<ClassCounts>({});
+  const [isShared, setIsShared] = useState<boolean>(false);
 
   const handleVisible = () => {
     setVisible(!visible);
   };
 
   const getResult = async () => {
-    const { img, timestamp, title, summary, extreme } = history![id!.toString()];
+    const { img, timestamp, title, summary, extreme, shared } = history![id!.toString()];
     const parseDate = new Date(timestamp);
     setImage(img);
     setTitle(title);
     setPrevtitle(title);
     setSummary(summary);
     setExtreme(extreme);
+    setIsShared(shared!);
     setDate(parseDate.toLocaleString());
   };
 
@@ -70,13 +72,13 @@ export default function ResultScreen() {
     const { serverId } = history![id!.toString()];
     router.push({
       pathname: "/partner/share",
-      params: { serverId: serverId }
+      params: { serverId: serverId, localId: id!.toString() }
     })
   }
 
   useEffect(() => {
     getResult();
-  }, []);
+  }, [history]);
 
   const images = [{ url: image! }];
   const theme = useColorScheme() ?? 'light';
@@ -85,6 +87,19 @@ export default function ResultScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      
+      <Badge 
+        icon={<Lock size="$1" color="$yellow9" />}
+        variant="default" 
+        paddingHorizontal="$5"
+        borderRadius="$6" 
+        justifyContent="center"
+        alignItems="center"
+        label={isShared 
+          ? "This shared report is end-to-end encrypted to a shared clinic."
+          : "This report is only saved on your device."}
+        onPress={() => {console.log(isShared)}}
+      />
       <SizableText size="$3" theme="alt1">
         Viewing
       </SizableText>

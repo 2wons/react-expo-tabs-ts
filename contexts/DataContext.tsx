@@ -11,6 +11,8 @@ export interface Report {
     serverId?: number
     timestamp: string;
     img?: string;
+    originalImg?: string;
+    shared?: boolean;
     title: string
     summary: ClassCounts
     extreme?: string
@@ -37,6 +39,7 @@ interface DataContextInterface {
     extreme,
     ...imageResponse
    }: SaveData) => Promise<string>;
+  edit?: (id: string, newData: Report) => Promise<void>;
   clear?: () => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
@@ -100,6 +103,8 @@ export const DataProvider = ({ children }: ContextProps) => {
       id: localId,
       timestamp: new Date().toISOString(),
       img: uri,
+      originalImg: imageResponse.originalImagePath,
+      shared: false,
       title: title,
       summary: summary,
       extreme: extreme,
@@ -128,7 +133,16 @@ export const DataProvider = ({ children }: ContextProps) => {
     await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
   }
 
-  const value = { history, load, save, clear, remove }
+  const edit = async (id: string, newData: Report) => {
+    const currentHistory = {...history}
+    if (history.hasOwnProperty(id)) {
+      currentHistory[id] = newData
+    }
+    setHistory(currentHistory)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
+  }
+
+  const value = { history, load, save, clear, remove, edit }
 
   return (
     <DataContext.Provider value={value}>
