@@ -27,7 +27,6 @@ export default function HomeScreen() {
   const clearAll = async () => {
     try {
       await clear!();
-      Alert.alert("History cleared");
     } catch (error) {
       Alert.alert("Error Clearing History");
     }
