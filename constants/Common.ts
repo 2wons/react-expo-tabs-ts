@@ -51,7 +51,7 @@ export const getRecommendation = (counts: ClassCounts, extreme: string) => {
             a. Continue rigorous oral hygiene practices and regular dental visits to monitor and maintain dental health.
 4. Dietary Advice:
             a. Follow a diet that supports dental health, emphasizing low sugar and high nutrient foods.`,
-        ["none"]: "No Caries Detected"
+        ["none"]: `No teeth detected. Make sure to capture your teeth properly. For a more precise analysis, it is recommended that the image is focused on your mouth with good lighting and make sure your teeth are not too wet.`
     }
     
     return RECOS[extreme]
