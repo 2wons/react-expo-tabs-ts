@@ -2,6 +2,7 @@ import { HelpCircle, XCircle } from "@tamagui/lucide-icons"
 import { useState } from "react";
 import { Modal } from "react-native";
 import { View, SizableText, XStack, Paragraph } from "tamagui"
+import { SafeAreaView } from "./Themed";
 
 export interface TooltipProps {
     text?: string;
@@ -15,10 +16,10 @@ export const Tooltip = (props: TooltipProps) => {
                 <HelpCircle size="$1" color="$gray7" />
                 <SizableText paddingRight="$1" theme="alt2" size="$2">{props.text}</SizableText>
             </XStack>
-            <Modal visible={visible} transparent>
-                <View flex={1} backgroundColor="$background" opacity={0.95} padding="$3">
+            <Modal visible={visible} animationType="fade" transparent>
+                <SafeAreaView style={{ flex: 1, backgroundColor: "black", opacity: 0.90, padding: 40 }}>
                     <XCircle size="$1" onPress={() => setVisible(false)} />
-                    <Paragraph>
+                    <Paragraph padding="$2">
                         {`Healthy (ICDAS Code 0)
 No signs of decay. The tooth looks normal. It’s clean, smooth, and white without any spots or discoloration. 
 
@@ -31,7 +32,7 @@ The tooth has small holes or rough spots where the enamel (the hard outer layer)
 Extensive Caries  (ICDAS Code 5-6)
 There’s a clear hole or cavity in the tooth, and you can see the dentin. The decay has gone through the enamel and reached the deeper layers. For an even more severe case, the tooth has a big, obvious cavity that might be close to or exposing the tooth's inner pulp (the soft part with nerves). There’s significant damage, with a lot of enamel and dentin lost.`}
                     </Paragraph>
-                </View>
+                </SafeAreaView>
             </Modal>
         </View>
     )
