@@ -15,6 +15,7 @@ import { Loader } from "./Loader";
 import { Summary } from "./Summary";
 import { RECO } from "@/constants/Common";
 import { ImageResponse } from "@/services/types";
+import { router } from "expo-router";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -36,10 +37,17 @@ type ResultProps = {
   summary: ClassCounts
   extreme?: string
   imageResponse: ImageResponse
+  handleVisibility?: () => void
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, summary, children, extreme="none", imageResponse }: ResultProps) => {
+export const ResultView = ({ 
+  imgUri,
+  summary, 
+  children, extreme="none", 
+  imageResponse, 
+  handleVisibility }: ResultProps
+) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -51,7 +59,7 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
   const saveToHistory = async () => {
     setLoading(true)
     setMessage("Saving to history...")
-    await save!({
+    const id = await save!({
       imgUri: imgUri!,
       title,
       summary,
@@ -61,6 +69,11 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
     Alert.alert('Result saved to history.')
     setLoading(false)
     setMessage("")
+    handleVisibility!()
+    router.navigate({
+      pathname: '/result',
+      params: { id: id }
+    })
   }
 
   const handleViewer = () => {
@@ -137,7 +150,7 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
 
 const styles = StyleSheet.create({
   container: {
-    margin: 5,
+    padding: 5,
   },
   preview: {
     backgroundColor: "black",

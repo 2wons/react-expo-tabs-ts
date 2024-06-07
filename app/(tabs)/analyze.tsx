@@ -140,8 +140,8 @@ export default function DetectScreen() {
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
-            <ScrollView>
-              <ResultView summary={counts} imgUri={result} extreme={extreme} imageResponse={response!}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+              <ResultView summary={counts} imgUri={result} extreme={extreme} imageResponse={response!} handleVisibility={() => setVisible(!visible)}>
                 <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
               </ResultView>
             </ScrollView>

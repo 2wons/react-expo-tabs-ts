@@ -36,7 +36,7 @@ interface DataContextInterface {
     summary,
     extreme,
     ...imageResponse
-   }: SaveData) => Promise<void>;
+   }: SaveData) => Promise<string>;
   clear?: () => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
@@ -115,6 +115,8 @@ export const DataProvider = ({ children }: ContextProps) => {
     } catch (error) {
       console.error(error)
     }
+
+    return localId
   }
 
   const remove = async (id: string) => {
