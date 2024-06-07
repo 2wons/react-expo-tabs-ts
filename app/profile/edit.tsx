@@ -94,7 +94,7 @@ export default function EditProfileSreen() {
         borderStyle="dashed"
         borderColor="$color12"
       >
-        <Avatar circular size="$13">
+        <Avatar circular size="$13" onPress={selectAvatar}>
           <Avatar.Image
             source={avi ? { uri: avi } : require("@/assets/images/avatardefault.png")}
             accessibilityLabel="Cam"
