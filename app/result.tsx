@@ -13,7 +13,7 @@ import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
-import { RECO } from "@/constants/Common";
+import { getRecommendation } from "@/constants/Common";
 import { Tooltip } from "@/components/Tooltip";
 
 export default function ResultScreen() {
@@ -109,7 +109,7 @@ export default function ResultScreen() {
       <Summary counts={summary} />
       <SizableText marginTop="$2" marginBottom="$1">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-        <Paragraph>{extreme ? RECO[extreme] : 'Recommendations not available'}</Paragraph>
+        <Paragraph>{extreme ? getRecommendation(summary, extreme) : 'Recommendations not available'}</Paragraph>
       </YStack>
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText theme="alt1" paddingTop="$2">
