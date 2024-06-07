@@ -37,7 +37,7 @@ b. The dentist might also use fluoride varnish or other remineralizing agents.
 3. Oral Hygiene and Diet:
 a. Maintain rigorous oral hygiene practices.
 b. Follow dietary recommendations to minimize sugar and acid exposure.`,
-    [EXTENSIVE]: `You have [count] extensive stage caries teeth. It is recommended that you do the following.
+    [EXTENSIVE]: `You have extensive stage caries teeth. It is recommended that you do the following.
     1. Seek Immediate Dental Treatment:
         a. Schedule an appointment for urgent dental care to prevent infection and further damage.
         b. The dentist will likely need to perform more extensive restorative work, such as fillings, crowns, or possibly root canal therapy if the pulp is involved.
