@@ -17,6 +17,7 @@ import { DataProvider } from '@/contexts/DataContext';
 
 LogBox.ignoreLogs([
   /Cannot update a component/,
+  /Function components cannot be given refs/
 ])
 
 export {
