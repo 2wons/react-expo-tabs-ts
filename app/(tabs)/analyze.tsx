@@ -19,7 +19,7 @@ import { ClassCounts } from '@/components/ResultView';
 import { Slider, H1, Text, SizableText, Input, Checkbox } from 'tamagui';
 import { useNavigation } from 'expo-router';
 
-import { ImagePlus, Camera, Check as CheckIcon } from '@tamagui/lucide-icons';
+import { ImagePlus, Camera, Check as CheckIcon, Cog } from '@tamagui/lucide-icons';
 import { ImageResponse } from '@/services/types';
 import { Disclaimer } from '@/components/Disclaimer';
 
@@ -40,6 +40,7 @@ export default function DetectScreen() {
   const [message, setMessage] = useState('');
   const [extreme, setExtreme] = useState('NONE');
   const [response, setImageResponse] = useState<ImageResponse | null>(null)
+  const [settingsVisible, setSettingsVisible] = useState(false)
   const [IoU, setIoU] = useState(0.25);
 
   const [options, setOptions] = useState<DetectOptions>(
@@ -137,8 +138,8 @@ export default function DetectScreen() {
   const PLACEHOLDER = 'https://i.postimg.cc/FFcjKg98/placeholder.png'
 
   return (
+    <>
     <ScrollView style={styles.container}>
-
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
@@ -149,8 +150,6 @@ export default function DetectScreen() {
             </ScrollView>
           </View>
       </Modal>
-      <View>
-
       <H1>Select Image Source</H1>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <XStack justifyContent='space-evenly' gap="$3" paddingVertical="$2">
@@ -166,51 +165,60 @@ export default function DetectScreen() {
       <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
           <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={{...styles.image, borderColor: theme === 'dark' ? 'white' : 'black'}} resizeMode='contain' />
       </YStack>
-      <XStack justifyContent='space-between' paddingTop="$3">
-        <Text theme="alt1">IoU Threshold</Text>
-        <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
-      </XStack>
-      <XStack alignItems='center' gap="$2">
-        <Text>0.05</Text>
-        <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
-          <Slider.Track>
-            <Slider.TrackActive />
-          </Slider.Track>
-          <Slider.Thumb index={0} circular size={'$2'}/>
-        </Slider>
-        <Text>1</Text>
-      </XStack>
-      <YStack gap="$2" paddingVertical="$3">
-        <XStack justifyContent='space-between'>
-          <Text>Draw Confidence</Text>
-          <Checkbox id='1' checked={options.drawConfidence} onCheckedChange={() => {
-            setOptions({...options, drawConfidence: !options.drawConfidence})
-          }}>
-            <Checkbox.Indicator>
-              <CheckIcon size={16} />
-            </Checkbox.Indicator>
-          </Checkbox>
-        </XStack>
-        <XStack justifyContent='space-between'>
-          <Text>Draw Labels</Text>
-          <Checkbox checked={options.drawNames} onCheckedChange={() => {
-            setOptions({...options, drawNames: !options.drawNames})
-          }}>
-            <Checkbox.Indicator>
-              <CheckIcon size={16} />
-            </Checkbox.Indicator>
-          </Checkbox>
-        </XStack>
-      </YStack>
+      {/* Settings */}
+      <Modal animationType='slide' presentationStyle='pageSheet' visible={settingsVisible} onRequestClose={() => setSettingsVisible(false)}>
+        <View style={styles.modal}>
+          <H1>Advance Settings</H1>
+          <XStack justifyContent='space-between' paddingTop="$3">
+            <Text theme="alt1">IoU Threshold</Text>
+            <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
+          </XStack>
+          <XStack alignItems='center' gap="$2">
+            <Text>0.05</Text>
+            <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
+              <Slider.Track>
+                <Slider.TrackActive />
+              </Slider.Track>
+              <Slider.Thumb index={0} circular size={'$2'}/>
+            </Slider>
+            <Text>1</Text>
+          </XStack>
+          <YStack gap="$2" paddingVertical="$3">
+            <XStack justifyContent='space-between'>
+              <Text>Draw Confidence</Text>
+              <Checkbox id='1' checked={options.drawConfidence} onCheckedChange={() => {
+                setOptions({...options, drawConfidence: !options.drawConfidence})
+              }}>
+                <Checkbox.Indicator>
+                  <CheckIcon size={16} />
+                </Checkbox.Indicator>
+              </Checkbox>
+            </XStack>
+            <XStack justifyContent='space-between'>
+              <Text>Draw Labels</Text>
+              <Checkbox checked={options.drawNames} onCheckedChange={() => {
+                setOptions({...options, drawNames: !options.drawNames})
+              }}>
+                <Checkbox.Indicator>
+                  <CheckIcon size={16} />
+                </Checkbox.Indicator>
+              </Checkbox>
+            </XStack>
+          </YStack>
+          <Button icon={XCircle} onPress={() => setSettingsVisible(false)}>Close settings</Button>
+        </View>
+      </Modal>
+      {/* Actions */}
+      <Button icon={Cog} marginVertical="$2" backgroundColor="$gray1" onPress={() => setSettingsVisible(true)}>Settings</Button>
       <XStack gap='$3'>
         <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
-      { loading ?  <Loader message={message} /> : '' }
-      </View>
 
       <Disclaimer />
     </ScrollView>
+    { loading && <Loader message={message} /> }
+    </>
   );
 }
 
@@ -222,6 +230,7 @@ const styles = StyleSheet.create({
   modal: {
     flex: 1,
     height: '100%',
+    paddingVertical: 10,
     paddingHorizontal: 25,
   },
   separator: {
