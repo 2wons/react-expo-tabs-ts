@@ -149,6 +149,7 @@ export default function DetectScreen() {
             </ScrollView>
           </View>
       </Modal>
+      <View>
 
       <H1>Select Image Source</H1>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
@@ -206,6 +207,8 @@ export default function DetectScreen() {
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
       { loading ?  <Loader message={message} /> : '' }
+      </View>
+
       <Disclaimer />
     </ScrollView>
   );
