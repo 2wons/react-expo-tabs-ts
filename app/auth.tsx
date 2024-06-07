@@ -26,7 +26,6 @@ export default function AuthScreen() {
       Alert.alert('Invalid Username or Password');
     }
     else {
-      Alert.alert('Login Successful');
       router.replace('/profile')
     }
     setStatus('submitted');
