@@ -97,7 +97,6 @@ export default function MapScreen() {
     await getNearbyClinics({...location?.coords!})
       .then((nearby) => {
         setNearbyPlaces(nearby)
-        console.log(nearby)
       })
       .catch((error) => {
         console.log(error)
