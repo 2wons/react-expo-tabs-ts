@@ -125,7 +125,7 @@ export const ResultView = ({
       </View>
       <H3 paddingTop={'$3'}>Summary</H3>
       <Summary counts={summary}  />
-      <SizableText marginTop="$2">Recommendations</SizableText>
+      <SizableText marginTop="$2">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
         <SizableText>{RECO[extreme]}</SizableText>
       </YStack>

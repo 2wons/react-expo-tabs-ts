@@ -1,6 +1,6 @@
-import { Image, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, Alert, TouchableOpacity, useColorScheme } from "react-native";
 import { Text, View, ScrollView } from "@/components/Themed";
-import { Button, XStack, YStack, SizableText, H1, H3 } from "tamagui";
+import { Button, XStack, YStack, SizableText, H1, H3, Paragraph } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
@@ -14,6 +14,7 @@ import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
 import { RECO } from "@/constants/Common";
+import { Tooltip } from "@/components/Tooltip";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
@@ -78,6 +79,7 @@ export default function ResultScreen() {
   }, []);
 
   const images = [{ url: image! }];
+  const theme = useColorScheme() ?? 'light';
 
   const defaultImage = "https://i.postimg.cc/FFcjKg98/placeholder.png";
 
@@ -95,16 +97,19 @@ export default function ResultScreen() {
         <TouchableOpacity onPress={handleVisible}>
           <Image
             source={{ uri: image ? image : defaultImage }}
-            style={styles.image}
+            style={{...styles.image, borderColor: theme === 'dark' ? 'white' : 'black'}}
             resizeMode="contain"
           />
         </TouchableOpacity>
       </YStack>
-      <H3 paddingTop="$3">Summary</H3>
+      <XStack alignItems="center" paddingTop="$3" gap="$2">
+        <H3>Summary</H3>
+        <Tooltip text="what's this" />
+      </XStack>
       <Summary counts={summary} />
-      <SizableText marginTop="$2">Recommendations</SizableText>
+      <SizableText marginTop="$2" marginBottom="$1">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-        <SizableText>{extreme ? RECO[extreme] : 'Recommendations not available'}</SizableText>
+        <Paragraph>{extreme ? RECO[extreme] : 'Recommendations not available'}</Paragraph>
       </YStack>
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText theme="alt1" paddingTop="$2">
