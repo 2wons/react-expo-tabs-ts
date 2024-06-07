@@ -1,5 +1,5 @@
 import { StyleSheet, Image, Alert, TouchableOpacity } from "react-native";
-import { Button, H1, H3, SizableText, Input, XStack, YStack } from "tamagui";
+import { Button, H1, H3, SizableText, Input, XStack, YStack, Text, Slider } from "tamagui";
 import { Download, History } from "@tamagui/lucide-icons";
 
 import * as FileSystem from "expo-file-system";
@@ -16,6 +16,7 @@ import { Summary } from "./Summary";
 import { RECO } from "@/constants/Common";
 import { ImageResponse } from "@/services/types";
 import { router } from "expo-router";
+import { Tooltip } from "./Tooltip";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -53,6 +54,8 @@ export const ResultView = ({
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [title, setTitle] = useState("Untitled")
+  const [opacity, setOpacity] = useState(0.0)
+  const [originalVisible, setOriginalVisible] = useState(false)
 
   const today = new Date();
 
@@ -117,13 +120,40 @@ export const ResultView = ({
           />
         </TouchableOpacity>
       <Modal visible={isViewerVisible} transparent={true}>
-        <ImageViewer imageUrls={images}/>
-        <Button onPress={handleViewer}>Close</Button>
+        <View style={{flex: 1}}>
+        <ImageViewer 
+          imageUrls={images}
+          renderImage={(props) => {
+            return (
+              <>
+              <Image {...props} />
+              <Image 
+                style={{ width: '100%', height: '100%', position: "absolute", left: 0, right: 0, opacity: opacity }} 
+                source={{ uri: `https://api.carident.live/${imageResponse.originalImagePath}` }}  
+              />
+              </>
+            )
+          }} 
+        />
+          <Slider margin="$4" value={[opacity]} max={1} onValueChange={(val) => setOpacity(val[0])} step={0.01}>
+            <Slider.Track>
+              <Slider.TrackActive />
+            </Slider.Track>
+            <Slider.Thumb index={0} circular elevate size="$2" />
+          </Slider>
+          <Button margin="$6" onPress={handleViewer}>Close</Button>
+          <Button position="absolute" right={0} marginTop="$10" onPress={() => setOpacity(opacity === 0 ? 1 : 0)}>
+            {opacity === 0 ? "Show Original" : "Hide Original"}
+          </Button>
+        </View>
       </Modal>
         <FloatingButton icon={Download} onPress={saveImage}>
         </FloatingButton>
       </View>
-      <H3 paddingTop={'$3'}>Summary</H3>
+      <XStack alignItems="center" gap="$2" paddingTop="$3">
+        <H3>Summary</H3>
+        <Tooltip text="what's this" />
+      </XStack>
       <Summary counts={summary}  />
       <SizableText marginTop="$2">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>

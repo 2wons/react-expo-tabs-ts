@@ -209,7 +209,7 @@ export default function DetectScreen() {
         </View>
       </Modal>
       {/* Actions */}
-      <Button icon={Cog} marginVertical="$2" backgroundColor="$gray1" onPress={() => setSettingsVisible(true)}>Settings</Button>
+      <Button variant="outlined" icon={Cog} marginVertical="$2" backgroundColor="$gray1" onPress={() => setSettingsVisible(true)}>Settings</Button>
       <XStack gap='$3'>
         <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
