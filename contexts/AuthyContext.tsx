@@ -27,8 +27,13 @@ interface AuthProviderProps {
 interface AuthContextInterface {
     authState?: AuthState | null;
     user?: User | null;
-    onRegister?: (username: string, password: string, name: string) => Promise<any>;
-    onLogin?: (username: string, password: string) => Promise<any>;
+    onRegister?: (
+        username: string, 
+        password: string, 
+        name: string) => Promise<any>;
+    onLogin?: (
+        username: string, 
+        password: string) => Promise<any>;
     onLogout?: () => Promise<any>
     onRefresh?: () => Promise<any>
 }
