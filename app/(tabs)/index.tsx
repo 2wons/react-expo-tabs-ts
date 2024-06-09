@@ -8,7 +8,7 @@ import { Link } from 'expo-router';
 import { router } from 'expo-router';
 
 import { CircleProps, XStack, YStack, Text, Avatar, Circle } from 'tamagui';
-import { CircleUserRound } from '@tamagui/lucide-icons';
+import { CircleUserRound, ArrowRight } from '@tamagui/lucide-icons';
 
 import { View, ScrollView } from '@/components/Themed';
 import ResultCard from '@/components/ResultCard';
@@ -16,6 +16,8 @@ import { AlertButton } from '@/components/Alert';
 
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
+import { Button } from '@/components/Button';
+
 
 
 export default function HomeScreen() {
@@ -98,6 +100,13 @@ export default function HomeScreen() {
           <YStack theme="alt2" alignItems='center' paddingVertical="$5">
             <Text alignSelf='center'>Empty History</Text> 
             <Text alignSelf='center'>{"\(Start by analyzing an image\)"}</Text>
+            <Button 
+              marginTop="$4" 
+              size="$3" variant="primary"
+              iconAfter={ArrowRight}
+              onPress={() => router.push({ pathname: '/analyze' })}>
+              Analyze my teeth
+            </Button>
           </YStack>
         )}
       </ScrollView >
