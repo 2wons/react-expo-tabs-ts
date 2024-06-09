@@ -31,3 +31,17 @@ export const createReport = async (report: SharedReportDTO) => {
         report
     )
 }
+
+export type AppointmentDTO = {
+    date: string
+    scheduledAt: string
+    clinicId: number
+    dentistId: number
+}
+
+export const createAppointment = async (appointment: AppointmentDTO) => {
+    return axios.post(
+        `${BASE_URL}/Appointment/CreateAppointment`,
+        appointment
+    )
+}

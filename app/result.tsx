@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Alert, TouchableOpacity, useColorScheme } from "react-native";
 import { ScrollView } from "@/components/Themed";
-import { Button, XStack, YStack, SizableText, H1, H3, Paragraph } from "tamagui";
+import { XStack, YStack, SizableText, H1, H3, Paragraph, View } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
@@ -16,11 +16,12 @@ import * as MediaLibrary from "expo-media-library";
 import { getRecommendation } from "@/constants/Common";
 import { Tooltip } from "@/components/Tooltip";
 import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
   const params = useLocalSearchParams();
-  const { history, remove, edit } = useData()
+  const { history, remove } = useData()
   const { id } = params;
 
   const [prevtitle, setPrevtitle] = useState<string>();
@@ -100,14 +101,17 @@ export default function ResultScreen() {
           : "This report is only saved on your device."}
         onPress={() => {console.log(isShared)}}
       />
-      <SizableText size="$3" theme="alt1">
-        Viewing
-      </SizableText>
-      <H1>{title}</H1>
+      <View paddingVertical="$2">
+        <SizableText size="$3" theme="alt1">
+          Viewing
+        </SizableText>
+        <H1>{title}</H1>
+      </View>
       <YStack
         backgroundColor={"$background025"}
         justifyContent="center"
         alignItems="center"
+        paddingBottom="$3"
       >
         <TouchableOpacity onPress={handleVisible}>
           <Image
@@ -117,15 +121,17 @@ export default function ResultScreen() {
           />
         </TouchableOpacity>
       </YStack>
-      <XStack alignItems="center" paddingTop="$3" gap="$2">
+      <XStack alignItems="center" paddingVertical="$1" gap="$2">
         <H3>Summary</H3>
         <Tooltip text="what's this" />
       </XStack>
       <Summary counts={summary} />
-      <SizableText marginTop="$2" marginBottom="$1">Insights & Recommendations</SizableText>
-      <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-        <Paragraph>{extreme ? getRecommendation(summary, extreme) : 'Recommendations not available'}</Paragraph>
-      </YStack>
+      <View paddingVertical="$2">
+        <SizableText marginVertical="$2" marginBottom="$1.5">Insights & Recommendations</SizableText>
+        <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
+          <Paragraph>{extreme ? getRecommendation(summary, extreme) : 'Recommendations not available'}</Paragraph>
+        </YStack>
+      </View>
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText theme="alt1" paddingTop="$2">
           General Information
@@ -149,7 +155,7 @@ export default function ResultScreen() {
       </XStack>
       <H3 marginTop="$4">Actions</H3>
       <YStack gap={3}>
-        <Button icon={StarFull} backgroundColor={"$blue5"} onPress={shareReport}>
+        <Button icon={StarFull} variant="primary" onPress={shareReport}>
           Share to partner clinic
         </Button>
         <Button icon={Download} onPress={saveImage} flex={1}>
@@ -163,7 +169,9 @@ export default function ResultScreen() {
           onConfirm={removeMe}
           backgroundColor="$red10"
           marginTop={10}
+          color="$white1"
           danger
+          cancellable
         />
       </YStack>
       <ImgModalViewer

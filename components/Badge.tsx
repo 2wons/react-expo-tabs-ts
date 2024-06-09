@@ -1,8 +1,8 @@
-import { SizableText, View, styled, GetProps, FontSizeTokens, ButtonProps, XStack } from "tamagui";
+import { SizableText, View, styled, GetProps, FontSizeTokens, XStack } from "tamagui";
 
 export const BadgeView = styled(View, {
   name: "Badge",
-  borderRadius: "$3",
+  borderRadius: "$6",
   padding: "$1.5",
   borderWidth: "$1",
 
@@ -12,12 +12,16 @@ export const BadgeView = styled(View, {
         backgroundColor: "$background",
         borderColor: "$gray5",
       },
+      primary:{
+        backgroundColor: "$blue3",
+        borderColor: "$blue8",
+      },
       success: {
-        backgroundColor: "$green6",
+        backgroundColor: "$green3",
         borderColor: "$green8",
       },
       danger: {
-        backgroundColor: "$red6",
+        backgroundColor: "$red3",
         borderColor: "$red8",
       },
     }

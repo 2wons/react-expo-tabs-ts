@@ -1,10 +1,12 @@
 import { PointOfInterest } from "@/constants/Markers";
 
 import { SizableText, Paragraph } from "tamagui";
-import { XStack, YStack, Button } from "tamagui";
+import { XStack, YStack } from "tamagui";
 import { useTheme } from "tamagui";
 import { MapPin, StarFull } from "@tamagui/lucide-icons";
 import { Badge } from "./Badge";
+import { Link } from "expo-router";
+import { Button } from "./Button";
 
 type PlaceCardProps = {
   place: PointOfInterest;
@@ -31,7 +33,18 @@ export default function PlaceCard({ place, onPress }: PlaceCardProps) {
       <SizableText size='$4' fontWeight='800' marginTop="$2">Place Information</SizableText>
       <Paragraph>Rating: <StarFull size="$1" /> {place.rating} {`(${place.reviews} reviews)`}</Paragraph>
       <XStack gap="$2" paddingTop='$4' flex={1} alignItems="flex-end">
-        <Button onPress={onPress} flex={1} flexGrow={1} themeInverse>Navigate</Button>
+        <Link href={{
+          pathname: '/partner/book',
+          params: {
+            clinicName: place.title,
+            clinicAddress: place.description
+          }
+        }} 
+        asChild
+        >
+        <Button variant="primary" themeInverse width="70%">Book Appointment</Button>
+        </Link>
+        <Button onPress={onPress} width="30%" themeInverse>Locate</Button>
       </XStack>
     </YStack>
   );

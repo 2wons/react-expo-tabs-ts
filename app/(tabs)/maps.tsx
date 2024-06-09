@@ -175,13 +175,12 @@ export default function MapScreen() {
           }
         </Animated.View>
         <YStack position='absolute' flex={1} top={0} right={0} alignItems='flex-end' margin="$2" gap="$2">
-          <Link href="/partner" asChild style={{alignSelf: "flex-end"}}>
-            <Button icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
-              Partnered Clinics
+            <Button icon={<Search size="$1" />} theme={'blue'} iconAfter={ChevronRight} onPress={getNearby}>
+              Get Nearby Clinics
             </Button>
-          </Link>
-          <Button padding="$3" icon={<Search size="$1" />} onPress={getNearby}></Button>
-          <Button padding="$3" icon={<Locate size="$1"/>} onPress={getCurrentLocation}/>
+          <Button icon={<Locate size="$1"/>} onPress={getCurrentLocation}>
+            Locate Me
+          </Button>
         </YStack>
         { loading && <Loader />}
     </View>

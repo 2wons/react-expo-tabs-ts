@@ -3,32 +3,50 @@ import { useEffect, useState } from "react";
 import { useNavigation } from "expo-router";
 import { getClinics } from "@/services/clinicService";
 
-import { View } from "@/components/Themed";
-import { H4, YStack } from "tamagui";
+import { ScrollView } from "@/components/Themed";
+import { H4, Paragraph, YStack } from "tamagui";
 
 import { Clinic } from "@/services/types";
 import { useLocalSearchParams } from "expo-router";
-import { createReport } from "@/services/clinicService";
+import { createReport, createAppointment } from "@/services/clinicService";
 import { Alert } from "react-native";
 
-import { Input, RadioGroup, XStack, SizableText } from "tamagui";
+import { RadioGroup, XStack, SizableText } from "tamagui";
 import { Button } from "@/components/Button";
 import { BulletList } from "react-content-loader/native";
-import { ChevronsUp } from "@tamagui/lucide-icons";
+import { ChevronsUp, Info } from "@tamagui/lucide-icons";
 import { Loader } from "@/components/Loader";
 import { useData } from "@/contexts/DataContext";
+
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function PartnerShareScreen() {
 
   const [clinics, setClinics] = useState<Clinic[] | null>(null)
-  const [title, setTitle] = useState<string>()
-  const [description, setDescription] = useState<string>()
   const [selected, setSelected] = useState<number>()
   const [loading ,setLoading] = useState<boolean>(false)
 
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [showDate, setShow] = useState(false);
+  
   const { history, edit } = useData()
 
   const { serverId, localId } = useLocalSearchParams<{ serverId: string, localId: string }>()
+
+  const showMode = (currentMode: any) => {
+    const currentDate = currentMode;
+    setShow(true);
+    setMode(currentDate);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
 
   const setReportToShared = async () => {
     const report = history![localId!];
@@ -45,26 +63,27 @@ export default function PartnerShareScreen() {
       return
     }
     setLoading(true)
-    await createReport({
-      clinicId: selected,
-      imageIds: [Number(serverId)],
-      description: description ?? "Shared from mobile app",
-      title: title ?? "Shared Report"
-    })
-    .then((r) => {
-      setReportToShared()
-      .then(() => {
-        Alert.alert("Report shared successfully")
-        navigation.goBack()
+
+    try {
+      await createAppointment({
+        date: date.toISOString().split('T')[0],
+        scheduledAt: date.toISOString(),
+        clinicId: selected,
+        dentistId: selected
       })
-      .catch(() => {
-        Alert.alert("Something went wrong")
+      await createReport({
+        clinicId: selected,
+        imageIds: [Number(serverId)],
+        description: "Shared from mobile app",
+        title: "Shared Report"
       })
-    })
-    .catch((e) => {
-      console.log(e)
+      Alert.alert("Report and appointment request sent. You will be notified once the clinic confirms your appointment.")
+      navigation.goBack()
+    } catch (error) {
+      const errors = error as any
+      console.log(errors.response.data)
       Alert.alert("Something went wrong")
-    })
+    }
     setLoading(false)
   }
 
@@ -89,8 +108,9 @@ export default function PartnerShareScreen() {
   }, [])
 
   return (
-    <View style={styles.container}>
-      <H4 paddingVertical="$3"l>Select Partner Clinic</H4>
+    <>
+    <ScrollView style={styles.container}>
+      <H4 paddingVertical="$3"l>Select Nearby Clinic</H4>
       <RadioGroup value={selected?.toString()}onValueChange={(value) => {
         setSelected(Number(value))
       }}
@@ -103,9 +123,9 @@ export default function PartnerShareScreen() {
       { clinics && clinics.map((clinic) => {
         return (
           <XStack gap="$3" alignItems="center" backgroundColor="$gray1" padding="$3" borderRadius="$5" borderColor="$gray3" borderWidth="$1"
-          onPress={() => {
-            setSelected(clinic.id)
-          }} key={clinic.id}>
+            onPress={() => {
+              setSelected(clinic.id)
+            }} key={clinic.id}>
             <RadioGroup.Item value={clinic.id.toString()} size="$3">
               <RadioGroup.Indicator backgroundColor="$green10" scale="$1"/>
             </RadioGroup.Item>
@@ -119,29 +139,61 @@ export default function PartnerShareScreen() {
       </RadioGroup>
 
       <YStack paddingVertical="$2">
-        {/* <SizableText size="$4" theme="alt1" padding="$1">Report Information</SizableText> */}
-        <H4 paddingTop="$2">Report Information</H4>
-        <SizableText padding="$1">Title</SizableText>
-        <Input value={title} placeholder="Enter report title (optional)" onChangeText={(t) => {
-          setTitle(t)
-        }}/>
-
-        <SizableText padding="$1" paddingTop="$3">Description</SizableText>
-        <Input value={description} placeholder="Shared from mobile app" onChangeText={(t) => {
-          setDescription(t)
-        }}/>
+        <H4 paddingTop="$2">Booking Information</H4>
+        <SizableText padding="$1">Date</SizableText>
+        <SizableText padding="$1">{date.toDateString()}</SizableText>
+        <Button onPress={showDatepicker}>Select Date</Button>
+        {
+          showDate && mode === 'date' && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={'date'}
+              onChange={(event, date) => {
+                setShow(false)
+                setDate(date!)
+              }}
+            />
+          )
+        }
+        <SizableText padding="$1" paddingTop="$3">Time</SizableText>
+        <SizableText padding="$1">{date.toLocaleTimeString()}</SizableText>
+        <Button onPress={showTimepicker}>Select Time</Button>
+        {
+          showDate && mode === 'time' && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={'time'}
+              onChange={(event, date) => {
+                setShow(false)
+                setDate(date!)
+              }}
+            />
+          )
+        }
+        
       </YStack>
+      <XStack padding="$2" borderColor="$gray4" borderWidth="$1" borderRadius="$3" gap="$2" theme="alt1">
+        <Info size={20}/>
+        <Paragraph>
+          Please note that sharing this report comes with appointment booking with selected clinic
+          </Paragraph>
+      </XStack>
       <Button
-        iconAfter={<ChevronsUp size={20}/> }
+        iconAfter={<ChevronsUp color="white" size={20}/> }
         style={styles.shareButton}
-        backgroundColor="$blue9" 
-        disableed={!selected} 
+        variant="primary"
+        off={!selected} 
         onPress={shareReport}
+        bold
       >
-          Share Now
-        </Button>
-        { loading && <Loader />}
-    </View>
+          Share Report and Book Now
+      </Button>
+      
+    </ScrollView>
+    { loading && <Loader message="Sharing report" />}
+    </>
   )
 }
 
@@ -151,11 +203,6 @@ const styles = StyleSheet.create({
     padding: 18
   },
   shareButton: {
-    flex: 1,
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    left: 0,
-    margin: 20,
-  }
+    marginVertical: 20
+  },
 })
