@@ -7,12 +7,12 @@ import { MessageSquareShare } from "@tamagui/lucide-icons";
 import { Image } from "react-native";
 
 export default function FeedbackScreen() {
-    const FEEDBACK_LINK = "https://docs.google.com/forms/d/e/1FAIpQLSecwrS5SShcnZqSqctCGgJht_zu1IeZh_DNjyWa1WjeIGzLWA/viewform"
+    const FEEDBACK_LINK = "https://survey.carident.live/"
     return (
         <View style={styles.container}>
             <Image source={require('@/assets/images/surveyQR.png')} style={styles.qr} />
             <ExternalLink href={FEEDBACK_LINK} asChild>
-                <Button icon={MessageSquareShare}>Open Google Feedback Form</Button>
+                <Button icon={MessageSquareShare}>https://survey.carident.live/</Button>
             </ExternalLink>
         </View>
     )
