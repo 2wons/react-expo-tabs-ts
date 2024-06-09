@@ -45,6 +45,7 @@ export default function HomeScreen() {
         subtitle={dateTaken.toLocaleString()}
         id={id}
         image={i.img}
+        shared={i.shared}
         onPress={() => {
           router.push({
             pathname: '/result',
@@ -83,6 +84,7 @@ export default function HomeScreen() {
             reports.length === 0 
               ? "$color05" 
               : "$color12"}
+          cancellable
           />
       </View>
       

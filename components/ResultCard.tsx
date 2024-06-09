@@ -2,16 +2,18 @@ import type { CardProps } from "tamagui";
 import { StyleSheet, Dimensions } from "react-native";
 import { Link } from "expo-router";
 import { Button, Card, H2, Image, Paragraph, XStack, YStack } from "tamagui";
+import { Badge } from "./Badge";
 
 interface MyCardProps extends CardProps {
   title?: string | number;
   subtitle?: string;
   id: string;
   image?: string;
+  shared?: boolean;
 }
 
 export default function ResultCard(props: MyCardProps) {
-  var { title, subtitle, id, image, ...other } = props;
+  var { title, subtitle, id, image, shared, ...other } = props;
 
   return (
     <Card
@@ -28,6 +30,7 @@ export default function ResultCard(props: MyCardProps) {
           <YStack>
             <H2>{title ?? "None"}</H2>
             <Paragraph theme="alt2">{subtitle ?? "None"}</Paragraph>
+            { shared && <Badge alignSelf="flex-start" label="shared" variant="primary" />}
           </YStack>
           <Image
             source={{
