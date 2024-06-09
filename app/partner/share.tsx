@@ -77,6 +77,7 @@ export default function PartnerShareScreen() {
         description: "Shared from mobile app",
         title: "Shared Report"
       })
+      setReportToShared()
       Alert.alert("Report and appointment request sent. You will be notified once the clinic confirms your appointment.")
       navigation.goBack()
     } catch (error) {
