@@ -27,8 +27,8 @@ export default function ResultCard(props: MyCardProps) {
     >
       <Card.Header padded>
         <XStack justifyContent="space-between">
-          <YStack>
-            <H2>{title ?? "None"}</H2>
+          <YStack marginHorizontal="$1">
+            <H2  numberOfLines={2} maxWidth="90%">{title ?? "None"}</H2>
             <Paragraph theme="alt2">{subtitle ?? "None"}</Paragraph>
             { shared && <Badge alignSelf="flex-start" label="shared" variant="primary" />}
           </YStack>

@@ -162,7 +162,7 @@ export const ResultView = ({
       <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
       <XStack alignItems="center">
         <SizableText theme="alt2">{`title `}</SizableText>
-        <Input size="$1" flex={1} placeholder="Untitled" onChangeText={t => setTitle(t)}/>
+        <Input size="$1" flex={1} maxLength={20} placeholder="Untitled" onChangeText={t => setTitle(t)}/>
       </XStack>
       <XStack>
         <SizableText theme="alt2">{`date taken `}</SizableText>
