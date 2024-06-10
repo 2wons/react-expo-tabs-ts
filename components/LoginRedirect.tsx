@@ -1,6 +1,6 @@
-import { View, Text, H3 } from "tamagui"
+import { H3 } from "tamagui"
 import { Button } from "./Button"
-import { Link} from "expo-router"
+import { Link } from "expo-router"
 
 import { View as DefaultView} from "./Themed"
 import { StyleSheet } from "react-native"
@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native"
 export const LoginRedirect = () => {
     return (
         <DefaultView style={styles.container}>
-            <H3 textAlign="center">You need to be logged in to access this page.</H3>
+            <H3 textAlign="center" color="$white1">You need to be logged in to access this feature.</H3>
             <Link href={{ pathname: "/auth" }} asChild>
                 <Button marginTop="$5" variant="primary">Go to Login</Button>
             </Link>
