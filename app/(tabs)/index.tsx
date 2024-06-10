@@ -18,8 +18,6 @@ import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
 import { Button } from '@/components/Button';
 
-
-
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { authState, user } = useAuth();
@@ -65,7 +63,12 @@ export default function HomeScreen() {
         <Link href={authState?.authenticated ? '/profile' : '/auth'} asChild>
           { authState?.authenticated 
             ? <CircleAvatar uri={user?.avatar!} />
-            : <CircleUserRound size={48} /> 
+            : (
+              <XStack borderWidth="$1" borderColor="$gray3" borderRadius="$4" alignItems='center' padding="$2" gap="$2">
+                <CircleUserRound size={16} /> 
+                <Text>Login</Text>
+              </XStack>
+            )
           }
         </Link>
       </View>
