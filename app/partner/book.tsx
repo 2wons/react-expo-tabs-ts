@@ -13,6 +13,8 @@ import { ChevronsUp, Info } from "@tamagui/lucide-icons";
 import { Loader } from "@/components/Loader";
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuth } from "@/contexts/AuthyContext";
+import { LoginRedirect } from "@/components/LoginRedirect";
 
 export default function PartnerBookingScreen() {
   
@@ -22,6 +24,8 @@ export default function PartnerBookingScreen() {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showDate, setShow] = useState(false);
+
+  const { authState } = useAuth()
 
   const { clinicName, clinicAddress } = useLocalSearchParams<{
     clinicName: string
@@ -120,11 +124,13 @@ export default function PartnerBookingScreen() {
         style={styles.shareButton}
         variant="primary"
         onPress={startBooking}
+        bold
       >
           Book Appointment
       </Button>
     </ScrollView>
     { loading && <Loader />}
+    { !authState?.authenticated && <LoginRedirect />}
     </>
   )
 }

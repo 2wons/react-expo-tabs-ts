@@ -80,16 +80,16 @@ interface NearbySearchResponse {
 }
 
 
-export const getNearbyClinics = async (location: Coords) => {
+export const getNearbyClinics = async (location: Coords, radius=500) => {
 
     const locationStr = location.latitude + ',' + location.longitude;
     const keyword = 'dental'
     const type = 'dentist';
-    const radius = '500';
+    const _radius = radius.toString()
 
     try {
-        const url = `${BASE_URL}keyword=${keyword}&location=${locationStr}&radius=${radius}&type=${type}&key=${API_KEY}`;
-
+        const url = `${BASE_URL}keyword=${keyword}&location=${locationStr}&radius=${_radius}&type=${type}&key=${API_KEY}`;
+    
         const response = await axios.get(url);
         
         return response.data.results;

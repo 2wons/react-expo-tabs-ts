@@ -1,4 +1,4 @@
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, Modal, StyleSheet } from 'react-native';
 import { View } from '@/components/Themed';
 import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-native';
 
@@ -11,12 +11,11 @@ import { Loader } from '@/components/Loader';
 import { getNearbyClinics, Coords } from '@/services/mapService';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
-import { YStack, SizableText, Button } from 'tamagui';
-import { Search, CheckCircle2, ChevronRight, Locate } from '@tamagui/lucide-icons';
-import { Link } from 'expo-router';
+import { YStack, SizableText, Button, H1, XStack, Input } from 'tamagui';
+import { Search, ChevronRight, Locate, Cog } from '@tamagui/lucide-icons';
+import { useNavigation } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
-const cardWidth = screenWidth * 0.85;
 const cardMargin = 10; 
 
 const LATITIUDE_DELTA = 0.00422
@@ -42,10 +41,13 @@ export default function MapScreen() {
   const [region, setRegion] = useState<MapRegion>(INITIAL_REGION)
   const [nearbyPlaces, setNearbyPlaces] = useState<any>()
   const [loading, setLoading] = useState(false)
+  const [settingsVisible, setSettingsVisible] = useState(false)
+  const [radius, setRadius] = useState(500)
 
   const carouselRef = useRef<ICarouselInstance>(null)
   const mapRef = useRef<any>()
   const theme = useColorScheme()
+  const navigation = useNavigation()
 
   const getCurrentLocation = async () => {
     const location = await Location.getCurrentPositionAsync()
@@ -63,16 +65,23 @@ export default function MapScreen() {
       { duration: 2000 }
     );
   }
+  const requestLocationPermission = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync()
+    if (status != 'granted') {
+      Alert.alert("Permission to access location was denied.")
+      return;
+    }
+  }
   
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync()
-      if (status != 'granted') {
-        Alert.alert("Permission to access location was denied.")
-        return;
-      }
-      getCurrentLocation()
-    })()
+    navigation.setOptions({
+      headerRight: () => (
+        <Cog marginRight="$3" onPress={() => setSettingsVisible(true)}/>
+      )
+    })
+
+    requestLocationPermission()
+    getCurrentLocation()
 
   }, [])
 
@@ -94,7 +103,7 @@ export default function MapScreen() {
     setLoading(true)
     setNearbyPlaces(null)
 
-    await getNearbyClinics({...location?.coords!})
+    await getNearbyClinics({...location?.coords!}, radius)
       .then((nearby) => {
         setNearbyPlaces(nearby)
       })
@@ -106,9 +115,39 @@ export default function MapScreen() {
         setLoading(false)
       })
   }
+
+  const handleSettings = () => {
+    setSettingsVisible(!settingsVisible)
+  }
+
+  const handleRadius = (text: string) => {
+  
+    if (text === '') {
+      setRadius(0)
+      return
+    }
+    setRadius(parseInt(text))
+    
+  }
   
   return (
+    <>
     <View style={styles.container}>
+      <Modal visible={settingsVisible} presentationStyle='pageSheet' onRequestClose={handleSettings} animationType='slide'>
+        <View style={{ flex: 1, padding: 24 }}>
+          <H1 marginBottom="$4">Nearby Clinics Settings</H1>
+          <XStack justifyContent="space-between" alignItems='center' gap="$2">
+            <YStack flex={1}>
+              <SizableText>Nearby Radius</SizableText>
+              <SizableText theme="alt2">Sets the distance range when searching for nearby clinics</SizableText>
+            </YStack>
+            <XStack alignItems='center' gap="$2">
+              <Input maxLength={3} keyboardType='number-pad' size="$4" value={radius.toString()} onChangeText={handleRadius} />
+              <SizableText>meters</SizableText>
+            </XStack>
+          </XStack>
+        </View>
+      </Modal>
        <MapView
         style={styles.map}
         initialRegion={INITIAL_REGION}
@@ -181,9 +220,11 @@ export default function MapScreen() {
           <Button icon={<Locate size="$1"/>} onPress={getCurrentLocation}>
             Locate Me
           </Button>
+          
         </YStack>
         { loading && <Loader />}
     </View>
+    </>
   );
 }
 

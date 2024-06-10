@@ -19,6 +19,9 @@ import { Loader } from "@/components/Loader";
 import { useData } from "@/contexts/DataContext";
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuth } from "@/contexts/AuthyContext";
+import { LoginRedirect } from "@/components/LoginRedirect";
+import { clinicDefaults } from "@/constants/Common";
 
 export default function PartnerShareScreen() {
 
@@ -29,6 +32,7 @@ export default function PartnerShareScreen() {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showDate, setShow] = useState(false);
+  const { authState } = useAuth()
   
   const { history, edit } = useData()
 
@@ -98,6 +102,7 @@ export default function PartnerShareScreen() {
       .catch((e) => {
         Alert.alert(e)
       })
+      setClinics(clinicDefaults)
   }
 
   useEffect(() => {
@@ -194,6 +199,7 @@ export default function PartnerShareScreen() {
       
     </ScrollView>
     { loading && <Loader message="Sharing report" />}
+    { !authState?.authenticated && <LoginRedirect />}
     </>
   )
 }
