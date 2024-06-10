@@ -30,7 +30,9 @@ export default function ResultCard(props: MyCardProps) {
           <YStack marginHorizontal="$1">
             <H2  numberOfLines={2} maxWidth="90%">{title ?? "None"}</H2>
             <Paragraph theme="alt2">{subtitle ?? "None"}</Paragraph>
-            { shared && <Badge alignSelf="flex-start" label="shared" variant="primary" />}
+            { shared 
+              ? <Badge alignSelf="flex-start" label="Shared" variant="primary" />
+              : <Badge alignSelf="flex-start" label="On-Device" variant="warning" />}
           </YStack>
           <Image
             source={{

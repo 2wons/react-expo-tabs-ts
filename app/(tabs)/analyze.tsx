@@ -51,7 +51,11 @@ export default function DetectScreen() {
   );
 
   useEffect(() => {
-    
+    navigation.setOptions({
+      headerRight: () => (
+        <Cog marginRight="$3" onPress={() => setSettingsVisible(true)}/>
+      )
+    })
   },[])
   
   const navigation = useNavigation();

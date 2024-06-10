@@ -24,6 +24,10 @@ export const BadgeView = styled(View, {
         backgroundColor: "$red3",
         borderColor: "$red8",
       },
+      warning: {
+        backgroundColor: "$yellow3",
+        borderColor: "$yellow8",
+      },
     }
   }
 })

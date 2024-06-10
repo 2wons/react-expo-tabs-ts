@@ -8,9 +8,9 @@ import { StyleSheet } from "react-native"
 export const LoginRedirect = () => {
     return (
         <DefaultView style={styles.container}>
-            <H3>You need to be logged in to access this page</H3>
+            <H3 textAlign="center">You need to be logged in to access this page.</H3>
             <Link href={{ pathname: "/auth" }} asChild>
-                <Button marginTop="$3" variant="primary">Go to Login</Button>
+                <Button marginTop="$5" variant="primary">Go to Login</Button>
             </Link>
         </DefaultView>
     )
