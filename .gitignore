@@ -47,3 +47,6 @@ ios/
 
 # tests
 __snapshots__/
+
+# other
+dump/
