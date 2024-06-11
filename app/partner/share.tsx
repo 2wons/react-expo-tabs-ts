@@ -21,13 +21,19 @@ import { useData } from "@/contexts/DataContext";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from "@/contexts/AuthyContext";
 import { LoginRedirect } from "@/components/LoginRedirect";
-import { clinicDefaults } from "@/constants/Common";
+import { calculateDistance } from "@/services/common";
+import * as Location from 'expo-location';
+
+const DEFAULT_COORDINATE = {
+  latitude: 14.604326629763175,
+  longitude: 120.98867833889382
+}
 
 export default function PartnerShareScreen() {
 
   const [clinics, setClinics] = useState<Clinic[] | null>(null)
-  const [selected, setSelected] = useState<number>()
   const [loading ,setLoading] = useState<boolean>(false)
+  const [selected, setSelected] = useState<number>()
 
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
@@ -94,22 +100,46 @@ export default function PartnerShareScreen() {
 
   const navigation = useNavigation()
 
+  const getLocation  = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission to access location was denied');
+      return
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    return location
+  }
+
   const fetchClinics = async () => {
+    const _location = await getLocation()
+    // testss
+    const coordinates = _location?.coords
+     ? {
+        latitude: _location?.coords.latitude,
+        longitude: _location?.coords.longitude,
+      }
+      : DEFAULT_COORDINATE;
+    console.log(`Using Default: ${coordinates === DEFAULT_COORDINATE}`)
     await getClinics()
       .then((res) => {
-        setClinics(res.data)
+        const filtered = res.data.filter((place) => {
+          const distance = calculateDistance({
+            first: coordinates,
+            second: { latitude: place.latitude, longitude: place.longitude },
+          });
+          return distance < 800;
+        });
+        setClinics(filtered);
       })
       .catch((e) => {
-        Alert.alert(e)
-      })
-      setClinics(clinicDefaults)
-  }
+        Alert.alert(e);
+      });
+  };
 
   useEffect(() => {
     navigation.setOptions({
       title: "Sharing Report"
     })
-
     fetchClinics()
   }, [])
 
@@ -124,6 +154,11 @@ export default function PartnerShareScreen() {
       {
         clinics === null && (
           <BulletList />
+        )
+      }
+      {
+        clinics && clinics.length === 0 && (
+          <SizableText theme="alt1">No nearby clinics</SizableText>
         )
       }
       { clinics && clinics.map((clinic) => {

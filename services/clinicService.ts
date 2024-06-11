@@ -1,5 +1,6 @@
 import { BASE_URL } from "@/constants/Common";
 import axios from "axios";
+import { Clinic } from "./types";
 
 export interface SharedReportDTO {
     clinicId: number
@@ -9,7 +10,7 @@ export interface SharedReportDTO {
 }
 
 export const getClinics = async () => {
-    return axios.get(
+    return axios.get<Clinic[]>(
         `${BASE_URL}/Clinic/GetClinics`
     )
 }

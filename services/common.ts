@@ -9,13 +9,13 @@ export function generateUUID(digits: number) {
     return uuid.join('');
 }
 
-interface DistanceBetween {
+export interface DistanceBetween {
     first : Coords
     second : Coords
 }
 
 // Function to calculate the distance between two coordinates using the Haversine formula
-function calculateDistance({ first, second }: DistanceBetween) {
+export function calculateDistance({ first, second }: DistanceBetween) {
 
     const lat1 = parseFloat(first.latitude.toString());
     const lng1 = parseFloat(first.longitude.toString());

@@ -14,6 +14,7 @@ import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { YStack, SizableText, Button, H1, XStack, Input } from 'tamagui';
 import { Search, ChevronRight, Locate, Cog } from '@tamagui/lucide-icons';
 import { useNavigation } from 'expo-router';
+import { calculateDistance } from '@/services/common';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardMargin = 10; 
@@ -81,6 +82,7 @@ export default function MapScreen() {
     })
 
     requestLocationPermission()
+      .catch(() => {})
     getCurrentLocation()
 
   }, [])
@@ -105,7 +107,21 @@ export default function MapScreen() {
 
     await getNearbyClinics({...location?.coords!}, radius)
       .then((nearby) => {
-        setNearbyPlaces(nearby)
+        //setNearbyPlaces(nearby)
+        const filtered = nearby.filter((place: any) => {
+          const distance = calculateDistance({
+            first: {
+              latitude: location?.coords.latitude!,
+              longitude: location?.coords.longitude!
+            },
+            second: {
+              latitude: place.geometry.location.lat,
+              longitude: place.geometry.location.lng
+            }
+          })
+          return distance < radius 
+        })
+        setNearbyPlaces(filtered)
       })
       .catch((error) => {
         console.log(error)
@@ -121,7 +137,6 @@ export default function MapScreen() {
   }
 
   const handleRadius = (text: string) => {
-  
     if (text === '') {
       setRadius(0)
       return
