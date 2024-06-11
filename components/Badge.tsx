@@ -28,6 +28,18 @@ export const BadgeView = styled(View, {
         backgroundColor: "$yellow3",
         borderColor: "$yellow8",
       },
+      alert: {
+        backgroundColor: "$orange3",
+        borderColor: "$orange8",
+      },
+    },
+    pressable: {
+      true: {
+        pressStyle: {
+          backgroundColor: 'transparent',
+          borderColor: '$borderColorPress',
+        },
+      }
     }
   }
 })

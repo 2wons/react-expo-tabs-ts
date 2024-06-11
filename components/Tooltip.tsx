@@ -1,8 +1,10 @@
 import { HelpCircle, XCircle } from "@tamagui/lucide-icons"
 import { useState } from "react";
 import { Modal } from "react-native";
-import { View, SizableText, XStack, Paragraph } from "tamagui"
+import { View, SizableText, XStack, Paragraph, H2, Text, H3, H4 } from "tamagui"
 import { SafeAreaView } from "./Themed";
+import { Badge } from "./Badge";
+import { icdas } from "@/constants/Common";
 
 export interface TooltipProps {
     text?: string;
@@ -17,23 +19,36 @@ export const Tooltip = (props: TooltipProps) => {
                 <SizableText paddingRight="$1" theme="alt2" size="$2">{props.text}</SizableText>
             </XStack>
             <Modal visible={visible} animationType="fade" transparent>
-                <SafeAreaView style={{ flex: 1, backgroundColor: "black", opacity: 0.90, padding: 40 }}>
-                    <XCircle size="$1" onPress={() => setVisible(false)} />
-                    <Paragraph padding="$2">
-                        {`Healthy (ICDAS Code 0)
-No signs of decay. The tooth looks normal. It’s clean, smooth, and white without any spots or discoloration. 
+                <SafeAreaView style={{ flex: 1, backgroundColor: "black", opacity: 0.95 }}>
+                    <View padding="$3" backgroundColor="$background" flex={1}>
+                        <XCircle size="$2" onPress={() => setVisible(false)} alignSelf="flex-end" />
 
-Initial Caries  (ICDAS Code 1-2)
-These are early signs of tooth decay. You might see some white spots on the tooth if you dry it first. These spots show the very early stage of decay just starting on the surface. You can also see white or light brown spots on the tooth even without drying it. These spots are signs of early decay, but the tooth surface is still mostly intact.
-
-Moderate Caries  (ICDAS Code 3-4)
-The tooth has small holes or rough spots where the enamel (the hard outer layer) has started to break down, but you can't see the deeper layer (dentin) yet. You might see a dark shadow under the enamel, indicating the decay is deeper and has reached the dentin (the layer under the enamel). The surface might still look mostly okay or have small breaks.
-
-Extensive Caries  (ICDAS Code 5-6)
-There’s a clear hole or cavity in the tooth, and you can see the dentin. The decay has gone through the enamel and reached the deeper layers. For an even more severe case, the tooth has a big, obvious cavity that might be close to or exposing the tooth's inner pulp (the soft part with nerves). There’s significant damage, with a lot of enamel and dentin lost.`}
-                    </Paragraph>
+                        <SummaryHelp />
+                    </View>
                 </SafeAreaView>
             </Modal>
         </View>
+    )
+}
+
+export const SummaryHelp = () => {
+    const [info, setInfo] = useState<{title: string, description: string}>(icdas.healthy)
+    return (
+        <>
+        <H2>What's the Summary?</H2>
+        <SizableText size="$1" theme="alt1">
+        The summary shows the count of detected caries by type, helping you understand the health of your teeth using the ICDAS standard, a system that categorizes caries from healthy to severe.
+        </SizableText>
+        <XStack padding="$3" paddingBottom="$5" gap="$3">
+            <Badge label="Healthy" variant="success" onPress={() => setInfo(icdas.healthy)} pressable />
+            <Badge label="Iniital" variant="warning" onPress={() => setInfo(icdas.initial)} pressable/>
+            <Badge label="Moderate" variant="alert" onPress={() => setInfo(icdas.moderate)} pressable/>
+            <Badge label="Extensive" variant="danger" onPress={() => setInfo(icdas.extensive)} pressable/>
+        </XStack>
+        <View backgroundColor="$gray1" borderColor="$gray2" borderWidth="$1" opacity={1.0} padding="$4" borderRadius="$3">
+            <H4 paddingBottom="$3">{info.title}</H4>
+            <Paragraph>{info.description}</Paragraph>
+        </View>
+        </>
     )
 }
