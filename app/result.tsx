@@ -17,6 +17,7 @@ import { getRecommendation } from "@/constants/Common";
 import { Tooltip } from "@/components/Tooltip";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
+import { Recommendations } from "@/components/Recommendations";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
@@ -129,8 +130,8 @@ export default function ResultScreen() {
       <Summary counts={summary} />
       <View paddingVertical="$2">
         <SizableText marginVertical="$2" marginBottom="$1.5">Insights & Recommendations</SizableText>
-        <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-          <Paragraph>{extreme ? getRecommendation(summary, extreme) : 'Recommendations not available'}</Paragraph>
+        <YStack padding="$3" backgroundColor="$gray1" borderColor="$gray2" borderWidth="$1" borderRadius={10}>
+          <Recommendations type={extreme!} counts={summary} />
         </YStack>
       </View>
       <XStack justifyContent="space-between" alignItems="center">

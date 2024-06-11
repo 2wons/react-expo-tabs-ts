@@ -17,6 +17,7 @@ import { getRecommendation } from "@/constants/Common";
 import { ImageResponse } from "@/services/types";
 import { router } from "expo-router";
 import { Tooltip } from "./Tooltip";
+import { Recommendations } from "./Recommendations";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -157,7 +158,7 @@ export const ResultView = ({
       <Summary counts={summary}  />
       <SizableText marginTop="$2">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-        <SizableText>{getRecommendation(summary, extreme)}</SizableText>
+        <Recommendations type={extreme} counts={summary} />
       </YStack>
       <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
       <XStack alignItems="center">

@@ -11,6 +11,7 @@ export const EXTENSIVE = "-3-Extensive-Caries"
 type RecoType = {
     [key: string]: string
 }
+export type CariesClass = typeof HEALTHY | typeof INITIAL | typeof MODERATE | typeof EXTENSIVE | "none"
 
 export const getRecommendation = (counts: ClassCounts, extreme: string) => {
     const RECOS: RecoType = {
@@ -56,56 +57,3 @@ export const getRecommendation = (counts: ClassCounts, extreme: string) => {
     
     return RECOS[extreme]
 }
-
-export const clinicDefaults = [
-    {
-        distance: 30,
-        latitude: 14.6042,
-        longitude: 120.9860,
-        dentists: [
-            {
-                email: "dr.santos@maniladental.com",
-                name: "Dr. Juan Santos",
-                phoneNumber: "+63 912 345 6789"
-            },
-            {
-                email: "dr.delacruz@maniladental.com",
-                name: "Dr. Maria Dela Cruz",
-                phoneNumber: "+63 912 345 6790"
-            }
-        ],
-        id: 1,
-        name: "Wayb Clinics",
-        address: "127 Sampaloc St, Manila, Philippines",
-        phoneNumber: "+63 912 345 6789",
-        description: "A leading dental clinic providing top-notch services in Manila.",
-        email: "info@maniladental.com",
-        imagePath: "/images/clinic1.jpg",
-        website: "https://www.maniladental.com"
-    },
-    {
-        distance: 45,
-        latitude: 14.6035,
-        longitude: 120.9873,
-        dentists: [
-            {
-                email: "dr.garcia@perfectsmile.com",
-                name: "Dr. Roberto Garcia",
-                phoneNumber: "+63 913 456 7890"
-            },
-            {
-                email: "dr.hernandez@perfectsmile.com",
-                name: "Dr. Angela Hernandez",
-                phoneNumber: "+63 913 456 7891"
-            }
-        ],
-        id: 2,
-        name: "Dentist of Life",
-        address: "412 Nicanor Reyes St, Manila, Philippines",
-        phoneNumber: "+63 913 456 7890",
-        description: "Your go-to place for achieving the perfect smile.",
-        email: "contact@perfectsmile.com",
-        imagePath: "/images/clinic2.jpg",
-        website: "https://www.perfectsmile.com"
-    }
-];
