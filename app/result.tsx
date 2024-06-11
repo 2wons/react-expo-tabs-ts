@@ -78,7 +78,8 @@ export default function ResultScreen() {
   }
 
   useEffect(() => {
-    getResult();
+    getResult()
+      .catch(() => {})
   }, [history]);
 
   const images = [{ url: image! }];
