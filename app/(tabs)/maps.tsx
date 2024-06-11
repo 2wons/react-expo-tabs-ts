@@ -12,7 +12,7 @@ import { getNearbyClinics, Coords } from '@/services/mapService';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import { YStack, SizableText, Button, H1, XStack, Input } from 'tamagui';
-import { Search, ChevronRight, Locate, Cog } from '@tamagui/lucide-icons';
+import { Search, ChevronRight, Locate, Cog, XCircle } from '@tamagui/lucide-icons';
 import { useNavigation } from 'expo-router';
 import { calculateDistance } from '@/services/common';
 
@@ -161,6 +161,7 @@ export default function MapScreen() {
               <SizableText>meters</SizableText>
             </XStack>
           </XStack>
+          <Button icon={XCircle} marginTop="$5" onPress={handleSettings}>Close</Button>
         </View>
       </Modal>
        <MapView
