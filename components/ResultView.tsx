@@ -10,10 +10,9 @@ import { styled } from "@tamagui/core";
 import { useData } from "@/contexts/DataContext";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { Modal } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader } from "./Loader";
 import { Summary } from "./Summary";
-import { getRecommendation } from "@/constants/Common";
 import { ImageResponse } from "@/services/types";
 import { router } from "expo-router";
 import { Tooltip } from "./Tooltip";
@@ -56,7 +55,7 @@ export const ResultView = ({
   const [message, setMessage] = useState("")
   const [title, setTitle] = useState("Untitled")
   const [opacity, setOpacity] = useState(0.0)
-  const [originalVisible, setOriginalVisible] = useState(false)
+  const [cachedImage, setCachedImage] = useState<string | undefined>(undefined)
 
   const today = new Date();
 
@@ -84,6 +83,20 @@ export const ResultView = ({
     setViewerVisible(!isViewerVisible)
   }
 
+  const cacheImage = async () => {
+    const { uri } = await FileSystem.downloadAsync(
+      imgUri!,
+      FileSystem.cacheDirectory + "result_cached.jpg"
+    );
+    setCachedImage(uri)
+  }
+
+  const cleanup = async () => {
+    if (cachedImage) {
+      FileSystem.deleteAsync(cachedImage)
+    }
+  }
+
   const saveImage = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") {
@@ -108,6 +121,14 @@ export const ResultView = ({
     { url: imgUri! },
   ]
 
+  useEffect(() => {
+    cacheImage()
+
+    return () => {
+      cleanup()
+    }
+  }, [])
+
   const PLACEHOLDER = "https://i.postimg.cc/FFcjKg98/placeholder.png";
   return (
     <>
@@ -123,7 +144,7 @@ export const ResultView = ({
       <Modal visible={isViewerVisible} transparent={true}>
         <View style={{flex: 1}}>
         <ImageViewer 
-          imageUrls={images}
+          imageUrls={cachedImage ? [{ url: cachedImage }] : images}
           renderImage={(props) => {
             return (
               <>
