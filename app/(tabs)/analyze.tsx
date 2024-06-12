@@ -88,7 +88,7 @@ export default function DetectScreen() {
       base64: true,
       allowsEditing: true,
       //aspect: [4,3],
-      quality: 1,
+      quality: 0.7,
       //allowsMultipleSelection: true
     })
 
