@@ -16,6 +16,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from "@/contexts/AuthyContext";
 import { LoginRedirect } from "@/components/LoginRedirect";
 
+import { createAppointment } from "@/services/clinicService";
+
 export default function PartnerBookingScreen() {
   
   const navigation = useNavigation()
@@ -31,6 +33,10 @@ export default function PartnerBookingScreen() {
     clinicName: string
     clinicAddress: string
   }>()
+
+  const today = new Date()
+  const two_days_later = new Date(today)
+  two_days_later.setDate(today.getDate() + 2)
   
   const showMode = (currentMode: any) => {
     const currentDate = currentMode;
@@ -48,12 +54,14 @@ export default function PartnerBookingScreen() {
 
   const startBooking = async () => {
     const confirm_message =
-      `Appointment Request Sent. You will be notified once the clinic confirms your appointment.`
+      `Appointment Request Sent`
+    const message_body =
+    `You will be notified once the clinic confirms your appointment.`
     setLoading(true)
 
     setTimeout(() => {
       setLoading(false)
-      Alert.alert(confirm_message)
+      Alert.alert(confirm_message, message_body)
       navigation.goBack()
     }, 1000)
     
@@ -85,6 +93,7 @@ export default function PartnerBookingScreen() {
           showDate && mode === 'date' && (
             <DateTimePicker
               testID="dateTimePicker"
+              minimumDate={two_days_later}
               value={date}
               mode={'date'}
               onChange={(event, date) => {
