@@ -12,13 +12,14 @@ interface AlertProps extends ButtonProps {
     label: string,
     onConfirm?: () => void,
     danger?: boolean
+    warning?: boolean
     cancellable?: boolean
 }
 
 
 
 export function AlertButton(props: AlertProps) {
-  const { title, message, label, onConfirm, danger, cancellable, ...other } = props  
+  const { title, message, label, onConfirm, danger, cancellable, warning, ...other } = props  
   return (
     <AlertDialog >
       <AlertDialog.Trigger asChild>
@@ -71,8 +72,8 @@ export function AlertButton(props: AlertProps) {
                 <Button 
                   onPress={onConfirm} 
                   theme="active" 
-                  backgroundColor={danger ? "$red10" : undefined}
-                  color={danger ? "$white1" : undefined}
+                  backgroundColor={danger ? "$red10" : warning ? "$yellow10" : undefined}
+                  color={danger ? "$white1" : warning ? "$black1" : undefined}
                 >
                   Confirm
                 </Button>

@@ -7,7 +7,7 @@ import { ImgModalViewer } from "@/components/ImgModalViewer";
 
 import { Summary } from "@/components/Summary";
 import { Input } from "tamagui";
-import { StarFull, XCircle, Download, Lock } from "@tamagui/lucide-icons";
+import { StarFull, XCircle, Download, Lock, Archive } from "@tamagui/lucide-icons";
 import { useData } from "@/contexts/DataContext";
 import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
@@ -20,8 +20,8 @@ import { Recommendations } from "@/components/Recommendations";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
-  const params = useLocalSearchParams();
-  const { history, remove } = useData()
+  const params = useLocalSearchParams<{id: string}>();
+  const { history, remove, edit } = useData()
   const { id } = params;
 
   const [prevtitle, setPrevtitle] = useState<string>();
@@ -68,6 +68,17 @@ export default function ResultScreen() {
       })
       router.back()
   };
+
+  const archive = async () => {
+    const report = history![id!.toString()];
+    const newReport = { ...report, archived: true };
+    await edit!(id!, newReport)
+      .then()
+      .catch(error => {
+        Alert.alert("Something went wrong")
+      })
+      router.back()
+  }
 
   const shareReport = async () => {
     const { serverId } = history![id!.toString()];
@@ -162,15 +173,12 @@ export default function ResultScreen() {
           Save Image
         </Button>
         <AlertButton
-          label="Delete"
-          title="Delete Report"
-          message="Are you sure you want to delete this report?"
-          icon={XCircle}
-          onConfirm={removeMe}
-          backgroundColor="$red10"
-          marginTop={10}
-          color="$white1"
-          danger
+          label="Archive"
+          title="Archive Report"
+          message="Are you sure you want to archive this report?"
+          icon={Archive}
+          onConfirm={archive}
+          warning
           cancellable
         />
       </YStack>

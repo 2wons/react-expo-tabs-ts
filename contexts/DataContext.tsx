@@ -25,6 +25,7 @@ export interface Report {
     summary: ClassCounts
     extreme?: string
     sharedInfo?: ShareInfo[]
+    archived?: boolean
 }
 
 export interface History {
@@ -118,6 +119,7 @@ export const DataProvider = ({ children }: ContextProps) => {
       summary: summary,
       extreme: extreme,
       serverId: imageResponse.id,
+      archived: false
     };
     
     try {

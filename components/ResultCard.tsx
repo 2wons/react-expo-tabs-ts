@@ -32,7 +32,7 @@ export default function ResultCard(props: MyCardProps) {
             <Paragraph theme="alt2">{subtitle ?? "None"}</Paragraph>
             { shared 
               ? <Badge alignSelf="flex-start" label="Shared" variant="primary" />
-              : <Badge alignSelf="flex-start" label="On-Device" variant="warning" />}
+              : <Badge alignSelf="flex-start" label="On-Device" variant="alert" />}
           </YStack>
           <Image
             source={{

@@ -8,7 +8,7 @@ import { Link } from 'expo-router';
 import { router } from 'expo-router';
 
 import { CircleProps, XStack, YStack, Text, Avatar, Circle, H1 } from 'tamagui';
-import { CircleUserRound, ArrowRight } from '@tamagui/lucide-icons';
+import { CircleUserRound, ArrowRight, Archive } from '@tamagui/lucide-icons';
 
 import { View, ScrollView } from '@/components/Themed';
 import ResultCard from '@/components/ResultCard';
@@ -17,6 +17,7 @@ import { AlertButton } from '@/components/Alert';
 import { useAuth } from '@/contexts/AuthyContext';
 import { useData } from '@/contexts/DataContext';
 import { Button } from '@/components/Button';
+import { Button as TamaguiButton } from 'tamagui';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -35,7 +36,8 @@ export default function HomeScreen() {
   const reports = Object.keys(history!).reverse().map((id) => {
     const i = history![id];
     const dateTaken = new Date(i.timestamp)
-    return (
+    if (i.archived) return null;
+    return ( 
       <ResultCard
         key={id}
         flexBasis={200}
@@ -73,8 +75,12 @@ export default function HomeScreen() {
         </Link>
       </View>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <View style={styles.container}>
-        <AlertButton 
+      <XStack style={styles.container} gap="$2">
+        <TamaguiButton icon={Archive} onPress={() => router.push('/archives')}>
+          Archives
+        </TamaguiButton>
+        <AlertButton
+          flex={1} 
           label="Clear History" 
           title="Confirm Clear" 
           message='Are you sure you want to clear your whole history?'
@@ -91,7 +97,7 @@ export default function HomeScreen() {
               : "$color12"}
           cancellable
           />
-      </View>
+      </XStack>
       
       <ScrollView style={styles.container}>
         {reports.length !== 0 ? <XStack $sm={{ flex: 1 }} marginVertical="$4"  space>

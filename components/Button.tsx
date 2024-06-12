@@ -30,6 +30,15 @@ export const Button = styled(DefaultTamaguiButton, {
                 backgroundColor: "$red9",
                 color: "$white1",
             },
+            warning: {
+                backgroundColor: "$yellow9",
+                color: "$black3",
+            },
+            warningNight: {
+                backgroundColor: "$yellow3",
+                borderColor: "$yellow8",
+                color: "$white1",
+            },
             outlined: {
                 backgroundColor: 'transparent',
                 borderWidth: 2,
