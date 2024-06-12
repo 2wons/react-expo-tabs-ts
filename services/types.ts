@@ -53,19 +53,23 @@ export interface ResetDTO {
     oldPassword: string
 }
 
+/**
+ * Represents a Dentist.
+ * @property email - The email of the Dentist.
+ * @property name - The name of the Dentist.
+ * @property phoneNumber - The phone number of the Dentist.
+ */
 export interface Dentist {
-
+  email: string
+  name: string
+  phoneNumber: string
 }
 
 export interface Clinic {
     distance: number
     latitude: number
     longitude: number
-    dentists: {
-        email: string
-        name: string
-        phoneNumber: string
-    }[]
+    dentists: Dentist[]
     id: number
     name: string
     address: string
@@ -75,6 +79,15 @@ export interface Clinic {
     imagePath: string
     website: string
 }
+
+export interface Appointment {
+  id: number
+  clinic: Clinic
+  dentist: Dentist[]
+  scheduledAt: string
+}
+
+export interface AppointmentsResponse extends Array<Appointment> {}
 
 export interface ImageResponse {
     createdAt: string;

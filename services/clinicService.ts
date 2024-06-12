@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/constants/Common";
 import axios from "axios";
-import { Clinic } from "./types";
+import { AppointmentsResponse, Clinic } from "./types";
 
 export interface SharedReportDTO {
     clinicId: number
@@ -44,5 +44,22 @@ export const createAppointment = async (appointment: AppointmentDTO) => {
     return axios.post(
         `${BASE_URL}/Appointment/CreateAppointment`,
         appointment
+    )
+}
+
+export const getAppointments = async () => {
+    return axios.get<AppointmentsResponse>(
+        `${BASE_URL}/Appointment/GetAppointments`
+    )
+}
+
+export const cancelAppointment = async (id: number) => {
+    return axios.delete(
+        `${BASE_URL}/Appointment/DeleteAppointment`,
+        {
+            params: {
+                id: id
+            }
+        }
     )
 }
