@@ -125,7 +125,7 @@ export default function EditProfileSreen() {
           }
         }}
       />
-      <Button onPress={saveChanges} disableed={!canSave} disabled={!canSave}>
+      <Button onPress={saveChanges} off={!canSave} disabled={!canSave}>
         Save Changes
       </Button>
       {loading && <Loader message="Saving Changes" />}
