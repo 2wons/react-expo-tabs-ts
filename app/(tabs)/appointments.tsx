@@ -13,12 +13,7 @@ import { Button } from "tamagui";
 
 export default function AppointmentScreen() {
   const [appointments, setAppointments] = useState<Appointment[] | undefined>()
-  const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  
-  const handleOpen = () => {
-    setOpen(!open)
-  }
   
   const cancel = async (id: number) => {
     await cancelAppointment(id)
