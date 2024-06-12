@@ -41,7 +41,6 @@ export default function ResultCard(props: MyCardProps) {
               height: 50,
             }}
             borderRadius={5}
-            onPress={() => console.log("Image pressed")}
           />
         </XStack>
       </Card.Header>

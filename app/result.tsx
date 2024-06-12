@@ -100,7 +100,6 @@ export default function ResultScreen() {
         label={isShared 
           ? "This shared report is end-to-end encrypted to a shared clinic."
           : "This report is only saved on your device."}
-        onPress={() => {console.log(isShared)}}
       />
       <View paddingVertical="$2">
         <SizableText size="$3" theme="alt1">

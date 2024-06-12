@@ -73,10 +73,8 @@ export default function DetectScreen() {
 
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [1,1],
       quality: 1,
     });
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);

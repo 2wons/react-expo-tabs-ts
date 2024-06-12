@@ -108,7 +108,7 @@ export default function PartnerShareScreen() {
         date: date.toISOString().split('T')[0],
         scheduledAt: date.toISOString(),
         clinicId: selected,
-        dentistId: selected
+        dentistId: 5
       })
 
       const response = await createReport({

@@ -29,7 +29,6 @@ export default function EditProfileSreen() {
     });
 
     if (!result.canceled) {
-      console.log(result.assets[0].uri);
       setAvi(result.assets[0].uri);
       setCanSave(true);
       setAvatarChanged(true);
@@ -70,9 +69,7 @@ export default function EditProfileSreen() {
     if (updated) {
       Alert.alert("Profile updated");
       await refresh!();
-      console.log(user?.avatar);
     }
-    console.log(updated);
     setCanSave(false);
     setLoading(false);
   };
