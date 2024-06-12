@@ -7,7 +7,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { Link } from 'expo-router';
 import { router } from 'expo-router';
 
-import { CircleProps, XStack, YStack, Text, Avatar, Circle } from 'tamagui';
+import { CircleProps, XStack, YStack, Text, Avatar, Circle, H1 } from 'tamagui';
 import { CircleUserRound, ArrowRight } from '@tamagui/lucide-icons';
 
 import { View, ScrollView } from '@/components/Themed';
@@ -59,7 +59,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={{...SafeViewAndroid.AndroidSafeArea, backgroundColor: Colors[colorScheme ?? 'light'].background}}>
       <View style={styles.myHeader}>
-        <Text style={styles.h1}>Home</Text>
+        <H1>Home</H1>
         <Link href={authState?.authenticated ? '/profile' : '/auth'} asChild>
           { authState?.authenticated 
             ? <CircleAvatar uri={user?.avatar!} />
