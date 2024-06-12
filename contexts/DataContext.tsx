@@ -6,6 +6,14 @@ import { ContextProps } from ".";
 import { ClassCounts } from "@/components/ResultView";
 import { ImageResponse } from "@/services/types";
 
+export interface ShareInfo {
+  id: number;
+  clinicId: number;
+  clinicName?: string;
+  clinicAddress?: string;
+  createdAt: string;
+}
+
 export interface Report {
     id: string;
     serverId?: number
@@ -16,6 +24,7 @@ export interface Report {
     title: string
     summary: ClassCounts
     extreme?: string
+    sharedInfo?: ShareInfo[]
 }
 
 export interface History {
@@ -108,7 +117,7 @@ export const DataProvider = ({ children }: ContextProps) => {
       title: title,
       summary: summary,
       extreme: extreme,
-      serverId: imageResponse.id
+      serverId: imageResponse.id,
     };
     
     try {

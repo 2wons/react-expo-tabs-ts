@@ -38,9 +38,13 @@ export default function PartnerShareScreen() {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('date');
   const [showDate, setShow] = useState(false);
+  const [address, setAddress] = useState("")
+  const [clinicName, setClinicName] = useState("")
+  const [filterIds, setFilterIds] = useState<number[]>([])
+
   const { authState } = useAuth()
-  
   const { history, edit } = useData()
+  const navigation = useNavigation()
 
   const { serverId, localId } = useLocalSearchParams<{ serverId: string, localId: string }>()
 
@@ -58,9 +62,34 @@ export default function PartnerShareScreen() {
     showMode('time');
   };
 
-  const setReportToShared = async () => {
+  const getFilters = () => {
+    const report = history![localId!]
+    const filterIds = report.sharedInfo
+      ? report.sharedInfo.map((info) => info.clinicId)
+      : []
+    // filter out already shared clinics
+    setFilterIds(filterIds)
+    return filterIds
+  }
+
+  const setReportToShared = async (shareId: number, date: string) => {
     const report = history![localId!];
-    let newReport = { ...report, shared: true };
+    const newSharedInfo = {
+      id: shareId,
+      clinicId: selected!,
+      clinicName: clinicName,
+      clinicAddress: address,
+      createdAt: date
+    }
+    const sharedInfo = report.sharedInfo 
+      ? [...report.sharedInfo, newSharedInfo] 
+      : [newSharedInfo]
+
+    let newReport = { 
+      ...report, 
+      shared: true,
+      sharedInfo: sharedInfo
+    };
     await edit!(localId!, newReport)
       .then()
       .catch(error => {
@@ -81,13 +110,18 @@ export default function PartnerShareScreen() {
         clinicId: selected,
         dentistId: selected
       })
-      await createReport({
+
+      const response = await createReport({
         clinicId: selected,
         imageIds: [Number(serverId)],
         description: "Shared from mobile app",
         title: "Shared Report"
       })
-      setReportToShared()
+
+      const { id, createdAt } = response.data
+      setReportToShared(id, createdAt)
+
+      // TODO: use toast instead of alert
       Alert.alert("Report and appointment request sent. You will be notified once the clinic confirms your appointment.")
       navigation.goBack()
     } catch (error) {
@@ -97,8 +131,6 @@ export default function PartnerShareScreen() {
     }
     setLoading(false)
   }
-
-  const navigation = useNavigation()
 
   const getLocation  = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -111,15 +143,16 @@ export default function PartnerShareScreen() {
   }
 
   const fetchClinics = async () => {
+    const _filterIds = getFilters()
     const _location = await getLocation()
-    // testss
+    // testsss
     const coordinates = _location?.coords
      ? {
         latitude: _location?.coords.latitude,
         longitude: _location?.coords.longitude,
       }
-      : DEFAULT_COORDINATE;
-    console.log(`Using Default: ${coordinates === DEFAULT_COORDINATE}`)
+     : DEFAULT_COORDINATE;
+    
     await getClinics()
       .then((res) => {
         const filtered = res.data.filter((place) => {
@@ -127,7 +160,7 @@ export default function PartnerShareScreen() {
             first: coordinates,
             second: { latitude: place.latitude, longitude: place.longitude },
           });
-          return distance < 800;
+          return distance < 800 && !_filterIds.includes(place.id);
         });
         setClinics(filtered);
       })
@@ -166,6 +199,8 @@ export default function PartnerShareScreen() {
           <XStack gap="$3" alignItems="center" backgroundColor="$gray1" padding="$3" borderRadius="$5" borderColor="$gray3" borderWidth="$1"
             onPress={() => {
               setSelected(clinic.id)
+              setAddress(clinic.address)
+              setClinicName(clinic.name)
             }} key={clinic.id}>
             <RadioGroup.Item value={clinic.id.toString()} size="$3">
               <RadioGroup.Indicator backgroundColor="$green10" scale="$1"/>

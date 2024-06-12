@@ -1,6 +1,6 @@
 import { Image, StyleSheet, Alert, TouchableOpacity, useColorScheme } from "react-native";
 import { ScrollView } from "@/components/Themed";
-import { XStack, YStack, SizableText, H1, H3, Paragraph, View } from "tamagui";
+import { XStack, YStack, SizableText, H1, H3, View } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
@@ -13,7 +13,6 @@ import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
-import { getRecommendation } from "@/constants/Common";
 import { Tooltip } from "@/components/Tooltip";
 import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
@@ -73,8 +72,8 @@ export default function ResultScreen() {
   const shareReport = async () => {
     const { serverId } = history![id!.toString()];
     router.push({
-      pathname: "/partner/share",
-      params: { serverId: serverId, localId: id!.toString() }
+      pathname: "/partner/share-list",
+      params: { serverId: serverId, reportId: id!.toString() }
     })
   }
 
@@ -156,9 +155,9 @@ export default function ResultScreen() {
         <SizableText>{date}</SizableText>
       </XStack>
       <H3 marginTop="$4">Actions</H3>
-      <YStack gap={3}>
+      <YStack gap="$2">
         <Button icon={StarFull} variant="primary" onPress={shareReport}>
-          Share to partner clinic
+          Clinic Sharing
         </Button>
         <Button icon={Download} onPress={saveImage} flex={1}>
           Save Image
