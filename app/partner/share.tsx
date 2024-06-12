@@ -40,13 +40,16 @@ export default function PartnerShareScreen() {
   const [showDate, setShow] = useState(false);
   const [address, setAddress] = useState("")
   const [clinicName, setClinicName] = useState("")
-  const [filterIds, setFilterIds] = useState<number[]>([])
 
   const { authState } = useAuth()
   const { history, edit } = useData()
   const navigation = useNavigation()
 
   const { serverId, localId } = useLocalSearchParams<{ serverId: string, localId: string }>()
+
+  const today = new Date()
+  const two_days_later = new Date(today)
+  two_days_later.setDate(today.getDate() + 2)
 
   const showMode = (currentMode: any) => {
     const currentDate = currentMode;
@@ -68,7 +71,6 @@ export default function PartnerShareScreen() {
       ? report.sharedInfo.map((info) => info.clinicId)
       : []
     // filter out already shared clinics
-    setFilterIds(filterIds)
     return filterIds
   }
 
@@ -122,7 +124,7 @@ export default function PartnerShareScreen() {
       setReportToShared(id, createdAt)
 
       // TODO: use toast instead of alert
-      Alert.alert("Report and appointment request sent. You will be notified once the clinic confirms your appointment.")
+      Alert.alert("Share Successful","Report and appointment request sent. You will be notified once the clinic confirms your appointment.")
       navigation.goBack()
     } catch (error) {
       const errors = error as any
@@ -174,6 +176,7 @@ export default function PartnerShareScreen() {
       title: "Sharing Report"
     })
     fetchClinics()
+    setDate(two_days_later)
   }, [])
 
   return (
@@ -223,6 +226,7 @@ export default function PartnerShareScreen() {
           showDate && mode === 'date' && (
             <DateTimePicker
               testID="dateTimePicker"
+              minimumDate={two_days_later}
               value={date}
               mode={'date'}
               onChange={(event, date) => {
