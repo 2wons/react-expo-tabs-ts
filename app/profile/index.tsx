@@ -98,7 +98,6 @@ export default function MeScreen() {
       {/* Help */}
       <Text theme='alt2'>Help</Text>
       <OptionsGroup>
-        <Option icon={HelpCircle} title="FAQs"/>
         <Option icon={HelpCircle} title="Feedback" onPress={() => router.push("/feedback")}/>
       </OptionsGroup>
       {/* Logout */}
