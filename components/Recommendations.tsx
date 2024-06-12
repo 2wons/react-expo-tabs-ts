@@ -23,7 +23,11 @@ export const Recommendations = ({ type, counts }: RecommendationFetcherProps) =>
     case EXTENSIVE:
       return <ExtensiveRecommendation count={counts.extensive ?? 0} />
     default:
-      return <></>
+      return (
+        <Paragraph>
+          {`No teeth detected. Make sure to capture your teeth properly. For a more precise analysis, it is recommended that the image is focused on your mouth with good lighting and make sure your teeth are not too wet.`}
+        </Paragraph>
+      )
   }
 }
 
