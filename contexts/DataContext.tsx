@@ -135,10 +135,14 @@ export const DataProvider = ({ children }: ContextProps) => {
 
   const remove = async (id: string) => {
     const currentHistory = {...history}
+    const imgPath = currentHistory[id].img
+    console.log(imgPath)
+
     if (history.hasOwnProperty(id)) {
       delete currentHistory[id]
     }
     setHistory(currentHistory)
+    await FileSystem.deleteAsync(imgPath!)
     await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
   }
 
