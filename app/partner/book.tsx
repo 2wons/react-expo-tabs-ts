@@ -65,7 +65,7 @@ export default function PartnerBookingScreen() {
         date: date.toISOString().split('T')[0],
         scheduledAt: date.toISOString(),
         clinicId: Number(id),
-        dentistId: Number(id)-1
+        dentistId: Number(id) >= 3 ? Number(id)-1 : Number(id)
       })
       Alert.alert(confirm_message, message_body)
     } catch (error) {
