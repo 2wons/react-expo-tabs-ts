@@ -1,7 +1,7 @@
 import axios from 'axios'
-
+import { BASE_URL } from '@/constants/Common';
 const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
-const BASE_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
+const GOOGLE_BASE_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?';
 
 export interface Coords {
     latitude: string | number;
@@ -88,7 +88,7 @@ export const getNearbyClinics = async (location: Coords, radius=500) => {
     const _radius = radius.toString()
 
     try {
-        const url = `${BASE_URL}keyword=${keyword}&location=${locationStr}&radius=${_radius}&type=${type}&key=${API_KEY}`;
+        const url = `${GOOGLE_BASE_URL}keyword=${keyword}&location=${locationStr}&radius=${_radius}&type=${type}&key=${API_KEY}`;
     
         const response = await axios.get(url);
         
@@ -97,4 +97,18 @@ export const getNearbyClinics = async (location: Coords, radius=500) => {
     } catch (error) {
         throw error;
     }
+}
+
+export const findNearbyClinics = async (location: Coords, radius=500) => {
+    
+    const latitude  = location.latitude;
+    const longitude = location.longitude;
+
+    return axios.get(
+        `${BASE_URL}/Clinic/FindNearbyClinics`,
+        {
+            params: { latitude, longitude, radiusKm: radius}
+        }
+    )
+    
 }

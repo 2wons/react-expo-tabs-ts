@@ -82,11 +82,11 @@ const AppointmentCard = (props: AppointmentCardProps) => {
       </YStack>
       <YStack flex={1} >
         <XStack gap="$2" alignItems="center" borderBottomWidth="$1" borderColor="$gray5" padding="$2.5" justifyContent="space-between">
-          <XStack alignItems="center" gap="$2">
+          <XStack alignItems="center" gap="$2" flex={1} flexShrink={1}>
             <Contact size="$1" />
-            <SizableText size="$5" fontWeight="bold">{appointment.clinic.name}</SizableText>
+            <SizableText size="$5" fontWeight="bold" numberOfLines={2}>{appointment.clinic.name}</SizableText>
           </XStack>
-          <TamaguiView flex={1} alignItems="flex-end"style={{padding: 3 }}>
+          <TamaguiView alignItems="flex-end"style={{padding: 3 }}>
             <AlertButton 
               label="cancel" 
               title="Cancel Appointment" 

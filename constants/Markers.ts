@@ -1,4 +1,5 @@
 export interface PointOfInterest {
+    id?: number
     coordinate : {
         latitude: number,
         longitude: number,

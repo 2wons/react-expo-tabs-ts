@@ -29,7 +29,8 @@ export default function PartnerBookingScreen() {
 
   const { authState } = useAuth()
 
-  const { clinicName, clinicAddress } = useLocalSearchParams<{
+  const { id, clinicName, clinicAddress } = useLocalSearchParams<{
+    id: string
     clinicName: string
     clinicAddress: string
   }>()
@@ -59,19 +60,27 @@ export default function PartnerBookingScreen() {
     `You will be notified once the clinic confirms your appointment.`
     setLoading(true)
 
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      await createAppointment({
+        date: date.toISOString().split('T')[0],
+        scheduledAt: date.toISOString(),
+        clinicId: Number(id),
+        dentistId: Number(id)-1
+      })
       Alert.alert(confirm_message, message_body)
-      navigation.goBack()
-    }, 1000)
-    
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again later.")
+    }
+    setLoading(false)
+    navigation.goBack()
   }
 
   useEffect(() => {
     navigation.setOptions({
       title: "Clinic Appointment"
     })
-
+    setDate(two_days_later)
+    //console.log(id)
   }, [])
 
   return (
@@ -86,7 +95,7 @@ export default function PartnerBookingScreen() {
       </YStack>
       <YStack paddingVertical="$2">
         <H4 paddingTop="$2">Appointment Information</H4>
-        <SizableText padding="$1">Date</SizableText>
+        <SizableText theme="alt1" padding="$1">Date</SizableText>
         <SizableText padding="$1">{date.toDateString()}</SizableText>
         <Button onPress={showDatepicker}>Select Date</Button>
         {
@@ -103,7 +112,7 @@ export default function PartnerBookingScreen() {
             />
           )
         }
-        <SizableText padding="$1" paddingTop="$3">Time</SizableText>
+        <SizableText theme="alt1" padding="$1" paddingTop="$3">Time</SizableText>
         <SizableText padding="$1">{date.toLocaleTimeString()}</SizableText>
         <Button onPress={showTimepicker}>Select Time</Button>
         {

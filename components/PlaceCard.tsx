@@ -36,6 +36,7 @@ export default function PlaceCard({ place, onPress }: PlaceCardProps) {
         <Link href={{
           pathname: '/partner/book',
           params: {
+            id: place.id?.toString(),
             clinicName: place.title,
             clinicAddress: place.description
           }

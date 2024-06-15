@@ -8,7 +8,7 @@ import Animated, { SlideInDown, SlideOutDown, SlideOutLeft } from 'react-native-
 import * as Location from 'expo-location'
 import PlaceCard from '@/components/PlaceCard';
 import { Loader } from '@/components/Loader';
-import { getNearbyClinics, Coords } from '@/services/mapService';
+import { getNearbyClinics, Coords, findNearbyClinics } from '@/services/mapService';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
 import { YStack, SizableText, Button, H1, XStack, Input } from 'tamagui';
@@ -105,18 +105,17 @@ export default function MapScreen() {
     setLoading(true)
     setNearbyPlaces(null)
 
-    await getNearbyClinics({...location?.coords!}, radius)
-      .then((nearby) => {
-        //setNearbyPlaces(nearby)
-        const filtered = nearby.filter((place: any) => {
+    await findNearbyClinics({...location?.coords!}, radius)
+      .then((response) => {
+        const filtered = response.data.filter((place: any) => {
           const distance = calculateDistance({
             first: {
               latitude: location?.coords.latitude!,
               longitude: location?.coords.longitude!
             },
             second: {
-              latitude: place.geometry.location.lat,
-              longitude: place.geometry.location.lng
+              latitude: place.latitude,
+              longitude: place.longitude
             }
           })
           return distance < radius 
@@ -176,12 +175,12 @@ export default function MapScreen() {
           return (
             <Marker key={index} 
               coordinate={{
-                latitude: nearby.geometry.location.lat,
-                longitude: nearby.geometry.location.lng
+                latitude: nearby.latitude,
+                longitude: nearby.longitude
               }} 
               onPress={() => onMarkerPress({
-                latitude: nearby.geometry.location.lat,
-                longitude: nearby.geometry.location.lng
+                latitude: nearby.latitude,
+                longitude: nearby.longitude
               }, index)}>
               <Callout>
                 <NormalView style={{ padding: 5 }}>
@@ -203,20 +202,21 @@ export default function MapScreen() {
               renderItem={({ item, index }: any) => {
               return (
                 <PlaceCard place={{
+                  id: item.id,
                   coordinate: {
-                    latitude: item.geometry.latitude,
-                    longitude: item.geometry.longitude
+                    latitude: item.latitude,
+                    longitude: item.longitude
                   },
                   title: item.name,
-                  description: item.vicinity,
-                  rating: item.rating,
-                  reviews: item.user_ratings_total,
-                  open_now: item.opening_hours?.open_now ?? false
+                  description: item.address,
+                  rating: 4,
+                  reviews: 5,
+                  open_now: true
                 }}
                 onPress={() => {
                   onMarkerPress({
-                    latitude: item.geometry.location.lat,
-                    longitude: item.geometry.location.lng
+                    latitude: item.latitude,
+                    longitude: item.longitude
                   }, index)
                 }}
                 />
@@ -248,24 +248,6 @@ interface PromptCardProps {
   onPress: () => void
 }
 
-function PromptCard({onPress}: PromptCardProps) {
-  return (
-    <YStack
-      justifyContent={"center"}
-      gap={5}
-      alignItems="center"
-      flex={1}
-      borderRadius={10}
-      margin={cardMargin}
-      backgroundColor={"$background"}
-    >
-      <SizableText paddingVertical={2}>Tap on Nearby Clinics to View</SizableText>
-      <Button width={'100%'} borderTopEndRadius={0} borderTopStartRadius={0} onPress={onPress}>
-        Get Nearby
-      </Button>
-    </YStack>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
