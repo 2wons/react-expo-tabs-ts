@@ -87,7 +87,7 @@ export default function HomeScreen() {
           flex={1} 
           label="Clear History" 
           title="Confirm Clear" 
-          message='Are you sure you want to clear your whole history?'
+          message='Are you sure you want to clear your whole history? This action will archive your whole history.'
           onConfirm={clearAll} 
           disabled={reports.length === 0}
           backgroundColor={
