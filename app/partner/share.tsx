@@ -258,7 +258,7 @@ export default function PartnerShareScreen() {
       </YStack>
       <XStack padding="$2" borderColor="$gray4" borderWidth="$1" borderRadius="$3" gap="$2" theme="alt1">
         <Info size={20}/>
-        <Paragraph>
+        <Paragraph flex={1} flexShrink={1}>
           Please note that sharing this report comes with appointment booking with selected clinic
           </Paragraph>
       </XStack>
