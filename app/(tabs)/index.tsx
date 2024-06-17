@@ -27,13 +27,17 @@ export default function HomeScreen() {
 
   const clearAll = async () => {
     try {
-      await clear!();
+      await clear!('archive');
     } catch (error) {
       Alert.alert("Error Clearing History");
     }
   }
 
-  const reports = Object.keys(history!).reverse().map((id) => {
+  const reports = Object.keys(history!).
+    filter((id) => {
+      return history![id].archived === false;
+    })
+    .reverse().map((id) => {
     const i = history![id];
     const dateTaken = new Date(i.timestamp)
     if (i.archived) return null;

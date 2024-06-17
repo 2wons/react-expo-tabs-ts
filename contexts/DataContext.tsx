@@ -50,7 +50,7 @@ interface DataContextInterface {
     ...imageResponse
    }: SaveData) => Promise<string>;
   edit?: (id: string, newData: Report) => Promise<void>;
-  clear?: () => Promise<void>;
+  clear?: (type: 'delete' | 'archive') => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
 
@@ -72,7 +72,18 @@ export const DataProvider = ({ children }: ContextProps) => {
     }
   }
 
-  const clear = async () => {
+  const clear = async (type: 'delete' | 'archive') => {
+    switch (type) {
+      case 'delete':
+        await clearToDelete()
+        break
+      case 'archive':
+        await clearToArchive()
+        break
+    }
+  }
+
+  const clearToDelete = async () => {
     await AsyncStorage.setItem('history', JSON.stringify({}))
     await FileSystem.deleteAsync(
       FileSystem.documentDirectory + 'images/',
@@ -84,6 +95,15 @@ export const DataProvider = ({ children }: ContextProps) => {
       {intermediates: true}
     )
     setHistory({})
+  }
+
+  const clearToArchive = async () => {
+    const currentHistory = {...history}
+    for (const id in currentHistory) {
+      currentHistory[id].archived = true
+    }
+    setHistory(currentHistory)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
   }
 
   useEffect(() => {
