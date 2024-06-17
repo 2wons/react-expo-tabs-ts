@@ -1,14 +1,15 @@
 import { ScrollView, View } from "@/components/Themed";
-import { XStack, H3, H2, YStack, Text, Image } from "tamagui";
-import { Archive } from "@tamagui/lucide-icons";
+import { XStack, H3, H2, YStack, Text, Image, View as TamaguiView } from "tamagui";
+import { Archive, Trash2 } from "@tamagui/lucide-icons";
 import { Alert } from "react-native";
 import { useData, Report } from "@/contexts/DataContext";
 import { Button } from "@/components/Button";
 import { useEffect } from "react";
 import { useNavigation } from "expo-router";
+import { AlertButton } from "@/components/Alert";
 
 export default function ArchiveScreen() {
-	const { history, edit, remove } = useData();
+	const { history, edit, remove, clear } = useData();
 	const navigation = useNavigation()
 
 	const restore =  async (id: string) => {
@@ -20,6 +21,14 @@ export default function ArchiveScreen() {
           Alert.alert("Something went wrong")
         })
       Alert.alert("Report Restored")
+	}
+
+	const clearAll = async () => {
+		try {
+			await clear!('delete')
+		} catch (error) {
+			Alert.alert('Something went wrong.')
+		}
 	}
 
 	const removeMe = async (id: string) => {
@@ -37,10 +46,12 @@ export default function ArchiveScreen() {
 		})
 	}, [])
 
-	const reports = Object.keys(history!).reverse().map((id) => {
+	const reports = Object.keys(history!)
+	.filter((id) => {
+		return history![id].archived === true;
+	})
+	.reverse().map((id) => {
     const i = history![id];
-    const dateTaken = new Date(i.timestamp)
-    if (!i.archived) return null;
     return ( 
 			<YStack key={id} gap="$1" marginVertical="$3" padding="$3" borderStyle="dashed" borderColor="$gray3" borderWidth="$1" borderRadius="$3">
 				<XStack justifyContent="space-between" alignItems="center">
@@ -70,9 +81,28 @@ export default function ArchiveScreen() {
 	return (
 		<>
 		<View style={{ flex: 1, padding: 16 }}>
-			<H2>Archived Reports</H2>
-			<Text theme="alt2">A list of your archived reports</Text>
+			<XStack justifyContent="space-between">
+				<View>
+					<H2>Archived Reports</H2>
+					<Text theme="alt2">A list of your archived reports</Text>
+				</View>
+				<AlertButton 
+					icon={Trash2} 
+					label="" 
+					title="Clear All Archives" 
+					message="Are you sure you want to clear your archives? This action is irreversible."
+					onConfirm={clearAll}
+					off={reports.length === 0}
+					disabled={reports.length === 0}
+					danger
+					cancellable />
+			</XStack>
 			<ScrollView>
+				{
+					reports.length === 0 && (
+					  <Text paddingVertical="$5" alignSelf="center" theme="alt1">No archived reports</Text>
+					)
+				}
 				{reports}
 			</ScrollView>
 		</View>
