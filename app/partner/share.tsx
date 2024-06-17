@@ -110,7 +110,9 @@ export default function PartnerShareScreen() {
         date: date.toISOString().split('T')[0],
         scheduledAt: date.toISOString(),
         clinicId: selected,
-        dentistId: 5
+        dentistId: Number(selected) >= 3 
+          ? Number(selected)-1 
+          : Number(selected)
       })
 
       const response = await createReport({
@@ -182,7 +184,7 @@ export default function PartnerShareScreen() {
   return (
     <>
     <ScrollView style={styles.container}>
-      <H4 paddingVertical="$3"l>Select Nearby Clinic</H4>
+      <H4 paddingVertical="$3"l>Select A Nearby Clinic</H4>
       <RadioGroup value={selected?.toString()}onValueChange={(value) => {
         setSelected(Number(value))
       }}
@@ -208,8 +210,8 @@ export default function PartnerShareScreen() {
             <RadioGroup.Item value={clinic.id.toString()} size="$3">
               <RadioGroup.Indicator backgroundColor="$green10" scale="$1"/>
             </RadioGroup.Item>
-            <YStack>
-              <SizableText size="$4" fontWeight={700}>{clinic.name}</SizableText>
+            <YStack flex={1} flexShrink={1}>
+              <SizableText size="$4" fontWeight={700} numberOfLines={1}>{clinic.name}</SizableText>
               <SizableText size="$3" theme="alt1" numberOfLines={1}>{clinic.address}</SizableText>
             </YStack>
           </XStack>
@@ -219,7 +221,7 @@ export default function PartnerShareScreen() {
 
       <YStack paddingVertical="$2">
         <H4 paddingTop="$2">Booking Information</H4>
-        <SizableText padding="$1">Date</SizableText>
+        <SizableText padding="$1" theme="alt1">Date</SizableText>
         <SizableText padding="$1">{date.toDateString()}</SizableText>
         <Button onPress={showDatepicker}>Select Date</Button>
         {
@@ -236,7 +238,7 @@ export default function PartnerShareScreen() {
             />
           )
         }
-        <SizableText padding="$1" paddingTop="$3">Time</SizableText>
+        <SizableText padding="$1" paddingTop="$3" theme="alt1">Time</SizableText>
         <SizableText padding="$1">{date.toLocaleTimeString()}</SizableText>
         <Button onPress={showTimepicker}>Select Time</Button>
         {
