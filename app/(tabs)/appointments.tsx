@@ -10,6 +10,7 @@ import { cancelAppointment } from "@/services/clinicService";
 import { AlertButton } from "@/components/Alert";
 import { Loader } from "@/components/Loader";
 import { Button } from "tamagui";
+import { Badge } from "@/components/Badge";
 
 export default function AppointmentScreen() {
   const [appointments, setAppointments] = useState<Appointment[] | undefined>()
@@ -84,7 +85,7 @@ const AppointmentCard = (props: AppointmentCardProps) => {
         <XStack gap="$2" alignItems="center" borderBottomWidth="$1" borderColor="$gray5" padding="$2.5" justifyContent="space-between">
           <XStack alignItems="center" gap="$2" flex={1} flexShrink={1}>
             <Contact size="$1" />
-            <SizableText size="$5" fontWeight="bold" numberOfLines={2}>{appointment.clinic.name}</SizableText>
+            <SizableText flex={1} flexShrink={1} size="$5" fontWeight="bold" numberOfLines={2}>{appointment.clinic.name}</SizableText>
           </XStack>
           <TamaguiView alignItems="flex-end"style={{padding: 3 }}>
             <AlertButton 
@@ -106,6 +107,17 @@ const AppointmentCard = (props: AppointmentCardProps) => {
         <XStack gap="$2" alignItems="center" padding="$2.5">
           <Home size="$1" />
           <SizableText size="$3" flex={1} flexWrap={"wrap"}>{appointment.clinic.address}</SizableText>
+        </XStack>
+        <XStack justifyContent="space-between" alignItems="center" padding="$2.5">
+          <SizableText flex={1} flexShrink={1} theme="alt1">{appointment.clinicMessage}</SizableText>
+          <Badge
+            label={appointment.status}
+            variant={appointment.status === "Confirmed" 
+              ? "success" 
+              : appointment.status === "Pending"
+                ? "warning"
+                : "danger"}
+          />
         </XStack>
       </YStack>
     </XStack>

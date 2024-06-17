@@ -85,6 +85,8 @@ export interface Appointment {
   clinic: Clinic
   dentist: Dentist[]
   scheduledAt: string
+  clinicMessage: string
+  status: string
 }
 
 export interface AppointmentsResponse extends Array<Appointment> {}
