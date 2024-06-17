@@ -95,6 +95,7 @@ export const ResultView = ({
     if (cachedImage) {
       FileSystem.deleteAsync(cachedImage)
     }
+    setCachedImage(undefined)
   }
 
   const saveImage = async () => {
@@ -132,7 +133,7 @@ export const ResultView = ({
   const PLACEHOLDER = "https://i.postimg.cc/FFcjKg98/placeholder.png";
   return (
     <>
-      <H1 paddingVertical="$5">Analysis result</H1>
+      <H1 paddingVertical="$5" onPress={() => console.log(cachedImage)}>Analysis result</H1>
       <View style={styles.preview}>
         <TouchableOpacity onPress={handleViewer}>
           <Image
