@@ -72,7 +72,17 @@ export default function ArchiveScreen() {
 				<Text theme="alt2">{new Date(i.timestamp).toDateString()}</Text>
 				<XStack gap="$2">
 					<Button size="$3" flex={1} onPress={() => restore(i.id.toString())}>Restore</Button>
-					<Button variant="destructive" size="$3" flex={1} onPress={() => removeMe(i.id.toString())}>Delete</Button>
+					<AlertButton
+						label="Delete"
+						variant="destructive"
+						flex={1}
+						size="$3"
+						title="Permanently Delete Report"
+						message="Are you sure you want to delete this report? This action is irreversible."
+						onConfirm={() => removeMe(i.id.toString())}
+						danger
+						cancellable 
+					/>
 				</XStack>
 			</YStack>
     )
@@ -86,7 +96,7 @@ export default function ArchiveScreen() {
 					<H2>Archived Reports</H2>
 					<Text theme="alt2">A list of your archived reports</Text>
 				</View>
-				<AlertButton 
+				{/* <AlertButton 
 					icon={Trash2} 
 					label="" 
 					title="Clear All Archives" 
@@ -95,7 +105,8 @@ export default function ArchiveScreen() {
 					off={reports.length === 0}
 					disabled={reports.length === 0}
 					danger
-					cancellable />
+					cancellable 
+				/> */}
 			</XStack>
 			<ScrollView>
 				{
