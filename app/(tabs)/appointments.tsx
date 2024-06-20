@@ -112,7 +112,7 @@ const AppointmentCard = (props: AppointmentCardProps) => {
           <SizableText flex={1} flexShrink={1} theme="alt1">{appointment.clinicMessage}</SizableText>
           <Badge
             label={appointment.status}
-            variant={appointment.status === "Confirmed" 
+            variant={appointment.status === "Accepted" 
               ? "success" 
               : appointment.status === "Pending"
                 ? "warning"
