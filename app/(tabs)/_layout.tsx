@@ -1,10 +1,14 @@
 import React from 'react';
-
+import { Dimensions } from 'react-native';
 import { Tabs } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Home, CalendarClock } from '@tamagui/lucide-icons';
+import { useAuth } from '@/contexts/AuthyContext';
+
+const height = Dimensions.get('window').height;
 
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -17,6 +21,7 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { authState } = useAuth();
 
   return (
     <Tabs
@@ -25,9 +30,7 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
-        tabBarStyle: {
-          width: '100%'
-        },
+        
         //tabBarLabelStyle: {paddingBottom: 5}
         tabBarVisibilityAnimationConfig: {}
       }}>
@@ -36,7 +39,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           headerShown: false,
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => <Home color={color} />,
         }}
       />
       <Tabs.Screen
@@ -53,6 +56,16 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="appointments"
+        options={{
+          title: 'Appointments',
+          headerTitle: "",
+          href: authState?.authenticated ? '/appointments' : null,
+          tabBarIcon: ({ color }) => <CalendarClock color={color} />,
+        }}
+      />
+
     </Tabs>
   );
 }

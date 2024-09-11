@@ -1,4 +1,4 @@
-import { StyleSheet, Alert } from 'react-native';
+import { StyleSheet, Alert, useColorScheme } from 'react-native';
 
 import { useEffect, useState } from 'react';
 
@@ -16,17 +16,21 @@ import { analyzeTeeth } from '@/services/modelService';
 import { useAuth as useAuthy } from '@/contexts/AuthyContext';
 import { ResultView } from '@/components/ResultView';
 import { ClassCounts } from '@/components/ResultView';
-import { Slider, H1, Text, SizableText, Input, Checkbox } from 'tamagui';
+import { Slider, H1, Text, SizableText, Input, Checkbox, View as TamaguiView } from 'tamagui';
 import { useNavigation } from 'expo-router';
 
-import { ImagePlus, Camera, Check as CheckIcon } from '@tamagui/lucide-icons';
+import { ImagePlus, Camera, Check as CheckIcon, Cog } from '@tamagui/lucide-icons';
 import { ImageResponse } from '@/services/types';
+import { Disclaimer } from '@/components/Disclaimer';
+import { LoginRedirect } from '@/components/LoginRedirect';
+
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 interface DetectOptions {
   drawConfidence: boolean 
   drawNames: boolean 
 }
+
 
 export default function DetectScreen() {
 
@@ -38,6 +42,8 @@ export default function DetectScreen() {
   const [message, setMessage] = useState('');
   const [extreme, setExtreme] = useState('NONE');
   const [response, setImageResponse] = useState<ImageResponse | null>(null)
+  const [settingsVisible, setSettingsVisible] = useState(false)
+  const [imgInfo, setImgInfo] = useState({name: '', resolution: ''})
   const [IoU, setIoU] = useState(0.25);
 
   const [options, setOptions] = useState<DetectOptions>(
@@ -45,11 +51,16 @@ export default function DetectScreen() {
   );
 
   useEffect(() => {
-    
+    navigation.setOptions({
+      headerRight: () => (
+        <Cog marginRight="$3" onPress={() => setSettingsVisible(true)}/>
+      )
+    })
   },[])
   
   const navigation = useNavigation();
   const { authState } = useAuthy();
+  const theme = useColorScheme() ?? 'light'
 
   const openCamera = async () => {
     // camera needs permission
@@ -62,10 +73,8 @@ export default function DetectScreen() {
 
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [1,1],
       quality: 1,
     });
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -79,12 +88,13 @@ export default function DetectScreen() {
       base64: true,
       allowsEditing: true,
       //aspect: [4,3],
-      quality: 1,
+      quality: 0.7,
       //allowsMultipleSelection: true
     })
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      setImgInfo({name: result.assets[0].fileName ?? 'un-named', resolution: `${result.assets[0].width} x ${result.assets[0].height}`})
     }
     setLoading(false);
   };
@@ -96,7 +106,7 @@ export default function DetectScreen() {
       return;
     }
     if (!authState?.token) {
-      Alert.alert("Not Authenticated");
+      Alert.alert("You must be logged in to analyze images");
       return;
     }
 
@@ -131,23 +141,26 @@ export default function DetectScreen() {
     setIoU(value);
   }
 
-  const PLACEHOLDER = 'https://i.postimg.cc/FFcjKg98/placeholder.png'
+  const reset = () => {
+    setImage(null)
+    setImgInfo({name: '', resolution: ''})
+  }
 
   return (
+    <>
     <ScrollView style={styles.container}>
-
       <Modal animationType='slide' presentationStyle='pageSheet' visible={visible}
         onRequestClose={() => setVisible(!visible)}>
           <View style={styles.modal}>
-            <ScrollView>
-              <ResultView summary={counts} imgUri={result} extreme={extreme} imageResponse={response!}>
+            <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+              <ResultView summary={counts} imgUri={result} extreme={extreme} imageResponse={response!} handleVisibility={() => setVisible(!visible)}>
                 <Button icon={XCircle} onPress={dismiss}> Dismiss </Button>
               </ResultView>
             </ScrollView>
           </View>
       </Modal>
-
       <H1>Select Image Source</H1>
+      <Text theme="alt2">Select either camera or gallery to import an image</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       <XStack justifyContent='space-evenly' gap="$3" paddingVertical="$2">
         <Button variant="outlined"size="$5" flex={1} onPress={openCamera}>
@@ -159,51 +172,68 @@ export default function DetectScreen() {
           <Text>Gallery</Text>
         </Button>
       </XStack>
-      <YStack backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
-          <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={styles.image} resizeMode='contain' />
+      <YStack onPress={select} backgroundColor={'$background025'} justifyContent='center' alignItems='center' marginVertical="$2" borderRadius={10}>
+          <Image source={image ? { uri: image }: require('@/assets/images/placeholder.png')} style={{...styles.image, borderColor: theme === 'dark' ? 'white' : 'black'}} resizeMode='contain' />
       </YStack>
-      <XStack justifyContent='space-between' paddingTop="$3">
-        <Text theme="alt1">IoU Threshold</Text>
-        <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
-      </XStack>
-      <XStack alignItems='center' gap="$2">
-        <Text>0.05</Text>
-        <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
-          <Slider.Track>
-            <Slider.TrackActive />
-          </Slider.Track>
-          <Slider.Thumb index={0} circular size={'$2'}/>
-        </Slider>
-        <Text>1</Text>
-      </XStack>
-      <YStack gap="$2" paddingVertical="$3">
-        <XStack justifyContent='space-between'>
-          <Text>Draw Confidence</Text>
-          <Checkbox id='1' checked={options.drawConfidence} onCheckedChange={() => {
-            setOptions({...options, drawConfidence: !options.drawConfidence})
-          }}>
-            <Checkbox.Indicator>
-              <CheckIcon size={16} />
-            </Checkbox.Indicator>
-          </Checkbox>
-        </XStack>
-        <XStack justifyContent='space-between'>
-          <Text>Draw Labels</Text>
-          <Checkbox checked={options.drawNames} onCheckedChange={() => {
-            setOptions({...options, drawNames: !options.drawNames})
-          }}>
-            <Checkbox.Indicator>
-              <CheckIcon size={16} />
-            </Checkbox.Indicator>
-          </Checkbox>
-        </XStack>
-      </YStack>
-      <XStack gap='$3'>
-        <Button onPress={() => setImage(null) } flex={1}>Reset</Button>
+      {/* Settings */}
+      <Modal animationType='slide' presentationStyle='pageSheet' visible={settingsVisible} onRequestClose={() => setSettingsVisible(false)}>
+        <View style={styles.modal}>
+          <H1>Advance Settings</H1>
+          <XStack justifyContent='space-between' paddingTop="$3">
+            <Text theme="alt1">IoU Threshold</Text>
+            <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
+          </XStack>
+          <XStack alignItems='center' gap="$2">
+            <Text>0.05</Text>
+            <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
+              <Slider.Track>
+                <Slider.TrackActive />
+              </Slider.Track>
+              <Slider.Thumb index={0} circular size={'$2'}/>
+            </Slider>
+            <Text>1</Text>
+          </XStack>
+          <YStack gap="$2" paddingVertical="$3">
+            <XStack justifyContent='space-between'>
+              <Text>Draw Confidence</Text>
+              <Checkbox id='1' checked={options.drawConfidence} onCheckedChange={() => {
+                setOptions({...options, drawConfidence: !options.drawConfidence})
+              }}>
+                <Checkbox.Indicator>
+                  <CheckIcon size={16} />
+                </Checkbox.Indicator>
+              </Checkbox>
+            </XStack>
+            <XStack justifyContent='space-between'>
+              <Text>Draw Labels</Text>
+              <Checkbox checked={options.drawNames} onCheckedChange={() => {
+                setOptions({...options, drawNames: !options.drawNames})
+              }}>
+                <Checkbox.Indicator>
+                  <CheckIcon size={16} />
+                </Checkbox.Indicator>
+              </Checkbox>
+            </XStack>
+          </YStack>
+          <Button icon={XCircle} onPress={() => setSettingsVisible(false)}>Close settings</Button>
+        </View>
+      </Modal>
+      {/* Actions */}
+      <TamaguiView borderWidth="$1" borderColor="$gray3" borderRadius="$3" padding="$2">
+        <SizableText theme="alt1">Selected Image Information</SizableText>
+        <SizableText size="$1" theme="alt1">{`Name ${imgInfo.name}`}</SizableText>
+        <SizableText size="$1" theme="alt1">{`Resolution ${imgInfo.resolution}`}</SizableText>
+      </TamaguiView>
+      <XStack gap='$3' paddingTop="$2">
+        <Button onPress={reset} flex={1}>Reset</Button>
         <Button onPress={analyze} flex={1}>Analyze</Button>
       </XStack>
-      { loading ?  <Loader message={message} /> : '' }
+
+      <Disclaimer />
     </ScrollView>
+    { loading && <Loader message={message} /> }
+    { !authState?.authenticated && <LoginRedirect />}
+    </>
   );
 }
 
@@ -215,6 +245,7 @@ const styles = StyleSheet.create({
   modal: {
     flex: 1,
     height: '100%',
+    paddingVertical: 10,
     paddingHorizontal: 25,
   },
   separator: {
@@ -227,7 +258,6 @@ const styles = StyleSheet.create({
     height: undefined,
     aspectRatio: 1.5,
     borderRadius: 10,
-    borderColor: "white",
     borderStyle: "dashed",
     borderWidth: 1
   },

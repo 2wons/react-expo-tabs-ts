@@ -29,7 +29,6 @@ export default function EditProfileSreen() {
     });
 
     if (!result.canceled) {
-      console.log(result.assets[0].uri);
       setAvi(result.assets[0].uri);
       setCanSave(true);
       setAvatarChanged(true);
@@ -70,9 +69,7 @@ export default function EditProfileSreen() {
     if (updated) {
       Alert.alert("Profile updated");
       await refresh!();
-      console.log(user?.avatar);
     }
-    console.log(updated);
     setCanSave(false);
     setLoading(false);
   };
@@ -94,7 +91,7 @@ export default function EditProfileSreen() {
         borderStyle="dashed"
         borderColor="$color12"
       >
-        <Avatar circular size="$13">
+        <Avatar circular size="$13" onPress={selectAvatar}>
           <Avatar.Image
             source={avi ? { uri: avi } : require("@/assets/images/avatardefault.png")}
             accessibilityLabel="Cam"
@@ -125,7 +122,7 @@ export default function EditProfileSreen() {
           }
         }}
       />
-      <Button onPress={saveChanges} disableed={!canSave} disabled={!canSave}>
+      <Button onPress={saveChanges} off={!canSave} disabled={!canSave}>
         Save Changes
       </Button>
       {loading && <Loader message="Saving Changes" />}

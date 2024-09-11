@@ -10,6 +10,7 @@ import { useNavigation, useRouter } from "expo-router";
 import { useEffect } from "react";
 
 import { PencilLine } from "@tamagui/lucide-icons";
+import { ExternalLink } from "@/components/ExternalLink";
 
 interface OptionGroupProps {
   children?: React.ReactNode;
@@ -40,6 +41,8 @@ export default function MeScreen() {
     const currentDate = new Date()
     return storedTokenExpiration > currentDate
   }
+
+  const MANUAL_LINK = 'https://files.catbox.moe/f0m6kz.pdf'
 
   const navigation = useNavigation()
 
@@ -93,12 +96,15 @@ export default function MeScreen() {
       <Text theme='alt2'>Legal</Text>
       <OptionsGroup>
         <Option icon={ArrowUpRight} title="Data Privacy" onPress={() => router.push("/privacy")}/>
+        <Option icon={ArrowUpRight} title="Disclaimer" onPress={() => router.push("/disclaimer")}/>
       </OptionsGroup>
       {/* Help */}
       <Text theme='alt2'>Help</Text>
       <OptionsGroup>
-        <Option icon={HelpCircle} title="FAQs"/>
-        <Option icon={HelpCircle} title="Feedback"/>
+        <ExternalLink href={MANUAL_LINK} asChild>
+          <Option icon={HelpCircle} title="Help Manual" />
+        </ExternalLink>
+        <Option icon={HelpCircle} title="Feedback" onPress={() => router.push("/feedback")}/>
       </OptionsGroup>
       {/* Logout */}
       <XStack flex={1} alignItems={"flex-end"}>

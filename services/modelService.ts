@@ -79,7 +79,6 @@ export const analyzeTeeth = async (uri: string, iou: number = 0.25, {
         const filters = Array.from(new Set(classes))
         const extreme = filters
             .reduce((a: string, b:string) => cariesRank[a] > cariesRank[b] ? a : b);
-        console.log(extreme)
         const ResponseWithCount = {...response.data, classCounts, extreme}
         return ResponseWithCount;
     } catch (error: any) {

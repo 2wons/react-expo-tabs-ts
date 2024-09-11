@@ -1,44 +1,50 @@
-import { Image, StyleSheet, Alert, TouchableOpacity } from "react-native";
-import { Text, View, ScrollView } from "@/components/Themed";
-import { Button, XStack, YStack, SizableText, H1, H3 } from "tamagui";
+import { Image, StyleSheet, Alert, TouchableOpacity, useColorScheme } from "react-native";
+import { ScrollView } from "@/components/Themed";
+import { XStack, YStack, SizableText, H1, H3, View } from "tamagui";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ImgModalViewer } from "@/components/ImgModalViewer";
 
 import { Summary } from "@/components/Summary";
 import { Input } from "tamagui";
-import { StarFull, XCircle, Download } from "@tamagui/lucide-icons";
+import { StarFull, XCircle, Download, Lock, Archive } from "@tamagui/lucide-icons";
 import { useData } from "@/contexts/DataContext";
 import { AlertButton } from "@/components/Alert";
 import { ClassCounts } from "@/components/ResultView";
 
 import * as MediaLibrary from "expo-media-library";
-import { createReport } from "@/services/clinicService";
+import { Tooltip } from "@/components/Tooltip";
+import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
+import { Recommendations } from "@/components/Recommendations";
 
 export default function ResultScreen() {
   const [visible, setVisible] = useState(false);
-  const params = useLocalSearchParams();
-  const { history, remove } = useData()
+  const params = useLocalSearchParams<{id: string}>();
+  const { history, remove, edit } = useData()
   const { id } = params;
 
   const [prevtitle, setPrevtitle] = useState<string>();
-  const [canSave, setCanSave] = useState(false);
   const [title, setTitle] = useState<string>();
   const [image, setImage] = useState<string>();
   const [date, setDate] = useState<string>();
+  const [extreme, setExtreme] = useState<string>();
   const [summary, setSummary] = useState<ClassCounts>({});
+  const [isShared, setIsShared] = useState<boolean>(false);
 
   const handleVisible = () => {
     setVisible(!visible);
   };
 
   const getResult = async () => {
-    const { img, timestamp, title, summary } = history![id!.toString()];
+    const { img, timestamp, title, summary, extreme, shared } = history![id!.toString()];
     const parseDate = new Date(timestamp);
     setImage(img);
     setTitle(title);
     setPrevtitle(title);
     setSummary(summary);
+    setExtreme(extreme);
+    setIsShared(shared!);
     setDate(parseDate.toLocaleString());
   };
 
@@ -63,43 +69,80 @@ export default function ResultScreen() {
       router.back()
   };
 
+  const archive = async () => {
+    const report = history![id!.toString()];
+    const newReport = { ...report, archived: true };
+    await edit!(id!, newReport)
+      .then()
+      .catch(error => {
+        Alert.alert("Something went wrong")
+      })
+      router.back()
+  }
+
   const shareReport = async () => {
     const { serverId } = history![id!.toString()];
     router.push({
-      pathname: "/partner/share",
-      params: { serverId: serverId }
+      pathname: "/partner/share-list",
+      params: { serverId: serverId, reportId: id!.toString() }
     })
   }
 
   useEffect(() => {
-    getResult();
-  }, []);
+    getResult()
+      .catch(() => {})
+  }, [history]);
 
   const images = [{ url: image! }];
+  const theme = useColorScheme() ?? 'light';
 
   const defaultImage = "https://i.postimg.cc/FFcjKg98/placeholder.png";
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <SizableText size="$3" theme="alt1">
-        Viewing
-      </SizableText>
-      <H1>{title}</H1>
+      
+      <Badge 
+        icon={<Lock size="$1" color="$yellow9" />}
+        variant="default" 
+        paddingHorizontal="$5"
+        borderRadius="$6" 
+        justifyContent="center"
+        alignItems="center"
+        label={isShared 
+          ? "This shared report is end-to-end encrypted to a shared clinic."
+          : "This report is only saved on your device."}
+      />
+      <View paddingVertical="$2">
+        <SizableText size="$3" theme="alt1">
+          Viewing
+        </SizableText>
+        <H1>{title}</H1>
+      </View>
       <YStack
         backgroundColor={"$background025"}
         justifyContent="center"
         alignItems="center"
+        paddingBottom="$3"
       >
         <TouchableOpacity onPress={handleVisible}>
           <Image
             source={{ uri: image ? image : defaultImage }}
-            style={styles.image}
+            style={{...styles.image, borderColor: theme === 'dark' ? 'white' : 'black'}}
             resizeMode="contain"
           />
         </TouchableOpacity>
       </YStack>
-      <H3 paddingTop="$3">Summary</H3>
+      <XStack alignItems="center" paddingVertical="$1" gap="$2">
+        <H3>Summary</H3>
+        <Tooltip text="what's this" />
+      </XStack>
       <Summary counts={summary} />
+      <View paddingVertical="$2">
+        <SizableText marginVertical="$2" marginBottom="$1.5">Insights & Recommendations</SizableText>
+        <YStack padding="$3" backgroundColor="$gray1" borderColor="$gray2" borderWidth="$1" borderRadius={10}>
+          <Recommendations type={extreme!} counts={summary} />
+        </YStack>
+      </View>
       <XStack justifyContent="space-between" alignItems="center">
         <SizableText theme="alt1" paddingTop="$2">
           General Information
@@ -122,22 +165,21 @@ export default function ResultScreen() {
         <SizableText>{date}</SizableText>
       </XStack>
       <H3 marginTop="$4">Actions</H3>
-      <YStack gap={3}>
-        <Button icon={StarFull} backgroundColor={"$blue5"} onPress={shareReport}>
-          Share to partner clinic
+      <YStack gap="$2">
+        <Button icon={StarFull} variant="primary" onPress={shareReport}>
+          Clinic Sharing
         </Button>
         <Button icon={Download} onPress={saveImage} flex={1}>
           Save Image
         </Button>
         <AlertButton
-          label="Delete"
-          title="Delete Report"
-          message="Are you sure you want to delete this report?"
-          icon={XCircle}
-          onConfirm={removeMe}
-          backgroundColor="$red10"
-          marginTop={10}
-          danger
+          label="Archive"
+          title="Archive Report"
+          message="Are you sure you want to archive this report?"
+          icon={Archive}
+          onConfirm={archive}
+          warning
+          cancellable
         />
       </YStack>
       <ImgModalViewer

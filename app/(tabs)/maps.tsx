@@ -1,4 +1,4 @@
-import { Alert, StyleSheet } from 'react-native';
+import { Alert, Modal, StyleSheet } from 'react-native';
 import { View } from '@/components/Themed';
 import { useColorScheme, View as NormalView, Text, Dimensions } from 'react-native';
 
@@ -8,15 +8,15 @@ import Animated, { SlideInDown, SlideOutDown, SlideOutLeft } from 'react-native-
 import * as Location from 'expo-location'
 import PlaceCard from '@/components/PlaceCard';
 import { Loader } from '@/components/Loader';
-import { getNearbyClinics, Coords } from '@/services/mapService';
+import { getNearbyClinics, Coords, findNearbyClinics } from '@/services/mapService';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 
-import { YStack, SizableText, Button } from 'tamagui';
-import { Search, CheckCircle2, ChevronRight, Locate } from '@tamagui/lucide-icons';
-import { Link } from 'expo-router';
+import { YStack, SizableText, Button, H1, XStack, Input } from 'tamagui';
+import { Search, ChevronRight, Locate, Cog, XCircle } from '@tamagui/lucide-icons';
+import { useNavigation } from 'expo-router';
+import { calculateDistance } from '@/services/common';
 
 const { width: screenWidth } = Dimensions.get('window');
-const cardWidth = screenWidth * 0.85;
 const cardMargin = 10; 
 
 const LATITIUDE_DELTA = 0.00422
@@ -42,10 +42,13 @@ export default function MapScreen() {
   const [region, setRegion] = useState<MapRegion>(INITIAL_REGION)
   const [nearbyPlaces, setNearbyPlaces] = useState<any>()
   const [loading, setLoading] = useState(false)
+  const [settingsVisible, setSettingsVisible] = useState(false)
+  const [radius, setRadius] = useState(500)
 
   const carouselRef = useRef<ICarouselInstance>(null)
   const mapRef = useRef<any>()
   const theme = useColorScheme()
+  const navigation = useNavigation()
 
   const getCurrentLocation = async () => {
     const location = await Location.getCurrentPositionAsync()
@@ -63,16 +66,24 @@ export default function MapScreen() {
       { duration: 2000 }
     );
   }
+  const requestLocationPermission = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync()
+    if (status != 'granted') {
+      Alert.alert("Permission to access location was denied.")
+      return;
+    }
+  }
   
   useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync()
-      if (status != 'granted') {
-        Alert.alert("Permission to access location was denied.")
-        return;
-      }
-      getCurrentLocation()
-    })()
+    navigation.setOptions({
+      headerRight: () => (
+        <Cog marginRight="$3" onPress={() => setSettingsVisible(true)}/>
+      )
+    })
+
+    requestLocationPermission()
+      .catch(() => {})
+    getCurrentLocation()
 
   }, [])
 
@@ -94,10 +105,22 @@ export default function MapScreen() {
     setLoading(true)
     setNearbyPlaces(null)
 
-    await getNearbyClinics({...location?.coords!})
-      .then((nearby) => {
-        setNearbyPlaces(nearby)
-        console.log(nearby)
+    await findNearbyClinics({...location?.coords!}, radius)
+      .then((response) => {
+        const filtered = response.data.filter((place: any) => {
+          const distance = calculateDistance({
+            first: {
+              latitude: location?.coords.latitude!,
+              longitude: location?.coords.longitude!
+            },
+            second: {
+              latitude: place.latitude,
+              longitude: place.longitude
+            }
+          })
+          return distance < radius 
+        })
+        setNearbyPlaces(filtered)
       })
       .catch((error) => {
         console.log(error)
@@ -107,9 +130,39 @@ export default function MapScreen() {
         setLoading(false)
       })
   }
+
+  const handleSettings = () => {
+    setSettingsVisible(!settingsVisible)
+  }
+
+  const handleRadius = (text: string) => {
+    if (text === '') {
+      setRadius(0)
+      return
+    }
+    setRadius(parseInt(text))
+    
+  }
   
   return (
+    <>
     <View style={styles.container}>
+      <Modal visible={settingsVisible} presentationStyle='pageSheet' onRequestClose={handleSettings} animationType='slide'>
+        <View style={{ flex: 1, padding: 24 }}>
+          <H1 marginBottom="$4">Nearby Clinics Settings</H1>
+          <XStack justifyContent="space-between" alignItems='center' gap="$2">
+            <YStack flex={1}>
+              <SizableText>Nearby Radius</SizableText>
+              <SizableText theme="alt2">Sets the distance range when searching for nearby clinics</SizableText>
+            </YStack>
+            <XStack alignItems='center' gap="$2">
+              <Input maxLength={3} keyboardType='number-pad' size="$4" value={radius.toString()} onChangeText={handleRadius} />
+              <SizableText>meters</SizableText>
+            </XStack>
+          </XStack>
+          <Button icon={XCircle} marginTop="$5" onPress={handleSettings}>Close</Button>
+        </View>
+      </Modal>
        <MapView
         style={styles.map}
         initialRegion={INITIAL_REGION}
@@ -122,12 +175,12 @@ export default function MapScreen() {
           return (
             <Marker key={index} 
               coordinate={{
-                latitude: nearby.geometry.location.lat,
-                longitude: nearby.geometry.location.lng
+                latitude: nearby.latitude,
+                longitude: nearby.longitude
               }} 
               onPress={() => onMarkerPress({
-                latitude: nearby.geometry.location.lat,
-                longitude: nearby.geometry.location.lng
+                latitude: nearby.latitude,
+                longitude: nearby.longitude
               }, index)}>
               <Callout>
                 <NormalView style={{ padding: 5 }}>
@@ -149,20 +202,21 @@ export default function MapScreen() {
               renderItem={({ item, index }: any) => {
               return (
                 <PlaceCard place={{
+                  id: item.id,
                   coordinate: {
-                    latitude: item.geometry.latitude,
-                    longitude: item.geometry.longitude
+                    latitude: item.latitude,
+                    longitude: item.longitude
                   },
                   title: item.name,
-                  description: item.vicinity,
-                  rating: item.rating,
-                  reviews: item.user_ratings_total,
-                  open_now: item.opening_hours?.open_now ?? false
+                  description: item.address,
+                  rating: 4,
+                  reviews: 5,
+                  open_now: true
                 }}
                 onPress={() => {
                   onMarkerPress({
-                    latitude: item.geometry.location.lat,
-                    longitude: item.geometry.location.lng
+                    latitude: item.latitude,
+                    longitude: item.longitude
                   }, index)
                 }}
                 />
@@ -176,16 +230,17 @@ export default function MapScreen() {
           }
         </Animated.View>
         <YStack position='absolute' flex={1} top={0} right={0} alignItems='flex-end' margin="$2" gap="$2">
-          <Link href="/partner" asChild style={{alignSelf: "flex-end"}}>
-            <Button icon={CheckCircle2} theme={'blue'} iconAfter={ChevronRight}>
-              Partnered Clinics
+            <Button icon={<Search size="$1" />} theme={'blue'} iconAfter={ChevronRight} onPress={getNearby}>
+              Get Nearby Clinics
             </Button>
-          </Link>
-          <Button padding="$3" icon={<Search size="$1" />} onPress={getNearby}></Button>
-          <Button padding="$3" icon={<Locate size="$1"/>} onPress={getCurrentLocation}/>
+          <Button icon={<Locate size="$1"/>} onPress={getCurrentLocation}>
+            Locate Me
+          </Button>
+          
         </YStack>
         { loading && <Loader />}
     </View>
+    </>
   );
 }
 
@@ -193,24 +248,6 @@ interface PromptCardProps {
   onPress: () => void
 }
 
-function PromptCard({onPress}: PromptCardProps) {
-  return (
-    <YStack
-      justifyContent={"center"}
-      gap={5}
-      alignItems="center"
-      flex={1}
-      borderRadius={10}
-      margin={cardMargin}
-      backgroundColor={"$background"}
-    >
-      <SizableText paddingVertical={2}>Tap on Nearby Clinics to View</SizableText>
-      <Button width={'100%'} borderTopEndRadius={0} borderTopStartRadius={0} onPress={onPress}>
-        Get Nearby
-      </Button>
-    </YStack>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {

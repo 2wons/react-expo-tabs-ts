@@ -6,14 +6,26 @@ import { ContextProps } from ".";
 import { ClassCounts } from "@/components/ResultView";
 import { ImageResponse } from "@/services/types";
 
+export interface ShareInfo {
+  id: number;
+  clinicId: number;
+  clinicName?: string;
+  clinicAddress?: string;
+  createdAt: string;
+}
+
 export interface Report {
     id: string;
     serverId?: number
     timestamp: string;
     img?: string;
+    originalImg?: string;
+    shared?: boolean;
     title: string
     summary: ClassCounts
     extreme?: string
+    sharedInfo?: ShareInfo[]
+    archived?: boolean
 }
 
 export interface History {
@@ -36,8 +48,9 @@ interface DataContextInterface {
     summary,
     extreme,
     ...imageResponse
-   }: SaveData) => Promise<void>;
-  clear?: () => Promise<void>;
+   }: SaveData) => Promise<string>;
+  edit?: (id: string, newData: Report) => Promise<void>;
+  clear?: (type: 'delete' | 'archive') => Promise<void>;
   remove?: (id: string) => Promise<void>;
 }
 
@@ -59,7 +72,18 @@ export const DataProvider = ({ children }: ContextProps) => {
     }
   }
 
-  const clear = async () => {
+  const clear = async (type: 'delete' | 'archive') => {
+    switch (type) {
+      case 'delete':
+        await clearToDelete()
+        break
+      case 'archive':
+        await clearToArchive()
+        break
+    }
+  }
+
+  const clearToDelete = async () => {
     await AsyncStorage.setItem('history', JSON.stringify({}))
     await FileSystem.deleteAsync(
       FileSystem.documentDirectory + 'images/',
@@ -71,6 +95,15 @@ export const DataProvider = ({ children }: ContextProps) => {
       {intermediates: true}
     )
     setHistory({})
+  }
+
+  const clearToArchive = async () => {
+    const currentHistory = {...history}
+    for (const id in currentHistory) {
+      currentHistory[id].archived = true
+    }
+    setHistory(currentHistory)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
   }
 
   useEffect(() => {
@@ -100,10 +133,13 @@ export const DataProvider = ({ children }: ContextProps) => {
       id: localId,
       timestamp: new Date().toISOString(),
       img: uri,
+      originalImg: imageResponse.originalImagePath,
+      shared: false,
       title: title,
       summary: summary,
       extreme: extreme,
-      serverId: imageResponse.id
+      serverId: imageResponse.id,
+      archived: false
     };
     
     try {
@@ -115,18 +151,33 @@ export const DataProvider = ({ children }: ContextProps) => {
     } catch (error) {
       console.error(error)
     }
+
+    return localId
   }
 
   const remove = async (id: string) => {
     const currentHistory = {...history}
+    const imgPath = currentHistory[id].img
+    console.log(imgPath)
+
     if (history.hasOwnProperty(id)) {
       delete currentHistory[id]
+    }
+    setHistory(currentHistory)
+    await FileSystem.deleteAsync(imgPath!)
+    await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
+  }
+
+  const edit = async (id: string, newData: Report) => {
+    const currentHistory = {...history}
+    if (history.hasOwnProperty(id)) {
+      currentHistory[id] = newData
     }
     setHistory(currentHistory)
     await AsyncStorage.setItem('history', JSON.stringify(currentHistory))
   }
 
-  const value = { history, load, save, clear, remove }
+  const value = { history, load, save, clear, remove, edit }
 
   return (
     <DataContext.Provider value={value}>

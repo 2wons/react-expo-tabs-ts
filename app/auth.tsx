@@ -26,7 +26,6 @@ export default function AuthScreen() {
       Alert.alert('Invalid Username or Password');
     }
     else {
-      Alert.alert('Login Successful');
       router.replace('/profile')
     }
     setStatus('submitted');
@@ -65,11 +64,8 @@ export default function AuthScreen() {
           secureTextEntry/>
 
         <XStack gap='$2' marginVertical="$5" width={'100%'}>
-          <Button width={'50%'}>
-            Forgot Password
-          </Button>
           <Form.Trigger asChild disabled={status !== "off"}>
-            <Button themeInverse width={'50%'}icon={status === "submitting" ? () => <Spinner /> : undefined}>
+            <Button flex={1} themeInverse icon={status === "submitting" ? () => <Spinner /> : undefined}>
               Login
             </Button>
           </Form.Trigger>

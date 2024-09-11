@@ -13,6 +13,7 @@ import { ErrorDetail } from "@/services/types";
 import { Modal } from "react-native";
 import { Privacy } from "@/components/Privacy";
 import { XCircle } from "@tamagui/lucide-icons";
+import { Loader } from "@/components/Loader";
 
 interface RegisterErrors {
   [key: string]: ErrorDetail[]
@@ -28,10 +29,12 @@ export default function RegisterScreen() {
   const [name , setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading , setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [privacyVisible, setPrivacyVisible] = useState(false)
   const [formErrors, setFormErrors] = useState<RegisterErrors>({})
 
-  const { onRegister } = useAuthy();
+  const { onRegister, onLogin } = useAuthy();
 
   const validate = () => {
     let isValid = true
@@ -81,7 +84,13 @@ export default function RegisterScreen() {
 
   const handleSubmit = async () => {
     setPrivacyVisible(false)
-    const response = await onRegister!(email, password, name);
+    const response = await onRegister!(email, password, name)
+      .catch((e) => {
+        console.log(e)
+        Alert.alert('Error', 'An error occurred while registering. Please try again.')
+        return
+      })
+
     if (response.error) {
       let newErrors = {
         "email": [],
@@ -102,11 +111,17 @@ export default function RegisterScreen() {
       setFormErrors(newErrors)
     }
     else {
-      Alert.alert('Sign up Successful');
-      setEmail('');
-      setPassword('');
-      setFormErrors({});
-      router.replace('/auth')
+      setLoading(true)
+      setMessage('Logging in...')
+      await onLogin!(email, password)
+        .then(() => {
+          router.replace('/profile')
+        })
+        .catch(() => {
+          Alert.alert('Error', 'An error occurred while logging in. Please try again.')
+          router.push('/auth')
+        })
+      setLoading(false)
     }
     setStatus('submitted')
   }
@@ -137,6 +152,7 @@ export default function RegisterScreen() {
         <Input width={'100%'} size="$4" placeholder={'Enter you full name'} borderWidth={2}
           marginBottom='$2'
           value={name}
+          maxLength={42}
           onChangeText={t => setName(t)} />
         {
           formErrors['name'] && formErrors['name'].map((detail: ErrorDetail, index) => {
@@ -151,6 +167,7 @@ export default function RegisterScreen() {
           marginBottom='$2'
           value={email}
           autoCapitalize="none"
+          maxLength={64}
           onChangeText={t => setEmail(t)}  />
         {
           formErrors['email'] && formErrors['email'].map((detail: ErrorDetail, index) => {
@@ -201,6 +218,7 @@ export default function RegisterScreen() {
           <Button marginBottom="$2" onPress={handleSubmit}>Agree and Sign up</Button>
         </Privacy>
       </Modal>
+      { loading && <Loader message={message} />}
     </View>
   );
 }

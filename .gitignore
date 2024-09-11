@@ -44,3 +44,9 @@ expo-env.d.ts
 # prebuild directories
 android/
 ios/
+
+# tests
+__snapshots__/
+
+# other
+dump/

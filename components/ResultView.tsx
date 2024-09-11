@@ -1,5 +1,5 @@
 import { StyleSheet, Image, Alert, TouchableOpacity } from "react-native";
-import { Button, H1, H3, SizableText, Input, XStack, YStack } from "tamagui";
+import { Button, H1, H3, SizableText, Input, XStack, YStack, Text, Slider } from "tamagui";
 import { Download, History } from "@tamagui/lucide-icons";
 
 import * as FileSystem from "expo-file-system";
@@ -10,11 +10,13 @@ import { styled } from "@tamagui/core";
 import { useData } from "@/contexts/DataContext";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { Modal } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader } from "./Loader";
 import { Summary } from "./Summary";
-import { RECO } from "@/constants/Common";
 import { ImageResponse } from "@/services/types";
+import { router } from "expo-router";
+import { Tooltip } from "./Tooltip";
+import { Recommendations } from "./Recommendations";
 
 const FloatingButton = styled(Button, {
   name: "Floating Button",
@@ -36,22 +38,31 @@ type ResultProps = {
   summary: ClassCounts
   extreme?: string
   imageResponse: ImageResponse
+  handleVisibility?: () => void
   children?: React.ReactElement
 };
 
-export const ResultView = ({ imgUri, summary, children, extreme="none", imageResponse }: ResultProps) => {
+export const ResultView = ({ 
+  imgUri,
+  summary, 
+  children, extreme="none", 
+  imageResponse, 
+  handleVisibility }: ResultProps
+) => {
   const { save } = useData();
   const [isViewerVisible, setViewerVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [title, setTitle] = useState("Untitled")
+  const [opacity, setOpacity] = useState(0.0)
+  const [cachedImage, setCachedImage] = useState<string | undefined>(undefined)
 
   const today = new Date();
 
   const saveToHistory = async () => {
     setLoading(true)
     setMessage("Saving to history...")
-    await save!({
+    const id = await save!({
       imgUri: imgUri!,
       title,
       summary,
@@ -61,11 +72,30 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
     Alert.alert('Result saved to history.')
     setLoading(false)
     setMessage("")
+    handleVisibility!()
+    router.navigate({
+      pathname: '/result',
+      params: { id: id }
+    })
   }
 
   const handleViewer = () => {
     setViewerVisible(!isViewerVisible)
-    console.log(extreme)
+  }
+
+  const cacheImage = async () => {
+    const { uri } = await FileSystem.downloadAsync(
+      imgUri!,
+      FileSystem.cacheDirectory + "result_cached.jpg"
+    );
+    setCachedImage(uri)
+  }
+
+  const cleanup = async () => {
+    if (cachedImage) {
+      FileSystem.deleteAsync(cachedImage)
+    }
+    setCachedImage(undefined)
   }
 
   const saveImage = async () => {
@@ -92,10 +122,18 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
     { url: imgUri! },
   ]
 
+  useEffect(() => {
+    cacheImage()
+
+    return () => {
+      cleanup()
+    }
+  }, [])
+
   const PLACEHOLDER = "https://i.postimg.cc/FFcjKg98/placeholder.png";
   return (
     <>
-      <H1 paddingVertical="$5">Analysis result</H1>
+      <H1 paddingVertical="$5" onPress={() => console.log(cachedImage)}>Analysis result</H1>
       <View style={styles.preview}>
         <TouchableOpacity onPress={handleViewer}>
           <Image
@@ -105,22 +143,49 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
           />
         </TouchableOpacity>
       <Modal visible={isViewerVisible} transparent={true}>
-        <ImageViewer imageUrls={images}/>
-        <Button onPress={handleViewer}>Close</Button>
+        <View style={{flex: 1}}>
+        <ImageViewer 
+          imageUrls={cachedImage ? [{ url: cachedImage }] : images}
+          renderImage={(props) => {
+            return (
+              <>
+              <Image {...props} />
+              <Image 
+                style={{ width: '100%', height: '100%', position: "absolute", left: 0, right: 0, opacity: opacity }} 
+                source={{ uri: `https://api.carident.live/${imageResponse.originalImagePath}` }}  
+              />
+              </>
+            )
+          }} 
+        />
+          <Slider margin="$4" value={[opacity]} max={1} onValueChange={(val) => setOpacity(val[0])} step={0.01}>
+            <Slider.Track>
+              <Slider.TrackActive />
+            </Slider.Track>
+            <Slider.Thumb index={0} circular elevate size="$2" />
+          </Slider>
+          <Button margin="$6" onPress={handleViewer}>Close</Button>
+          <Button position="absolute" right={0} marginTop="$10" onPress={() => setOpacity(opacity === 0 ? 1 : 0)}>
+            {opacity === 0 ? "Show Original" : "Hide Original"}
+          </Button>
+        </View>
       </Modal>
         <FloatingButton icon={Download} onPress={saveImage}>
         </FloatingButton>
       </View>
-      <H3 paddingTop={'$3'}>Summary</H3>
+      <XStack alignItems="center" gap="$2" paddingTop="$3">
+        <H3>Summary</H3>
+        <Tooltip text="what's this" />
+      </XStack>
       <Summary counts={summary}  />
-      <SizableText marginTop="$2">Recommendations</SizableText>
+      <SizableText marginTop="$2">Insights & Recommendations</SizableText>
       <YStack padding="$3" backgroundColor="$gray1" borderRadius={10}>
-        <SizableText>{RECO[extreme]}</SizableText>
+        <Recommendations type={extreme} counts={summary} />
       </YStack>
       <SizableText theme="alt1" paddingTop="$1.5">General Information</SizableText>
       <XStack alignItems="center">
         <SizableText theme="alt2">{`title `}</SizableText>
-        <Input size="$1" flex={1} placeholder="Untitled" onChangeText={t => setTitle(t)}/>
+        <Input size="$1" flex={1} maxLength={20} placeholder="Untitled" onChangeText={t => setTitle(t)}/>
       </XStack>
       <XStack>
         <SizableText theme="alt2">{`date taken `}</SizableText>
@@ -138,7 +203,7 @@ export const ResultView = ({ imgUri, summary, children, extreme="none", imageRes
 
 const styles = StyleSheet.create({
   container: {
-    margin: 5,
+    padding: 5,
   },
   preview: {
     backgroundColor: "black",
