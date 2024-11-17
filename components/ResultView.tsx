@@ -98,6 +98,11 @@ export const ResultView = ({
     setCachedImage(undefined)
   }
 
+  const handleOpacitySlider = (val: number) => {
+    const _val = parseFloat((val / 100).toFixed(2));
+    setOpacity(_val)
+  }
+
   const saveImage = async () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status !== "granted") {
@@ -158,7 +163,7 @@ export const ResultView = ({
             )
           }} 
         />
-          <Slider margin="$4" value={[opacity]} max={1} onValueChange={(val) => setOpacity(val[0])} step={0.01}>
+          <Slider margin="$4" value={[Math.round(opacity * 100)]} max={100} onValueChange={(val) => handleOpacitySlider(val[0])} step={1}>
             <Slider.Track>
               <Slider.TrackActive />
             </Slider.Track>

@@ -138,7 +138,8 @@ export default function DetectScreen() {
   }
 
   const handleIoU = (value: number) => {
-    setIoU(value);
+    const newVal  = parseFloat((value / 100).toFixed(2));
+    setIoU(newVal)
   }
 
   const reset = () => {
@@ -179,17 +180,18 @@ export default function DetectScreen() {
       <Modal animationType='slide' presentationStyle='pageSheet' visible={settingsVisible} onRequestClose={() => setSettingsVisible(false)}>
         <View style={styles.modal}>
           <H1>Advance Settings</H1>
-          <XStack justifyContent='space-between' paddingTop="$3">
+          <XStack justifyContent='space-between' alignItems='center' paddingTop="$3">
             <Text theme="alt1">IoU Threshold</Text>
-            <Input disabled size="$1" value={IoU.toString()} onChangeText={val => handleIoU(parseFloat(val))} />
+            <Input size="$4" value={IoU.toString()} disabled/>
           </XStack>
           <XStack alignItems='center' gap="$2">
             <Text>0.05</Text>
-            <Slider defaultValue={[0.25]} value={[IoU]} max={1} min={0.05} step={0.05} flex={1} marginVertical="$4" onValueChange={(val) => handleIoU(val[0])}>
+            <Slider size="$4" width={200} value={[Math.round(IoU * 100)]} defaultValue={[25]} max={100} flex={1} step={5}
+              onValueChange={(val) => handleIoU(val[0])}>
               <Slider.Track>
                 <Slider.TrackActive />
               </Slider.Track>
-              <Slider.Thumb index={0} circular size={'$2'}/>
+              <Slider.Thumb circular index={0} size="$2" />
             </Slider>
             <Text>1</Text>
           </XStack>
