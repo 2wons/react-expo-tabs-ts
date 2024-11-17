@@ -1,33 +1,37 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import { TamaguiProvider, createTamagui, Theme } from 'tamagui';
-import { ShieldQuestion } from '@tamagui/lucide-icons';
-import { config } from '@tamagui/config/v3'
-import { LogBox } from 'react-native';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { TamaguiProvider, createTamagui, Theme } from "tamagui";
+import { ShieldQuestion } from "@tamagui/lucide-icons";
+import { config } from "@tamagui/config/v3";
+import { LogBox } from "react-native";
 
-import 'react-native-reanimated'
+import "react-native-reanimated";
 
-import { useColorScheme } from '@/components/useColorScheme';
-import { AuthProvider } from '@/contexts/AuthyContext';
-import { DataProvider } from '@/contexts/DataContext';
+import { useColorScheme } from "@/components/useColorScheme";
+import { AuthProvider } from "@/contexts/AuthyContext";
+import { DataProvider } from "@/contexts/DataContext";
 
 LogBox.ignoreLogs([
   /Cannot update a component/,
-  /Function components cannot be given refs/
-])
+  /Function components cannot be given refs/,
+]);
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: "(tabs)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -35,9 +39,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    Inter: require('@tamagui/font-inter/otf/Inter-Medium.otf'),
-    InterBold: require('@tamagui/font-inter/otf/Inter-Bold.otf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Inter: require("../assets/fonts/Inter-Medium.otf"),
+    InterBold: require("../assets/fonts/Inter-Bold.otf"),
     ...FontAwesome.font,
   });
 
@@ -60,12 +64,12 @@ export default function RootLayout() {
 }
 
 // you usually export this from a tamagui.config.ts file
-const tamaguiConfig = createTamagui(config)
+const tamaguiConfig = createTamagui(config);
 
 // make TypeScript type everything based on your config
-type Conf = typeof tamaguiConfig
-declare module '@tamagui/core' {
-  interface TamaguiCustomConfig extends Conf { }
+type Conf = typeof tamaguiConfig;
+declare module "@tamagui/core" {
+  interface TamaguiCustomConfig extends Conf {}
 }
 
 function RootLayoutNav() {
@@ -88,10 +92,14 @@ function RootLayoutNav() {
                 />
                 <Stack.Screen
                   name="result"
-                  options={{ 
-                    title: "Viewing Result" }}
+                  options={{
+                    title: "Viewing Result",
+                  }}
                 />
-                <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal" }}
+                />
               </Stack>
             </DataProvider>
           </AuthProvider>

@@ -27,5 +27,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     eas:{
       projectId:  "1e21b330-da3b-472e-b880-6bd54a89b3f4"
     }
-  }
+  },
+  plugins: [
+    "expo-font",
+    
+  ]
 });
